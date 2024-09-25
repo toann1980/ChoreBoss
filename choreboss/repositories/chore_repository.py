@@ -16,13 +16,18 @@ class ChoreRepository:
 
     def get_all_chores(self):
         session = self.Session()
-        chores = session.query(Chore).options(joinedload(Chore.person)).all()
+        chores = session.query(Chore).options(
+            joinedload(Chore.person_id_relationship),
+            joinedload(Chore.last_completed_id_person)
+        ).all()
         session.close()
         return chores
 
     def get_chore_by_id(self, chore_id):
         session = self.Session()
-        chore = session.query(Chore).filter_by(id=chore_id).first()
+        chore = session.query(Chore).options(
+            joinedload(Chore.person_id_relationship),
+            joinedload(Chore.last_completed_id_person)
+        ).filter_by(id=chore_id).first()
         session.close()
-
         return chore

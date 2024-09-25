@@ -20,7 +20,7 @@ def add_chore():
         name = request.form['name']
         description = request.form['description']
         chore_service.add_chore(name, description)
-        return redirect(url_for('chore_bp.get_all_chores'))
+        return redirect(url_for('index_bp.home'))
 
     return render_template('add_chore.html')
 

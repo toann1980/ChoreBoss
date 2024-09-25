@@ -22,4 +22,4 @@ def add_person():
 @person_bp.route('/people', methods=['GET'])
 def get_all_people():
     people = person_service.get_all_people()
-    return person_schema.jsonify(people, many=True)
+    return jsonify(people, many=True)
