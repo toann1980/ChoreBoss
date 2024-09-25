@@ -4,10 +4,12 @@ from choreboss.models.chore import Chore
 from sqlalchemy.orm import relationship
 
 
-class Person(Base):
-    __tablename__ = 'person'
+class People(Base):
+    __tablename__ = 'people'
     id = Column(Integer, primary_key=True)
-    name = Column(String(50), nullable=False)
+    first_name = Column(String(50), nullable=False)
+    last_name = Column(String(50), nullable=False)
+    age = Column(Integer, nullable=False)
 
     chores = relationship(
         'Chore',

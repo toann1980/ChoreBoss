@@ -6,8 +6,8 @@ class ChoreSchema(Schema):
     name = fields.Str(required=True)
     description = fields.Str(required=True)
     person_id = fields.Int()
-    person_id_relationship = fields.Nested('PersonSchema', only=('id', 'name'))
+    person_id_relationship = fields.Nested('PeopleSchema', only=('id', 'name'))
     last_completed = fields.DateTime()  # New field
     last_completed_id = fields.Int()  # New field
     last_completed_id_person = \
-        fields.Nested('PersonSchema', only=('id', 'name'))
+        fields.Nested('PeopleSchema', only=('id', 'name'))

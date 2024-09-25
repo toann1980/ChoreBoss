@@ -8,12 +8,12 @@ class Chore(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), nullable=False, unique=True)
     description = Column(String(200), nullable=False)
-    person_id = Column(Integer, ForeignKey('person.id'), nullable=True)
+    person_id = Column(Integer, ForeignKey('people.id'), nullable=True)
     last_completed = Column(DateTime, nullable=True, default=None)
-    last_completed_id = Column(Integer, ForeignKey('person.id'), nullable=True)
+    last_completed_id = Column(Integer, ForeignKey('people.id'), nullable=True)
 
     person_id_relationship = relationship(
-        'Person', back_populates='chores', foreign_keys=[person_id]
+        'People', back_populates='chores', foreign_keys=[person_id]
     )
     last_completed_id_person = \
-        relationship('Person', foreign_keys=[last_completed_id])
+        relationship('People', foreign_keys=[last_completed_id])
