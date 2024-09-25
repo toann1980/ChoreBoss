@@ -6,47 +6,65 @@
     <title>ChoreBoss - Desktop</title>
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='styles.css') }}"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
     />
   </head>
   <body>
-    <header>
+    <header class="text-center">
       <img
         src="{{ url_for('static', filename='images/chore-boss_v1.svg') }}"
         alt="ChoreBoss Logo"
+        class="img-fluid svg-logo"
       />
+      <h1>ChoreBoss</h1>
+      <h2>Chore like a boss!</h2>
     </header>
-    <main>
-      <section id="chores">
-        <h2>Chores</h2>
-        {% if chores %}
-        <ul>
-          {% for chore in chores %}
-          <li>{{ chore.name }}: {{ chore.description }}</li>
-          {% endfor %}
-        </ul>
-        {% else %}
-        <p>No chores available.</p>
-        <button onclick="location.href='{{ url_for('chore_bp.add_chore') }}'">
-          Add Chore
-        </button>
-        {% endif %}
-      </section>
-      <section id="people">
-        <h2>People</h2>
-        {% if people %}
-        <ul>
-          {% for person in people %}
-          <li>{{ person.name }}</li>
-          {% endfor %}
-        </ul>
-        {% else %}
-        <p>No people available.</p>
-        <button onclick="location.href='{{ url_for('person_bp.add_person') }}'">
-          Add Person
-        </button>
-        {% endif %}
-      </section>
+    <main class="container">
+      <div class="content-container">
+        <section id="chores" class="my-4">
+          <h2>Chores</h2>
+          {% if chores %}
+          <ul class="list-group">
+            {% for chore in chores %}
+            <li class="list-group-item">{{ chore.name }}</li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p>No chores available.</p>
+          <button
+            class="btn btn-primary"
+            onclick="location.href='{{ url_for('chore_bp.add_chore') }}'"
+          >
+            Add Chore
+          </button>
+          {% endif %}
+        </section>
+        <section id="people" class="my-4">
+          <h2>People</h2>
+          {% if people %}
+          <ul class="list-group">
+            {% for person in people %}
+            <li class="list-group-item">{{ person.name }}</li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p>No people available.</p>
+          <button
+            class="btn btn-primary"
+            onclick="location.href='{{ url_for('person_bp.add_person') }}'"
+          >
+            Add Person
+          </button>
+          {% endif %}
+        </section>
+      </div>
     </main>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   </body>
 </html>

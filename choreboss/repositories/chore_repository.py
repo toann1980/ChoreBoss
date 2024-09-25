@@ -1,21 +1,28 @@
 from choreboss.models.chore import Chore
 from choreboss.models import Base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, joinedload
 
 
 class ChoreRepository:
     def __init__(self, engine):
-        self.session = sessionmaker(bind=engine)
+        self.Session = sessionmaker(bind=engine)
 
-    def add_chore(self, description):
-        chore = Chore(description=description)
-        self.session.add(chore)
-        self.session.commit()
-        self.session.close()
-        return chore
+    def add_chore(self, name, description):
+        session = self.Session()  # Create a session instance
+        chore = Chore(name=name, description=description)
+        session.add(chore)
+        session.commit()
+        session.close()
 
     def get_all_chores(self):
-        session = self.session()
-        chores = session.query(Chore).all()
+        session = self.Session()
+        chores = session.query(Chore).options(joinedload(Chore.person)).all()
         session.close()
         return chores
+
+    def get_chore_by_id(self, chore_id):
+        session = self.Session()
+        chore = session.query(Chore).filter_by(id=chore_id).first()
+        session.close()
+
+        return chore

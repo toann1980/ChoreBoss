@@ -1,4 +1,6 @@
-from flask import Blueprint, request, jsonify
+from flask import (
+    Blueprint, jsonify, redirect, render_template, request, url_for
+)
 from choreboss.repositories.chore_repository import ChoreRepository
 from choreboss.services.chore_service import ChoreService
 from choreboss.schemas.chore_schema import ChoreSchema
@@ -12,14 +14,27 @@ chore_service = ChoreService(chore_repository)
 chore_schema = ChoreSchema()
 
 
-@chore_bp.route('/chores', methods=['POST'])
+@chore_bp.route('/chores', methods=['GET', 'POST'])
 def add_chore():
-    data = request.get_json()
-    chore = chore_service.add_chore(data['description'])
-    return jsonify(chore_schema.dump(chore))
+    if request.method == 'POST':
+        name = request.form['name']
+        description = request.form['description']
+        chore_service.add_chore(name, description)
+        return redirect(url_for('chore_bp.get_all_chores'))
+
+    return render_template('add_chore.html')
 
 
 @chore_bp.route('/chores', methods=['GET'])
 def get_all_chores():
     chores = chore_service.get_all_chores()
-    return jsonify(chore_schema.dump(chores, many=True))
+    return render_template('chores_list.html', chores=chores)
+
+
+@chore_bp.route('/chores/<int:chore_id>', methods=['GET'])
+def get_chore(chore_id):
+    chore = chore_service.get_chore_by_id(chore_id)
+    if chore:
+        return render_template('chore_detail.html', chore=chore)
+    else:
+        return jsonify({'error': 'Chore not found'}), 404
