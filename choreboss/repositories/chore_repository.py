@@ -5,18 +5,17 @@ from sqlalchemy.orm import sessionmaker
 
 class ChoreRepository:
     def __init__(self, engine):
-        self.Session = sessionmaker(bind=engine)
+        self.session = sessionmaker(bind=engine)
 
     def add_chore(self, description):
-        session = self.Session()
         chore = Chore(description=description)
-        session.add(chore)
-        session.commit()
-        session.close()
+        self.session.add(chore)
+        self.session.commit()
+        self.session.close()
         return chore
 
     def get_all_chores(self):
-        session = self.Session()
+        session = self.session()
         chores = session.query(Chore).all()
         session.close()
         return chores

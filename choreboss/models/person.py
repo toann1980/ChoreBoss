@@ -7,5 +7,5 @@ class Person(Base):
     __tablename__ = 'person'
     id = Column(Integer, primary_key=True)
     name = Column(String(50), nullable=False)
-    # Define the relationship to Chore
+
     chores = relationship('Chore', back_populates='person')

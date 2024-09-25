@@ -6,6 +6,7 @@ from choreboss.models import Base
 class Chore(Base):
     __tablename__ = 'chore'
     id = Column(Integer, primary_key=True)
+    name = Column(String(50), nullable=False, unique=True)
     description = Column(String(200), nullable=False)
     person_id = Column(Integer, ForeignKey('person.id'), nullable=True)
 
