@@ -13,7 +13,8 @@ class PeopleRepository:
             first_name=first_name,
             last_name=last_name,
             birthday=birthday,
-            pin=pin
+            pin=pin,
+            is_admin=is_admin
         )
         session.add(person)
         session.commit()
