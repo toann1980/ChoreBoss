@@ -21,8 +21,10 @@ def add_person():
         first_name = request.form['first_name']
         last_name = request.form['last_name']
         birthday_str = request.form['birthday']
+        pin = request.form['pin']
+        print(f'pin: {pin}')
         birthday = datetime.strptime(birthday_str, '%Y-%m-%d').date()
-        people_service.add_person(first_name, last_name, birthday)
+        people_service.add_person(first_name, last_name, birthday, pin)
         return redirect(url_for('index_bp.home'))
 
     return render_template('add_person.html')

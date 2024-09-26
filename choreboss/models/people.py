@@ -10,6 +10,7 @@ class People(Base):
     first_name = Column(String(50), nullable=False)
     last_name = Column(String(50), nullable=False)
     birthday = Column(Date, nullable=False)
+    pin = Column(String(255), nullable=False)
 
     chores = relationship(
         'Chore',
