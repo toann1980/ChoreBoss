@@ -1,28 +1,25 @@
-<!-- web/templates/chores_list.html -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chores List</title>
+    <title>{% block title %}ChoreBoss{% endblock %}</title>
     <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='images/favicon.ico') }}"
+      type="image/x-icon"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
   </head>
   <body>
-    <div class="container">
-      <h1 class="mt-5">Chores List</h1>
-      <ul class="list-group">
-        {% for chore in chores %}
-        <li class="list-group-item">
-          <a href="{{ url_for('chore_bp.get_chore', chore_id=chore.id) }}"
-            >{{ chore.name }}</a
-          >
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
+    {% block content %}{% endblock %}
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
