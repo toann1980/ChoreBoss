@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Date, Integer, String
 from choreboss.models import Base
 from choreboss.models.chore import Chore
 from sqlalchemy.orm import relationship
@@ -9,7 +9,7 @@ class People(Base):
     id = Column(Integer, primary_key=True)
     first_name = Column(String(50), nullable=False)
     last_name = Column(String(50), nullable=False)
-    age = Column(Integer, nullable=False)
+    birthday = Column(Date, nullable=False)
 
     chores = relationship(
         'Chore',

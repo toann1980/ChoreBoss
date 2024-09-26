@@ -47,6 +47,8 @@ def tablet_home():
 @index_bp.route('/desktop', methods=['GET'])
 def desktop_home():
     people = people_service.get_all_people()
+    print(f'people: {people}')
     chores = chore_service.get_all_chores()
+    print(f'chores: {chores}')
 
     return render_template('desktop_home.html', people=people, chores=chores)

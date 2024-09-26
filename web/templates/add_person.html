@@ -1,0 +1,46 @@
+{% extends "base.html" %} {% block title %}Add Person{% endblock %} {% block
+content %}
+<div class="container">
+  <div class="row mt-3">
+    <div class="col-12">
+      <button class="btn btn-secondary" onclick="window.history.back()">
+        Back
+      </button>
+    </div>
+  </div>
+  <h1 class="mt-5">Add Person</h1>
+  <form method="POST" action="{{ url_for('people_bp.add_person') }}">
+    <div class="form-group">
+      <label for="first_name">First Name</label>
+      <input
+        type="text"
+        class="form-control"
+        id="first_name"
+        name="first_name"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="last_name">Last Name</label>
+      <input
+        type="text"
+        class="form-control"
+        id="last_name"
+        name="last_name"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="birthday">birthday</label>
+      <input
+        type="date"
+        class="form-control"
+        id="birthday"
+        name="birthday"
+        required
+      />
+    </div>
+    <button type="submit" class="btn btn-primary">Add Person</button>
+  </form>
+</div>
+{% endblock %}
