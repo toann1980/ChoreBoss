@@ -17,7 +17,7 @@ header {
 
 .svg-logo {
     height: auto; /* Maintain aspect ratio */
-    max-height: 50%; /* Ensure the SVG does not take up more than 50% of the header */
+    max-height: 75%; /* Ensure the SVG does not take up more than 75% of the header */
 }
 
 header h1, header h2 {
