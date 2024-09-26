@@ -13,8 +13,8 @@ content %}
     </li>
     {% endfor %}
   </ul>
-  <a href="{{ url_for('people_bp.get_all_people') }}" class="btn btn-secondary"
-    >Back to People</a
-  >
+  <button class="btn btn-secondary" onclick="window.history.back()">
+    Back
+  </button>
 </div>
 {% endblock %}
