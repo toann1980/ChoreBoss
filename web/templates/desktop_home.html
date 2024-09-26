@@ -16,7 +16,11 @@ content %}
       {% if chores %}
       <ul class="list-group">
         {% for chore in chores %}
-        <li class="list-group-item">{{ chore.name }}</li>
+        <li class="list-group-item">
+          <a href="{{ url_for('chore_bp.get_chore', chore_id=chore.id) }}"
+            >{{ chore.name }}</a
+          >
+        </li>
         {% endfor %}
       </ul>
       {% else %}
@@ -35,7 +39,9 @@ content %}
       <ul class="list-group">
         {% for person in people %}
         <li class="list-group-item">
-          {{ person.first_name }} {{ person.last_name }}
+          <a href="{{ url_for('people_bp.get_person', person_id=person.id) }}">
+            {{ person.first_name }} {{ person.last_name }}
+          </a>
         </li>
         {% endfor %}
       </ul>

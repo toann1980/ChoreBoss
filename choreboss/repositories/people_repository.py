@@ -24,3 +24,12 @@ class PeopleRepository:
         ).all()
         session.close()
         return people
+
+    def get_person_by_id(self, person_id):
+        session = self.Session()
+        person = session.query(People).options(
+            joinedload(People.chores),
+            joinedload(People.completed_chores)
+        ).filter(People.id == person_id).first()
+        session.close()
+        return person

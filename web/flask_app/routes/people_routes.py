@@ -32,3 +32,12 @@ def add_person():
 def get_all_people():
     people = people_service.get_all_people()
     return jsonify(people_schema.dump(people, many=True))
+
+
+@people_bp.route('/people/<int:person_id>', methods=['GET'])
+def get_person(person_id):
+    person = people_service.get_person_by_id(person_id)
+    if person:
+        return render_template('person_detail.html', person=person)
+    else:
+        return jsonify({'error': 'Person not found'}), 404
