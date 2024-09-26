@@ -25,13 +25,13 @@ content %}
       </ul>
       {% else %}
       <p>No chores available.</p>
+      {% endif %}
       <button
         class="btn btn-primary"
         onclick="location.href='{{ url_for('chore_bp.add_chore') }}'"
       >
         Add Chore
       </button>
-      {% endif %}
     </section>
     <section id="people" class="my-4">
       <h2>People</h2>
@@ -47,13 +47,13 @@ content %}
       </ul>
       {% else %}
       <p>No people available.</p>
+      {% endif %}
       <button
         class="btn btn-primary"
         onclick="location.href='{{ url_for('people_bp.add_person') }}'"
       >
         Add Person
       </button>
-      {% endif %}
     </section>
   </div>
 </main>
