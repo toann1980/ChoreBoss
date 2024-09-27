@@ -9,7 +9,11 @@ content %}
     </div>
   </div>
   <h1 class="mt-5">Add New Person</h1>
-    <form id="addPersonForm" method="POST" action="{{ url_for('people_bp.add_person') }}">
+  <form
+    id="addPersonForm"
+    method="POST"
+    action="{{ url_for('people_bp.add_person') }}"
+  >
     <div class="form-group">
       <label for="first_name">First Name</label>
       <input
@@ -42,15 +46,24 @@ content %}
     </div>
     {% if not admins_exist %}
     <div class="form-group form-check">
-      <input type="checkbox" class="form-check-input" id="is_admin" name="is_admin" />
+      <input
+        type="checkbox"
+        class="form-check-input"
+        id="is_admin"
+        name="is_admin"
+      />
       <label class="form-check-label" for="is_admin">Admin</label>
     </div>
-    {% endif %}      
+    {% endif %}
     <div class="form-group">
       <div class="row">
-      <button type="button" class="btn btn-primary mt-2 w-100" onclick="showPinModal()">
-        Add Person
-      </button>
+        <button
+          type="button"
+          class="btn btn-primary mt-2 w-100"
+          onclick="showPinModal()"
+        >
+          Add Person
+        </button>
       </div>
       <input type="hidden" id="pin" name="pin" required />
     </div>
@@ -89,14 +102,14 @@ content %}
           />
         </div>
         <div class="numpad">
-          {% set buttons = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'C',
-          '0', '←'] %} {% for i in range(0, 12, 3) %}
+          {% set buttons = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "C",
+          "0", "←"] %} {% for i in range(0, 12, 3) %}
           <div class="row no-gutters">
             {% for j in range(3) %}
             <div class="col-4 p-1">
               <button
                 class="btn btn-secondary w-100"
-                onclick="addToPin('{{ buttons[i + j] }}')"
+                onclick="addToPin("{{ buttons[i + j] }}")"
               >
                 {{ buttons[i + j] }}
               </button>
@@ -122,15 +135,35 @@ content %}
   let isConfirmingPin = false;
   let initialPin = "";
   function showPinModal() {
-    $('#numpadModal').modal('show');
+    $("#numpadModal").modal("show");
+    document.addEventListener("keydown", handleKeyPress);
   }
+
+  function hidePinModal() {
+    $("#numpadModal").modal("hide");
+    document.removeEventListener("keydown", handleKeyPress);
+  }
+
+  function handleKeyPress(event) {
+    const key = event.key;
+    if (key >= "0" && key <= "9") {
+      addToPin(key);
+    } else if (key === "Backspace") {
+      deleteLastPin();
+    } else if (key === "Enter") {
+      confirmPin();
+    } else if (key === "Escape") {
+      clearPin();
+    }
+  }
+
   function addToPin(value) {
     const pinInput = document.getElementById("pin");
     const pinDisplay = document.getElementById("pinDisplay");
-    if (value === 'C') {
+    if (value === "C") {
       clearPin();
-    } else if (value === '←') {
-      deleteLastPin();      
+    } else if (value === "←") {
+      deleteLastPin();
     } else if (pinInput.value.length < 6) {
       pinInput.value += value;
       pinDisplay.value = pinInput.value;
@@ -160,7 +193,7 @@ content %}
       alert("Please re-enter your PIN to confirm.");
     } else {
       if (pinInput === initialPin) {
-        $('#numpadModal').modal('hide');
+        $("#numpadModal").modal("hide");
         document.getElementById("addPersonForm").submit();
       } else {
         alert("PINs do not match. Please try again.");
