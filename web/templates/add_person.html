@@ -40,6 +40,12 @@ content %}
         required
       />
     </div>
+    {% if not admins_exist %}
+    <div class="form-group form-check">
+      <input type="checkbox" class="form-check-input" id="is_admin" name="is_admin" />
+      <label class="form-check-label" for="is_admin">Admin</label>
+    </div>
+    {% endif %}      
     <div class="form-group">
       <div class="row">
       <button type="button" class="btn btn-primary mt-2 w-100" onclick="showPinModal()">

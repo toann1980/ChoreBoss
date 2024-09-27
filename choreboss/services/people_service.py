@@ -5,9 +5,9 @@ class PeopleService:
     def __init__(self, people_repository: PeopleRepository):
         self.people_repository = people_repository
 
-    def add_person(self, first_name, last_name, birthday, pin):
+    def add_person(self, first_name, last_name, birthday, pin, is_admin):
         return self.people_repository.add_person(
-            first_name, last_name, birthday, pin
+            first_name, last_name, birthday, pin, is_admin
         )
 
     def get_all_people(self):
@@ -15,3 +15,6 @@ class PeopleService:
 
     def get_person_by_id(self, person_id):
         return self.people_repository.get_person_by_id(person_id)
+
+    def admins_exist(self):
+        return self.people_repository.admins_exist()

@@ -28,7 +28,9 @@ def add_person():
             first_name, last_name, birthday, pin, is_admin)
         return redirect(url_for('index_bp.home'))
 
-    return render_template('add_person.html')
+    # Check if there are any admins
+    admins_exist = people_service.admins_exist()
+    return render_template('add_person.html', admins_exist=admins_exist)
 
 
 @people_bp.route('/people', methods=['GET'])

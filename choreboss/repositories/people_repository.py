@@ -7,7 +7,7 @@ class PeopleRepository:
     def __init__(self, engine):
         self.Session = sessionmaker(bind=engine)
 
-    def add_person(self, first_name, last_name, birthday, pin):
+    def add_person(self, first_name, last_name, birthday, pin, is_admin):
         session = self.Session()
         person = People(
             first_name=first_name,
@@ -38,3 +38,10 @@ class PeopleRepository:
         ).filter(People.id == person_id).first()
         session.close()
         return person
+
+    def admins_exist(self):
+        session = self.Session()
+        admin_exists = session.query(People).filter_by(
+            is_admin=True).first() is not None
+        session.close()
+        return admin_exists
