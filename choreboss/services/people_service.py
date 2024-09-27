@@ -18,3 +18,9 @@ class PeopleService:
 
     def admins_exist(self):
         return self.people_repository.admins_exist()
+
+    def verify_pin(self, person_id, pin):
+        person = self.people_repository.get_person_by_id(person_id)
+        if person and person.verify_pin(pin):
+            return True
+        return False

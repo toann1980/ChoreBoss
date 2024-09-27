@@ -1,6 +1,8 @@
-from sqlalchemy import Boolean, Column, Date, Integer, String
 from choreboss.models import Base
 from choreboss.models.chore import Chore
+
+import bcrypt
+from sqlalchemy import Boolean, Column, Date, Integer, String
 from sqlalchemy.orm import relationship
 
 
@@ -23,3 +25,10 @@ class People(Base):
         foreign_keys=[Chore.last_completed_id],
         back_populates='last_completed_id_person'
     )
+
+    def set_pin(self, pin):
+        hashed = bcrypt.hashpw(pin.encode('utf-8'), bcrypt.gensalt())
+        self.pin = hashed.decode('utf-8')
+
+    def verify_pin(self, pin):
+        return bcrypt.checkpw(pin.encode('utf-8'), self.pin.encode('utf-8'))

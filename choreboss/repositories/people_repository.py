@@ -16,6 +16,7 @@ class PeopleRepository:
             pin=pin,
             is_admin=is_admin
         )
+        person.set_pin(pin)
         session.add(person)
         session.commit()
         session.close()
