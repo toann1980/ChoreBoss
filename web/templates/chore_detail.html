@@ -11,8 +11,8 @@ content %}
     <strong>Last completed by:</strong>
     <!-- Add logic to display who last completed it and when -->
   </p>
-  <a href="{{ url_for('chore_bp.get_all_chores') }}" class="btn btn-secondary"
-    >Back to Chores</a
-  >
+  <button class="btn btn-secondary" onclick="window.history.back()">
+    Back
+  </button>
 </div>
 {% endblock %}
