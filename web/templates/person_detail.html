@@ -2,7 +2,7 @@
 content %}
 <div class="container">
   <h1 class="mt-5">{{ person.first_name }} {{ person.last_name }}</h1>
-  <p><strong>Birthday:</strong> {{ person.birthday }}</p>
+  <p><strong>Birthday:</strong> {{ person.birthday.strftime('%m-%d-%Y') }}</p>
   <p><strong>Chores:</strong></p>
   <ul>
     {% for chore in person.chores %}

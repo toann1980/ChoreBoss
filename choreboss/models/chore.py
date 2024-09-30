@@ -9,7 +9,7 @@ class Chore(Base):
     name = Column(String(50), nullable=False, unique=True)
     description = Column(String(200), nullable=False)
     person_id = Column(Integer, ForeignKey('people.id'), nullable=True)
-    last_completed = Column(DateTime, nullable=True, default=None)
+    last_completed_date = Column(DateTime, nullable=True, default=None)
     last_completed_id = Column(Integer, ForeignKey('people.id'), nullable=True)
 
     person_id_relationship = relationship(
