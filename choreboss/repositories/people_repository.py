@@ -1,3 +1,5 @@
+import bcrypt
+
 from choreboss.models.people import People
 from choreboss.models import Base
 from sqlalchemy.orm import sessionmaker, joinedload
@@ -39,6 +41,14 @@ class PeopleRepository:
         ).filter(People.id == person_id).first()
         session.close()
         return person
+
+    def get_person_by_pin(self, pin):
+        session = self.Session()
+        person = session.query(People).filter(People.pin != None).first()
+        session.close()
+        if person and bcrypt.checkpw(pin.encode('utf-8'), person.pin.encode('utf-8')):
+            return person
+        return None
 
     def admins_exist(self):
         session = self.Session()

@@ -16,6 +16,9 @@ class PeopleService:
     def get_person_by_id(self, person_id):
         return self.people_repository.get_person_by_id(person_id)
 
+    def get_person_by_pin(self, pin):
+        return self.people_repository.get_person_by_pin(pin)
+
     def admins_exist(self):
         return self.people_repository.admins_exist()
 

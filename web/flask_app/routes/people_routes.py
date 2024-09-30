@@ -64,3 +64,13 @@ def get_person(person_id):
         return render_template('person_detail.html', person=person)
     else:
         return jsonify({'error': 'Person not found'}), 404
+
+
+@people_bp.route('/verify_pin', methods=['POST'])
+def verify_pin():
+    data = request.get_json()
+    pin = data.get('pin')
+    person = people_service.get_person_by_pin(pin)
+    if person and person.is_admin:
+        return jsonify({'is_admin': True})
+    return jsonify({'is_admin': False})
