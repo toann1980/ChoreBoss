@@ -4,14 +4,14 @@ content %}
   <img
     src="{{ url_for('static', filename='images/chore-boss_v1.svg') }}"
     alt="ChoreBoss Logo"
-    class="img-fluid svg-logo"
+    class="svg-logo"
   />
   <h1>ChoreBoss</h1>
   <h2>Chore like a boss!</h2>
 </header>
 <main class="container">
   <div class="content-container">
-    <section id="chores" class="my-4">
+    <section class="my-4" id="chores">
       <h2>Chores</h2>
       {% if chores %}
       <ul class="list-group">
@@ -33,27 +33,23 @@ content %}
         Add Chore
       </button>
     </section>
-    <section id="people" class="my-4">
+    <section id="people">
       <h2>People</h2>
-      {% if people %}
-      <ul class="list-group">
-        {% for person in people %}
-        <li class="list-group-item">
-          <a href="{{ url_for('people_bp.get_person', person_id=person.id) }}">
-            {{ person.first_name }} {{ person.last_name }}
-          </a>
-        </li>
-        {% endfor %}
-      </ul>
-      {% else %}
-      <p>Are you the Boss?</p>
-      {% endif %}
       <button
         class="btn btn-primary"
         onclick="location.href='{{ url_for('people_bp.add_person') }}'"
       >
         Add Person
       </button>
+      <button
+        class="btn btn-primary"
+        onclick="location.href='{{ url_for('people_bp.get_people') }}'"
+      >
+        Edit People
+      </button>
+      {% if not people %}
+      <p>Are you the Boss?</p>
+      {% endif %}
     </section>
   </div>
 </main>
