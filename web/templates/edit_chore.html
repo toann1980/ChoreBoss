@@ -1,34 +1,33 @@
 {% extends "base.html" %} {% block title %}Edit Chore{% endblock %} {% block content %}
 <div class="container">
-  <div class="row mt-3">
-    <div class="col-12">
-      <button class="btn btn-secondary" onclick="window.history.back()">
-        Back
-      </button>
-    </div>
-  </div>
+  {% include "back_home_buttons.html" %}
   <h1 class="mt-5">Edit Chore</h1>
-  <form method="POST" action="{{ url_for('chore_bp.edit_chore', chore_id=chore.id) }}">
+  <form id="editChoreForm" method="POST" action="{{ url_for('chore_bp.edit_chore', chore_id=chore.id) }}">
     <div class="form-group">
       <label for="name">Chore Name</label>
       <input type="text" class="form-control" id="name" name="name" value="{{ chore.name }}" required />
     </div>
     <div class="form-group">
       <label for="description">Description</label>
-      <textarea class="form-control" id="description" name="description" rows="3" required>{{ chore.description }}</textarea>
+      <textarea class="form-control" id="description" name="description" rows="3" required>
+{{ chore.description }}</textarea>
     </div>
     <div class="form-group">
       <label for="assigned_to">Assigned To</label>
       <select class="form-control" id="assigned_to" name="assigned_to">
         <option value="">-- Select a person --</option>
         {% for person in people %}
-        <option value="{{ person.id }}" {% if person.id == chore.assigned_to %}selected{% endif %}>
+        <option value='{{ person.id }}' {% if person.id==chore.assigned_to %} selected {% endif %}>
           {{ person.first_name }} {{ person.last_name }}
         </option>
         {% endfor %}
       </select>
     </div>
-    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <button type="button" class="btn btn-primary mt-2 w-100" onclick="showPinModal()">
+      Save Changes
+    </button>
+    <input type="hidden" id="pinContext" name="pinContext" value="edit_chore" />
+    <input type="hidden" id="pin" name="pin" required />
   </form>
 </div>
-{% endblock %}
+{% include "pin_modal.html" %} {% endblock %}

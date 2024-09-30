@@ -31,3 +31,13 @@ class ChoreRepository:
         ).filter_by(id=chore_id).first()
         session.close()
         return chore
+
+    def update_chore(self, chore):
+        session = self.Session()
+        existing_chore = session.query(Chore).filter_by(id=chore.id).first()
+        if existing_chore:
+            existing_chore.name = chore.name
+            existing_chore.description = chore.description
+            existing_chore.person_id = chore.person_id
+            session.commit()
+        session.close()

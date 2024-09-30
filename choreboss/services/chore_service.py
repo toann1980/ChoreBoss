@@ -13,3 +13,6 @@ class ChoreService:
 
     def get_chore_by_id(self, chore_id):
         return self.chore_repository.get_chore_by_id(chore_id)
+
+    def update_chore(self, chore):
+        return self.chore_repository.update_chore(chore)
