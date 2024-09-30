@@ -16,5 +16,10 @@ content %}
   <button class="btn btn-secondary" onclick="window.history.back()">
     Back
   </button>
+  <a
+    class="btn btn-primary"
+    href="{{ url_for('people_bp.edit_person', person_id=person.id) }}"
+    >Edit</a
+  >
 </div>
 {% endblock %}

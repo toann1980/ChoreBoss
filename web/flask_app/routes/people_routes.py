@@ -33,6 +33,24 @@ def add_person():
     return render_template('add_person.html', admins_exist=admins_exist)
 
 
+@people_bp.route('/people/<int:person_id>/edit', methods=['GET', 'POST'])
+def edit_person(person_id):
+    person = people_service.get_person_by_id(person_id)
+    if not person:
+        return jsonify({'error': 'Person not found'}), 404
+
+    if request.method == 'POST':
+        person.first_name = request.form['first_name']
+        person.last_name = request.form['last_name']
+        birthday_str = request.form['birthday']
+        person.birthday = datetime.strptime(birthday_str, '%Y-%m-%d').date()
+        person.is_admin = 'is_admin' in request.form
+        people_service.update_person(person)
+        return redirect(url_for('people_bp.get_person', person_id=person.id))
+
+    return render_template('edit_person.html', person=person)
+
+
 @people_bp.route('/people', methods=['GET'])
 def get_all_people():
     people = people_service.get_all_people()
