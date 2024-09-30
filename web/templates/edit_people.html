@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Edit People{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="row mt-3">
+    <div class="col-6">
+      <button class="btn btn-secondary" onclick="window.history.back()">
+        Back
+      </button>
+    </div>
+  </div>
+  <h1 class="mt-5">Edit People</h1>
+  <main class="container">
+    <div class="content-container">
+      <ul class="list-group" style="width: 100%;">
+        {% for person in people %}
+        <li class="list-group-item">
+          <a href="{{ url_for('people_bp.edit_person', person_id=person.id) }}">
+            {{ person.first_name }} {{ person.last_name }}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </main>
+</div>
+{% endblock %}

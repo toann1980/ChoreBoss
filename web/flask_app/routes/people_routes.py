@@ -52,9 +52,9 @@ def edit_person(person_id):
 
 
 @people_bp.route('/people', methods=['GET'])
-def get_all_people():
+def get_people():
     people = people_service.get_all_people()
-    return jsonify(people_schema.dump(people, many=True))
+    return render_template('edit_people.html', people=people)
 
 
 @people_bp.route('/people/<int:person_id>', methods=['GET'])
