@@ -37,7 +37,7 @@
             <div class="col-4 p-1">
               <button
                 class="btn btn-secondary w-100"
-                onclick="addToPin("{{ buttons[i + j] }}")"
+                onclick="addToPin('{{ buttons[i + j] }}')"
               >
                 {{ buttons[i + j] }}
               </button>
@@ -62,15 +62,6 @@
 <script>
   let isConfirmingPin = false;
   let initialPin = "";
-  function showPinModal() {
-    $("#numpadModal").modal("show");
-    document.addEventListener("keydown", handleKeyPress);
-  }
-
-  function hidePinModal() {
-    $("#numpadModal").modal("hide");
-    document.removeEventListener("keydown", handleKeyPress);
-  }
 
   function clearPin() {
     const pinInput = document.getElementById("pin");
@@ -84,6 +75,17 @@
     const pinDisplay = document.getElementById("pinDisplay");
     pinInput.value = pinInput.value.slice(0, -1);
     pinDisplay.value = pinInput.value;
+  }
+
+  function showPinModal() {
+    clearPin();
+    $("#numpadModal").modal("show");
+    document.addEventListener("keydown", handleKeyPress);
+  }
+
+  function hidePinModal() {
+    $("#numpadModal").modal("hide");
+    document.removeEventListener("keydown", handleKeyPress);
   }
 
   function handleKeyPress(event) {
@@ -102,6 +104,7 @@
   function addToPin(value) {
     const pinInput = document.getElementById("pin");
     const pinDisplay = document.getElementById("pinDisplay");
+
     if (value === "C") {
       clearPin();
     } else if (value === "←") {
@@ -115,8 +118,7 @@
   function confirmPin() {
     const pinInput = document.getElementById("pin").value;
     const context = document.getElementById("pinContext").value;
-    console.log('context: ', context);
-
+    console.log("context: ", context);
     if (context === "add") {
       if (!isConfirmingPin) {
         initialPin = pinInput;
@@ -139,7 +141,7 @@
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify({ pin: pinInput }),
-        success: function(response) {
+        success: function (response) {
           if (response.is_admin) {
             $("#numpadModal").modal("hide");
             if (context === "edit_person") {
@@ -147,7 +149,8 @@
               if (editPersonForm) {
                 editPersonForm.submit();
               } else {
-                const editPersonUrl = document.getElementById("editPersonUrl").value;
+                const editPersonUrl =
+                  document.getElementById("editPersonUrl").value;
                 window.location.href = editPersonUrl;
               }
             } else if (context === "edit_chore") {
@@ -158,10 +161,10 @@
             clearPin();
           }
         },
-        error: function() {
+        error: function () {
           alert("Error verifying PIN. Please try again.");
           clearPin();
-        }
+        },
       });
     }
   }
