@@ -1,0 +1,133 @@
+<!-- Numpad Modal -->
+<div
+  class="modal fade"
+  id="numpadModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="numpadModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog custom-modal-width" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="numpadModalLabel">Enter PIN</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <input
+            type="password"
+            class="form-control text-center"
+            id="pinDisplay"
+            readonly
+          />
+        </div>
+        <div class="numpad">
+          {% set buttons = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "C",
+          "0", "←"] %} {% for i in range(0, 12, 3) %}
+          <div class="row no-gutters">
+            {% for j in range(3) %}
+            <div class="col-4 p-1">
+              <button
+                class="btn btn-secondary w-100"
+                onclick="addToPin("{{ buttons[i + j] }}")"
+              >
+                {{ buttons[i + j] }}
+              </button>
+            </div>
+            {% endfor %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="confirmPin()">
+          Okay
+        </button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let isConfirmingPin = false;
+  let initialPin = "";
+  function showPinModal() {
+    $("#numpadModal").modal("show");
+    document.addEventListener("keydown", handleKeyPress);
+  }
+
+  function hidePinModal() {
+    $("#numpadModal").modal("hide");
+    document.removeEventListener("keydown", handleKeyPress);
+  }
+
+  function handleKeyPress(event) {
+    const key = event.key;
+    if (key >= "0" && key <= "9") {
+      addToPin(key);
+    } else if (key === "Backspace") {
+      deleteLastPin();
+    } else if (key === "Enter") {
+      confirmPin();
+    } else if (key === "Escape") {
+      clearPin();
+    }
+  }
+
+  function addToPin(value) {
+    const pinInput = document.getElementById("pin");
+    const pinDisplay = document.getElementById("pinDisplay");
+    if (value === "C") {
+      clearPin();
+    } else if (value === "←") {
+      deleteLastPin();
+    } else if (pinInput.value.length < 6) {
+      pinInput.value += value;
+      pinDisplay.value = pinInput.value;
+    }
+  }
+
+  function clearPin() {
+    const pinInput = document.getElementById("pin");
+    const pinDisplay = document.getElementById("pinDisplay");
+    pinInput.value = "";
+    pinDisplay.value = "";
+  }
+
+  function deleteLastPin() {
+    const pinInput = document.getElementById("pin");
+    const pinDisplay = document.getElementById("pinDisplay");
+    pinInput.value = pinInput.value.slice(0, -1);
+    pinDisplay.value = pinInput.value;
+  }
+
+  function confirmPin() {
+    const pinInput = document.getElementById("pin").value;
+    if (!isConfirmingPin) {
+      initialPin = pinInput;
+      isConfirmingPin = true;
+      clearPin();
+      alert("Please re-enter your PIN to confirm.");
+    } else {
+      if (pinInput === initialPin) {
+        $("#numpadModal").modal("hide");
+        document.getElementById("addPersonForm").submit();
+      } else {
+        alert("PINs do not match. Please try again.");
+        clearPin();
+        isConfirmingPin = false;
+      }
+    }
+  }
+</script>
