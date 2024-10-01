@@ -24,14 +24,12 @@ class PeopleRepository:
         session.close()
         return person
 
-    def get_all_people_in_sequence_order(self):
+    def admins_exist(self):
         session = self.Session()
-        people = session.query(People).join(
-            Sequence,
-            People.id == Sequence.person_id
-        ).order_by(Sequence.sequence).all()
+        admin_exists = session.query(People).filter_by(
+            is_admin=True).first() is not None
         session.close()
-        return people
+        return admin_exists
 
     def get_all_people(self):
         session = self.Session()
@@ -39,6 +37,15 @@ class PeopleRepository:
             joinedload(People.chore_person_id_back_populate),
             joinedload(People.last_completed_id_back_populate)
         ).all()
+        session.close()
+        return people
+
+    def get_all_people_in_sequence_order(self):
+        session = self.Session()
+        people = session.query(People).join(
+            Sequence,
+            People.id == Sequence.person_id
+        ).order_by(Sequence.sequence).all()
         session.close()
         return people
 
@@ -59,10 +66,3 @@ class PeopleRepository:
             if bcrypt.checkpw(pin.encode('utf-8'), person.pin.encode('utf-8')):
                 return person
         return None
-
-    def admins_exist(self):
-        session = self.Session()
-        admin_exists = session.query(People).filter_by(
-            is_admin=True).first() is not None
-        session.close()
-        return admin_exists
