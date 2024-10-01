@@ -27,7 +27,8 @@ class PeopleRepository:
     def get_all_people_in_sequence_order(self):
         session = self.Session()
         people = session.query(People).join(
-            Sequence, People.id == Sequence.person_id
+            Sequence,
+            People.id == Sequence.person_id
         ).order_by(Sequence.sequence).all()
         session.close()
         return people
@@ -52,10 +53,11 @@ class PeopleRepository:
 
     def get_person_by_pin(self, pin):
         session = self.Session()
-        person = session.query(People).filter(People.pin != None).first()
+        people = session.query(People).all()
         session.close()
-        if person and bcrypt.checkpw(pin.encode('utf-8'), person.pin.encode('utf-8')):
-            return person
+        for person in people:
+            if bcrypt.checkpw(pin.encode('utf-8'), person.pin.encode('utf-8')):
+                return person
         return None
 
     def admins_exist(self):
