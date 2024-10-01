@@ -13,6 +13,9 @@ class PeopleService:
     def get_all_people(self):
         return self.people_repository.get_all_people()
 
+    def get_all_people_in_sequence_order(self):
+        return self.people_repository.get_all_people_in_sequence_order()
+
     def get_person_by_id(self, person_id):
         return self.people_repository.get_person_by_id(person_id)
 

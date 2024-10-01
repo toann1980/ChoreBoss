@@ -53,7 +53,7 @@ def edit_person(person_id):
 
 @people_bp.route('/people', methods=['GET'])
 def get_people():
-    people = people_service.get_all_people()
+    people = people_service.get_all_people_in_sequence_order()
     return render_template('edit_people.html', people=people)
 
 
