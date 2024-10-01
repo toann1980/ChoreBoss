@@ -14,9 +14,6 @@ people_schema = PeopleSchema(many=True)
 @index_bp.route('/', methods=['GET'])
 def home():
     people = people_service.get_all_people()
-    people_schema = PeopleSchema(many=True)
-    print(f'people: {people_schema.dump(people)}')
     chores = chore_service.get_all_chores()
-    print(f'chores: {chores}')
 
     return render_template('index.html', people=people, chores=chores)
