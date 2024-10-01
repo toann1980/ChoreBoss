@@ -74,3 +74,9 @@ class PeopleRepository:
             if bcrypt.checkpw(pin.encode('utf-8'), person.pin.encode('utf-8')):
                 return person
         return None
+
+    def verify_pin(self, person_id, pin):
+        person = self.get_person_by_id(person_id)
+        if person and person.verify_pin(pin):
+            return True
+        return False
