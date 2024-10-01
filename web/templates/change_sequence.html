@@ -1,0 +1,56 @@
+{% extends "base.html" %} {% block title %}Change Sequence{% endblock %} {%
+block content %}
+<div class="container-lg">
+  <div class="row mt-3">
+    <div class="col-6">
+      <button class="btn btn-secondary" onclick="window.history.back()">
+        Back
+      </button>
+    </div>
+  </div>
+  <h1 class="mt-5">Change Sequence</h1>
+  <ul id="sortable" class="list-group">
+    {% for person in people %}
+    <li
+      class="list-group-item d-flex align-items-center"
+      data-id="{{ person.id }}"
+    >
+      <i class="fas fa-bars mr-3"></i>
+      {{ person.first_name }} {{ person.last_name }}
+    </li>
+    {% endfor %}
+  </ul>
+  <button id="saveSequence" class="btn btn-primary mt-3">Save Sequence</button>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const sortable = new Sortable(document.getElementById('sortable'), {
+      animation: 150,
+      handle: '.fa-bars',
+    });
+
+    document.getElementById('saveSequence').addEventListener('click', function () {
+      const items = document.querySelectorAll('#sortable .list-group-item');
+      const sequenceData = Array.from(items).map((item, index) => ({
+        id: item.getAttribute('data-id'),
+        sequence: index + 1,
+      }));
+
+      fetch('{{ url_for('sequence_bp.update_sequence') }}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(sequenceData),
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            alert('Sequence updated successfully!');
+          }
+        });
+    });
+  });
+</script>
+{% endblock %}
