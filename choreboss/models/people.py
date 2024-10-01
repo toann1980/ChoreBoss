@@ -1,6 +1,6 @@
 from choreboss.models import Base
 from choreboss.models.chore import Chore
-
+from choreboss.models.sequence import Sequence
 import bcrypt
 from sqlalchemy import Boolean, Column, Date, Integer, String
 from sqlalchemy.orm import relationship
@@ -15,15 +15,21 @@ class People(Base):
     pin = Column(String(255), nullable=False)
     is_admin = Column(Boolean, default=False)
 
-    chores = relationship(
+    chore_person_id_back_populate = relationship(
         'Chore',
-        back_populates='person_id_relationship',
+        back_populates='person_id_foreign_key',
         foreign_keys=[Chore.person_id]
     )
-    completed_chores = relationship(
+    last_completed_id_back_populate = relationship(
         'Chore',
-        foreign_keys=[Chore.last_completed_id],
-        back_populates='last_completed_id_person'
+        back_populates='last_completed_id_foreign_key',
+        foreign_keys=[Chore.last_completed_id]
+    )
+
+    sequence_person_id_back_populate = relationship(
+        'Sequence',
+        back_populates='person_id_foreign_key',
+        foreign_keys=[Sequence.person_id]
     )
 
     def set_pin(self, pin):

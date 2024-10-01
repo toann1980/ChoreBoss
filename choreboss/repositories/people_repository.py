@@ -1,7 +1,7 @@
 import bcrypt
 
 from choreboss.models.people import People
-from choreboss.models import Base
+from choreboss.models.sequence import Sequence
 from sqlalchemy.orm import sessionmaker, joinedload
 
 
@@ -24,11 +24,19 @@ class PeopleRepository:
         session.close()
         return person
 
+    def get_all_people_in_sequence_order(self):
+        session = self.Session()
+        people = session.query(People).join(
+            Sequence, People.id == Sequence.person_id
+        ).order_by(Sequence.sequence).all()
+        session.close()
+        return people
+
     def get_all_people(self):
         session = self.Session()
         people = session.query(People).options(
-            joinedload(People.chores),
-            joinedload(People.completed_chores)
+            joinedload(People.chore_person_id_back_populate),
+            joinedload(People.last_completed_id_back_populate)
         ).all()
         session.close()
         return people
@@ -36,8 +44,8 @@ class PeopleRepository:
     def get_person_by_id(self, person_id):
         session = self.Session()
         person = session.query(People).options(
-            joinedload(People.chores),
-            joinedload(People.completed_chores)
+            joinedload(People.chore_person_id_back_populate),
+            joinedload(People.last_completed_id_back_populate)
         ).filter(People.id == person_id).first()
         session.close()
         return person

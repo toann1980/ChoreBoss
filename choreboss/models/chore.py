@@ -12,8 +12,13 @@ class Chore(Base):
     last_completed_date = Column(DateTime, nullable=True, default=None)
     last_completed_id = Column(Integer, ForeignKey('people.id'), nullable=True)
 
-    person_id_relationship = relationship(
-        'People', back_populates='chores', foreign_keys=[person_id]
+    person_id_foreign_key = relationship(
+        'People',
+        back_populates='chore_person_id_back_populate',
+        foreign_keys=[person_id]
     )
-    last_completed_id_person = \
-        relationship('People', foreign_keys=[last_completed_id])
+    last_completed_id_foreign_key = relationship(
+        'People',
+        back_populates='last_completed_id_back_populate',
+        foreign_keys=[last_completed_id]
+    )

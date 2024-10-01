@@ -17,8 +17,8 @@ class ChoreRepository:
     def get_all_chores(self):
         session = self.Session()
         chores = session.query(Chore).options(
-            joinedload(Chore.person_id_relationship),
-            joinedload(Chore.last_completed_id_person)
+            joinedload(Chore.person_id_foreign_key),
+            joinedload(Chore.last_completed_id_foreign_key)
         ).all()
         session.close()
         return chores
@@ -26,8 +26,8 @@ class ChoreRepository:
     def get_chore_by_id(self, chore_id):
         session = self.Session()
         chore = session.query(Chore).options(
-            joinedload(Chore.person_id_relationship),
-            joinedload(Chore.last_completed_id_person)
+            joinedload(Chore.person_id_foreign_key),
+            joinedload(Chore.last_completed_id_foreign_key)
         ).filter_by(id=chore_id).first()
         session.close()
         return chore

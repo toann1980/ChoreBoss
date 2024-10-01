@@ -8,4 +8,5 @@ class PeopleSchema(Schema):
     birthday = fields.Date(required=True)
     pin = fields.Str(required=True)
     is_admin = fields.Bool(required=True)
-    chores = fields.List(fields.Nested('ChoreSchema', exclude=('person',)))
+    chore_person_id_back_populate = fields.List(
+        fields.Nested('ChoreSchema', exclude=('person',)))
