@@ -30,8 +30,6 @@ header {
     align-items: center;
     height: 50vh;
     flex-shrink: 0;
-    /* margin: 2rem 0 0 0; */
-
 }
 
 header h1 {
@@ -67,10 +65,7 @@ section button {
     align-items: center;
     justify-content: center;
     padding: 1rem;
-}
-
-.custom-modal-width {
-    max-width: 90%;
+    margin: 0 0 3rem 0;
 }
 
 .svg-logo {
