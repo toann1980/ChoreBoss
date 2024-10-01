@@ -31,6 +31,14 @@ class PeopleRepository:
         session.close()
         return admin_exists
 
+    def delete_person(self, person_id: int) -> None:
+        session = self.Session()
+        person = session.query(People).filter_by(id=person_id).first()
+        if person:
+            session.delete(person)
+            session.commit()
+        session.close()
+
     def get_all_people(self):
         session = self.Session()
         people = session.query(People).options(

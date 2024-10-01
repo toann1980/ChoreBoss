@@ -10,6 +10,12 @@ class PeopleService:
             first_name, last_name, birthday, pin, is_admin
         )
 
+    def admins_exist(self):
+        return self.people_repository.admins_exist()
+
+    def delete_person(self, person_id):
+        return self.people_repository.delete_person(person_id)
+
     def get_all_people(self):
         return self.people_repository.get_all_people()
 
@@ -22,11 +28,5 @@ class PeopleService:
     def get_person_by_pin(self, pin):
         return self.people_repository.get_person_by_pin(pin)
 
-    def admins_exist(self):
-        return self.people_repository.admins_exist()
-
     def verify_pin(self, person_id, pin):
-        person = self.people_repository.get_person_by_id(person_id)
-        if person and person.verify_pin(pin):
-            return True
-        return False
+        return self.people_repository.verify_pin(person_id, pin)
