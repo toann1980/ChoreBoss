@@ -17,7 +17,7 @@
       <select class="form-control" id="assigned_to" name="assigned_to">
         <option value="">-- Select a person --</option>
         {% for person in people %}
-        <option value='{{ person.id }}' {% if person.id==chore.assigned_to %} selected {% endif %}>
+        <option value='{{ person.id }}' {% if person.id==chore.person_id %} selected {% endif %}>
           {{ person.first_name }} {{ person.last_name }}
         </option>
         {% endfor %}

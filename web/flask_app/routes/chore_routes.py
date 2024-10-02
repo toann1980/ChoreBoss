@@ -39,7 +39,7 @@ def edit_chore(chore_id):
         chore.name = request.form['name']
         chore.description = request.form['description']
         assigned_to = request.form['assigned_to']
-        chore.assigned_to = int(assigned_to) if assigned_to else None
+        chore.person_id = int(assigned_to) if assigned_to else None
         chore_service.update_chore(chore)
         return redirect(url_for('chore_bp.get_chore', chore_id=chore.id))
 
