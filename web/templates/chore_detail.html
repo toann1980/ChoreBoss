@@ -4,8 +4,9 @@ content %}
   <h1 class="mt-5">{{ chore.name }}</h1>
   <p><strong>Description:</strong> {{ chore.description }}</p>
   <p>
-    <strong>Assigned to:</strong> {{ chore.person.name if chore.person else
-    'Unassigned' }}
+    <strong>Assigned to:</strong> {% if chore.person_id_foreign_key %} {{
+    chore.person_id_foreign_key.first_name }} {{
+    chore.person_id_foreign_key.last_name }} {% else %} Unassigned {% endif %}
   </p>
   <p>
     <strong>Last completed by:</strong>
