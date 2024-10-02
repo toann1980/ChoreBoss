@@ -15,6 +15,10 @@ people_service = PeopleService(people_repository)
 people_schema = PeopleSchema()
 
 
+def fetch_people_in_sequence_order():
+    return people_service.get_all_people_in_sequence_order()
+
+
 @people_bp.route('/add_person', methods=['GET', 'POST'])
 def add_person():
     if request.method == 'POST':
@@ -46,14 +50,14 @@ def edit_person(person_id):
         person.birthday = datetime.strptime(birthday_str, '%Y-%m-%d').date()
         person.is_admin = 'is_admin' in request.form
         people_service.update_person(person)
-        return redirect(url_for('people_bp.get_person', person_id=person.id))
+        person = people_service.get_person_by_id(person_id)
 
     return render_template('edit_person.html', person=person)
 
 
 @people_bp.route('/people', methods=['GET'])
 def get_people():
-    people = people_service.get_all_people_in_sequence_order()
+    people = fetch_people_in_sequence_order()
     return render_template('edit_people.html', people=people)
 
 
@@ -68,7 +72,7 @@ def get_person(person_id):
 
 @people_bp.route('/change_sequence', methods=['GET'])
 def change_sequence():
-    people = people_service.get_all_people_in_sequence_order()
+    people = fetch_people_in_sequence_order()
     return render_template('change_sequence.html', people=people)
 
 
