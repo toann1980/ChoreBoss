@@ -84,6 +84,13 @@ class PeopleRepository:
                 return person
         return None
 
+    def update_person(self, person):
+        session = self.Session()
+        session.add(person)
+        session.commit()
+        session.close()
+        return person
+
     def update_sequence(self, person_id, new_sequence):
         session = self.Session()
         person = session.query(People).filter_by(id=person_id).first()
