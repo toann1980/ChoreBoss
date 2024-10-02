@@ -1,8 +1,8 @@
 import bcrypt
 
 from choreboss.models.people import People
-from choreboss.models.sequence import Sequence
 from sqlalchemy.orm import sessionmaker, joinedload
+from sqlalchemy import func
 
 
 class PeopleRepository:
@@ -16,7 +16,8 @@ class PeopleRepository:
             last_name=last_name,
             birthday=birthday,
             pin=pin,
-            is_admin=is_admin
+            is_admin=is_admin,
+            sequence_num=self.get_next_sequence_num()
         )
         person.set_pin(pin)
         session.add(person)
@@ -49,13 +50,21 @@ class PeopleRepository:
         return people
 
     def get_all_people_in_sequence_order(self):
+        people = self.get_all_people()
+        sorted_people = sorted(people, key=lambda x: x.sequence_num)
+        return sorted_people
+
+    def get_next_sequence_num(self):
         session = self.Session()
-        people = session.query(People).join(
-            Sequence,
-            People.id == Sequence.person_id
-        ).order_by(Sequence.sequence).all()
-        session.close()
-        return people
+        max_sequence_num = None
+        try:
+            max_sequence_num = session.query(
+                func.max(People.sequence_num)).scalar()
+
+        finally:
+            session.close()
+
+        return 1 if max_sequence_num is None else max_sequence_num
 
     def get_person_by_id(self, person_id):
         session = self.Session()
@@ -74,6 +83,15 @@ class PeopleRepository:
             if bcrypt.checkpw(pin.encode('utf-8'), person.pin.encode('utf-8')):
                 return person
         return None
+
+    def update_sequence(self, person_id, new_sequence):
+        session = self.Session()
+        person = session.query(People).filter_by(id=person_id).first()
+        if person:
+            person.sequence_num = new_sequence
+            session.commit()
+        session.close()
+        return person
 
     def verify_pin(self, person_id, pin):
         person = self.get_person_by_id(person_id)

@@ -66,6 +66,20 @@ def get_person(person_id):
         return jsonify({'error': 'Person not found'}), 404
 
 
+@people_bp.route('/change_sequence', methods=['GET'])
+def change_sequence():
+    people = people_service.get_all_people_in_sequence_order()
+    return render_template('change_sequence.html', people=people)
+
+
+@people_bp.route('/update_sequence', methods=['POST'])
+def update_sequence():
+    data = request.get_json()
+    for item in data:
+        people_service.update_sequence(item['id'], item['sequence'])
+    return jsonify({'status': 'success'})
+
+
 @people_bp.route('/verify_pin', methods=['POST'])
 def verify_pin():
     data = request.get_json()

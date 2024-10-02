@@ -28,5 +28,8 @@ class PeopleService:
     def get_person_by_pin(self, pin):
         return self.people_repository.get_person_by_pin(pin)
 
+    def update_sequence(self, person_id, new_sequence):
+        return self.people_repository.update_sequence(person_id, new_sequence)
+
     def verify_pin(self, person_id, pin):
         return self.people_repository.verify_pin(person_id, pin)

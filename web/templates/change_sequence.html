@@ -37,7 +37,7 @@ block content %}
         sequence: index + 1,
       }));
 
-      fetch('{{ url_for('sequence_bp.update_sequence') }}', {
+      fetch('{{ url_for('people_bp.update_sequence') }}', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
