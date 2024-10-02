@@ -1,24 +1,29 @@
-{% extends "base.html" %} {% block title %}Chore Details{% endblock %} {% block
-content %}
-<div class="container">
-  <h1 class="mt-5">{{ chore.name }}</h1>
-  <p><strong>Description:</strong> {{ chore.description }}</p>
-  <p>
-    <strong>Assigned to:</strong> {% if chore.person_id_foreign_key %} {{
-    chore.person_id_foreign_key.first_name }} {{
-    chore.person_id_foreign_key.last_name }} {% else %} Unassigned {% endif %}
-  </p>
-  <p>
-    <strong>Last completed by:</strong>
-    <!-- Add logic to display who last completed it and when -->
-  </p>
-  <button class="btn btn-secondary" onclick="window.history.back()">
-    Back
-  </button>
-  <a
-    class="btn btn-primary"
-    href="{{ url_for('chore_bp.edit_chore', chore_id=chore.id) }}"
-    >Edit</a
-  >
-</div>
-{% endblock %}
+{% extends "base.html" %}
+{% block title %}
+  Chore Details
+{% endblock title %}
+{% block content %}
+  <div class="container">
+    <h1 class="mt-5">{{ chore.name }}</h1>
+    <p>
+      <strong>Description:</strong> {{ chore.description }}
+    </p>
+    <p>
+      <strong>Assigned to:</strong>
+      {% if chore.person_id_foreign_key %}
+        {{
+        chore.person_id_foreign_key.first_name }} {{
+        chore.person_id_foreign_key.last_name }}
+      {% else %}
+        Unassigned
+      {% endif %}
+    </p>
+    <p>
+      <strong>Last completed by:</strong>
+      <!-- Add logic to display who last completed it and when -->
+    </p>
+    <button class="btn btn-secondary" onclick="window.history.back()">Back</button>
+    <a class="btn btn-primary"
+       href="{{ url_for('chore_bp.edit_chore', chore_id=chore.id) }}">Edit</a>
+  </div>
+{% endblock content %}

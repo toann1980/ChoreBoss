@@ -1,56 +1,43 @@
-{% extends "base.html" %} {% block title %}Desktop Home{% endblock %} {% block
-content %}
-<header class="text-center">
-  <img
-    src="{{ url_for('static', filename='images/chore-boss_v1.svg') }}"
-    alt="ChoreBoss Logo"
-    class="svg-logo"
-  />
-  <h1>ChoreBoss</h1>
-  <h2>Chore like a boss!</h2>
-</header>
-<main class="container">
-  <div class="content-container">
-    <section class="my-4" id="chores">
-      <h2>Chores</h2>
-      {% if chores %}
-      <ul class="list-group">
-        {% for chore in chores %}
-        <li class="list-group-item">
-          <a href="{{ url_for('chore_bp.get_chore', chore_id=chore.id) }}"
-            >{{ chore.name }}</a
-          >
-        </li>
-        {% endfor %}
-      </ul>
-      {% else %}
-      <p>No chores? This can't be right...</p>
-      {% endif %}
-      <button
-        class="btn btn-primary"
-        onclick="location.href='{{ url_for('chore_bp.add_chore') }}'"
-      >
-        Add Chore
-      </button>
-    </section>
-    <section id="people">
-      <h2>People</h2>
-      <button
-        class="btn btn-primary"
-        onclick="location.href='{{ url_for('people_bp.add_person') }}'"
-      >
-        Add Person
-      </button>
-      <button
-        class="btn btn-primary"
-        onclick="location.href='{{ url_for('people_bp.get_people') }}'"
-      >
-        Edit People
-      </button>
-      {% if not people %}
-      <p>Are you the Boss?</p>
-      {% endif %}
-    </section>
-  </div>
-</main>
-{% endblock %}
+{% extends "base.html" %}
+{% block title %}
+  Desktop Home
+{% endblock title %}
+{% block content %}
+  <header class="text-center">
+    <img src="{{ url_for('static', filename='images/chore-boss_v1.svg') }}"
+         alt="ChoreBoss Logo"
+         class="svg-logo"
+         width="auto"
+         height="auto" />
+    <h1>ChoreBoss</h1>
+    <h2>Chore like a boss!</h2>
+  </header>
+  <main class="container">
+    <div class="content-container">
+      <section class="my-4" id="chores">
+        <h2>Chores</h2>
+        {% if chores %}
+          <ul class="list-group">
+            {% for chore in chores %}
+              <li class="list-group-item">
+                <a href="{{ url_for('chore_bp.get_chore', chore_id=chore.id) }}">{{ chore.name }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>No chores? This can't be right...</p>
+        {% endif %}
+        <button class="btn btn-primary"
+                onclick="location.href='{{ url_for("chore_bp.add_chore") }}'">Add Chore</button>
+      </section>
+      <section id="people">
+        <h2>People</h2>
+        <button class="btn btn-primary"
+                onclick="location.href='{{ url_for("people_bp.add_person") }}'">Add Person</button>
+        <button class="btn btn-primary"
+                onclick="location.href='{{ url_for("people_bp.get_people") }}'">Edit People</button>
+        {% if not people %}<p>Are you the Boss?</p>{% endif %}
+      </section>
+    </div>
+  </main>
+{% endblock content %}

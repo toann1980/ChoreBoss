@@ -1,30 +1,29 @@
-{% extends "base.html" %} {% block title %}Add Chore{% endblock %} {% block
-content %}
-<div class="container-lg">
-  <div class="row mt-3">
-    <div class="col-12">
-      <button class="btn btn-secondary" onclick="window.history.back()">
-        Back
-      </button>
+{% extends "base.html" %}
+{% block title %}
+  Add Chore
+{% endblock title %}
+{% block content %}
+  <div class="container-lg">
+    <div class="row mt-3">
+      <div class="col-12">
+        <button class="btn btn-secondary" onclick="window.history.back()">Back</button>
+      </div>
     </div>
+    <h1 class="mt-5">Add Chore</h1>
+    <form method="post" action="{{ url_for('chore_bp.add_chore') }}">
+      <div class="form-group">
+        <label for="name">Chore Name</label>
+        <input type="text" class="form-control" id="name" name="name" required />
+      </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea class="form-control"
+                  id="description"
+                  name="description"
+                  rows="3"
+                  required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Add Chore</button>
+    </form>
   </div>
-  <h1 class="mt-5">Add Chore</h1>
-  <form method="POST" action="{{ url_for('chore_bp.add_chore') }}">
-    <div class="form-group">
-      <label for="name">Chore Name</label>
-      <input type="text" class="form-control" id="name" name="name" required />
-    </div>
-    <div class="form-group">
-      <label for="description">Description</label>
-      <textarea
-        class="form-control"
-        id="description"
-        name="description"
-        rows="3"
-        required
-      ></textarea>
-    </div>
-    <button type="submit" class="btn btn-primary">Add Chore</button>
-  </form>
-</div>
-{% endblock %}
+{% endblock content %}

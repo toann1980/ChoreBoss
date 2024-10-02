@@ -1,31 +1,28 @@
-{% extends "base.html" %} {% block title %}Change Sequence{% endblock %} {%
+{% extends "base.html" %}
+{% block title %}
+  Change Sequence
+{% endblock title %}
+{%
 block content %}
 <div class="container-lg">
   <div class="row mt-3">
     <div class="col-6">
-      <button
-        class="btn btn-secondary"
-        onclick="location.href='{{ url_for('people_bp.get_people') }}'"
-      >
-        Back
-      </button>
+      <button class="btn btn-secondary"
+              onclick="location.href='{{ url_for("people_bp.get_people") }}'">Back</button>
     </div>
   </div>
   <h1 class="mt-5">Change Sequence</h1>
   <ul id="sortable" class="list-group">
     {% for person in people %}
-    <li
-      class="list-group-item d-flex align-items-center"
-      data-id="{{ person.id }}"
-    >
-      <i class="fas fa-bars mr-3"></i>
-      {{ person.first_name }} {{ person.last_name }}
-    </li>
+      <li class="list-group-item d-flex align-items-center"
+          data-id="{{ person.id }}">
+        <i class="fas fa-bars mr-3"></i>
+        {{ person.first_name }} {{ person.last_name }}
+      </li>
     {% endfor %}
   </ul>
   <button id="saveSequence" class="btn btn-primary mt-3">Save Sequence</button>
 </div>
-
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const sortable = new Sortable(document.getElementById('sortable'), {
@@ -56,4 +53,4 @@ block content %}
     });
   });
 </script>
-{% endblock %}
+{% endblock content %}

@@ -1,64 +1,46 @@
 <!-- Numpad Modal -->
-<div
-  class="modal fade"
-  id="numpadModal"
-  tabindex="-1"
-  role="dialog"
-  aria-labelledby="numpadModalLabel"
-  aria-hidden="true"
->
+<div class="modal fade"
+     id="numpadModal"
+     tabindex="-1"
+     role="dialog"
+     aria-labelledby="numpadModalLabel"
+     aria-hidden="true">
   <div class="modal-dialog custom-modal-width" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="numpadModalLabel">Enter PIN</h5>
-        <button
-          type="button"
-          class="close"
-          data-dismiss="modal"
-          aria-label="Close"
-        >
-          <span aria-hidden="true">&times;</span>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
         </button>
       </div>
       <div class="modal-body">
         <div class="form-group">
-          <input
-            type="password"
-            class="form-control text-center"
-            id="pinDisplay"
-            readonly
-          />
+          <input type="password"
+                 class="form-control text-center"
+                 id="pinDisplay"
+                 readonly />
         </div>
         <div class="numpad">
-          {% set buttons = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "C",
-          "0", "←"] %} {% for i in range(0, 12, 3) %}
-          <div class="row no-gutters">
-            {% for j in range(3) %}
-            <div class="col-4 p-1">
-              <button
-                class="btn btn-secondary w-100"
-                onclick="addToPin('{{ buttons[i + j] }}')"
-              >
-                {{ buttons[i + j] }}
-              </button>
+          {% set buttons = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "C", "0", "←"] %}
+          {% for i in range(0, 12, 3) %}
+            <div class="row no-gutters">
+              {% for j in range(3) %}
+                <div class="col-4 p-1">
+                  <button class="btn btn-secondary w-100"
+                          onclick="addToPin('{{ buttons[i + j] }}')">{{ buttons[i + j] }}</button>
+                </div>
+              {% endfor %}
             </div>
-            {% endfor %}
-          </div>
           {% endfor %}
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" onclick="confirmPin()">
-          Okay
-        </button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal">
-          Cancel
-        </button>
+        <button type="button" class="btn btn-primary" onclick="confirmPin()">Okay</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
       </div>
     </div>
   </div>
 </div>
-
 <script>
   let isConfirmingPin = false;
   let initialPin = "";
