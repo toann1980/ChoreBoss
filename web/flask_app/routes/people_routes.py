@@ -2,6 +2,9 @@ from datetime import datetime
 from flask import (
     Blueprint, jsonify, redirect, request, render_template, url_for
 )
+from choreboss.repositories.chore_repository import ChoreRepository
+from choreboss.services.chore_service import ChoreService
+from choreboss.repositories.people_repository import PeopleRepository
 from choreboss.repositories.people_repository import PeopleRepository
 from choreboss.services.people_service import PeopleService
 from choreboss.schemas.people_schema import PeopleSchema
@@ -10,6 +13,8 @@ from choreboss.config import Config
 
 people_bp = Blueprint('people_bp', __name__)
 engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
+chore_repository = ChoreRepository(engine)
+chore_service = ChoreService(chore_repository)
 people_repository = PeopleRepository(engine)
 people_service = PeopleService(people_repository)
 people_schema = PeopleSchema()
@@ -53,6 +58,29 @@ def edit_person(person_id):
         person = people_service.get_person_by_id(person_id)
 
     return render_template('edit_person.html', person=person)
+
+
+@people_bp.route('/people/<int:person_id>/edit_pin', methods=['GET', 'POST'])
+def edit_pin(person_id):
+    person = people_service.get_person_by_id(person_id)
+    if not person:
+        return jsonify({'error': 'Person not found'}), 404
+
+    if request.method == 'POST':
+        current_pin = request.form['current_pin']
+        new_pin = request.form['new_pin']
+        confirm_pin = request.form['confirm_pin']
+
+        if new_pin != confirm_pin:
+            return jsonify({'error': 'New PINs do not match'}), 400
+
+        if not people_service.verify_pin(person_id, current_pin):
+            return jsonify({'error': 'Current PIN is incorrect'}), 400
+
+        people_service.update_pin(person_id, new_pin)
+        return redirect(url_for('people_bp.edit_person', person_id=person_id))
+
+    return render_template('edit_pin.html', person=person)
 
 
 @people_bp.route('/people', methods=['GET'])

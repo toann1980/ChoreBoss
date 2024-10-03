@@ -28,6 +28,9 @@ class PeopleService:
     def get_person_by_pin(self, pin):
         return self.people_repository.get_person_by_pin(pin)
 
+    def update_pin(self, person_id, new_pin):
+        return self.people_repository.update_pin(person_id, new_pin)
+
     def update_person(self, person):
         return self.people_repository.update_person(person)
 

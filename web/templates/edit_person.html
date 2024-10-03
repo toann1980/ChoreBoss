@@ -50,6 +50,9 @@
       <input type="hidden" id="pinContext" name="pinContext" value="edit_person" />
       <input type="hidden" id="pin" name="pin" required />
     </form>
+    <button type="button"
+            class="btn btn-primary mt-3 w-100"
+            onclick="location.href='{{ url_for("people_bp.edit_pin", person_id=person.id) }}'">Edit PIN Number</button>
   </div>
   {% include "pin_modal.html" %}
 {% endblock content %}

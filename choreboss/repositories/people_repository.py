@@ -91,6 +91,12 @@ class PeopleRepository:
         session.close()
         return person
 
+    def update_pin(self, person_id, new_pin):
+        person = self.get_person_by_id(person_id)
+        if person:
+            person.set_pin(new_pin)
+            self.update_person(person)
+
     def update_sequence(self, person_id, new_sequence):
         session = self.Session()
         person = session.query(People).filter_by(id=person_id).first()
