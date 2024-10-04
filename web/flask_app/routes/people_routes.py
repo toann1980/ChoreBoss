@@ -89,15 +89,6 @@ def get_people():
     return render_template('edit_people.html', people=people)
 
 
-@people_bp.route('/people/<int:person_id>', methods=['GET'])
-def get_person(person_id):
-    person = people_service.get_person_by_id(person_id)
-    if person:
-        return render_template('person_detail.html', person=person)
-    else:
-        return jsonify({'error': 'Person not found'}), 404
-
-
 @people_bp.route('/change_sequence', methods=['GET'])
 def change_sequence():
     people = fetch_people_in_sequence_order()
