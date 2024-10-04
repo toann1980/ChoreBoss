@@ -3,7 +3,7 @@
   Edit Person
 {% endblock title %}
 {% block content %}
-  <div class="container-lg">
+  <div class="container">
     {% include "back_home_buttons.html" %}
     <h1 class="mt-5">Edit Person</h1>
     <form id="editPersonForm"
@@ -46,13 +46,21 @@
       </div>
       <button type="button"
               class="btn btn-primary mt-2 w-100"
-              onclick="showPinModal()">Save Changes</button>
-      <input type="hidden" id="pinContext" name="pinContext" value="edit_person" />
+              onclick="showPinModal('edit_person')">Save Changes</button>
+      <button type="button"
+              class="btn btn-danger mt-2 w-100"
+              onclick="showPinModal('delete_person')">Delete Person</button>
+      <input type="hidden" id="pinContext" name="pinContext" value="" />
       <input type="hidden" id="pin" name="pin" required />
     </form>
     <button type="button"
             class="btn btn-primary mt-3 w-100"
             onclick="location.href='{{ url_for("people_bp.edit_pin", person_id=person.id) }}'">Edit PIN Number</button>
+    <form id="deletePersonForm"
+          method="post"
+          action="{{ url_for('people_bp.delete_person') }}">
+      <input type="hidden" name="person_id" value="{{ person.id }}" />
+    </form>
   </div>
   {% include "pin_modal.html" %}
 {% endblock content %}

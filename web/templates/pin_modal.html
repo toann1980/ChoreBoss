@@ -44,11 +44,9 @@
   let isConfirmingPin = false;
   let initialPin = "";
 
+
   function clearPin() {
-    const pinInput = document.getElementById("pin");
-    const pinDisplay = document.getElementById("pinDisplay");
-    pinInput.value = "";
-    pinDisplay.value = "";
+    document.getElementById("pin").value = "";
   }
 
   function deleteLastPin() {
@@ -56,30 +54,6 @@
     const pinDisplay = document.getElementById("pinDisplay");
     pinInput.value = pinInput.value.slice(0, -1);
     pinDisplay.value = pinInput.value;
-  }
-
-  function showPinModal() {
-    clearPin();
-    $("#numpadModal").modal("show");
-    document.addEventListener("keydown", handleKeyPress);
-  }
-
-  function hidePinModal() {
-    $("#numpadModal").modal("hide");
-    document.removeEventListener("keydown", handleKeyPress);
-  }
-
-  function handleKeyPress(event) {
-    const key = event.key;
-    if (key >= "0" && key <= "9") {
-      addToPin(key);
-    } else if (key === "Backspace") {
-      deleteLastPin();
-    } else if (key === "Enter") {
-      confirmPin();
-    } else if (key === "Escape") {
-      clearPin();
-    }
   }
 
   function addToPin(value) {
@@ -96,57 +70,122 @@
     }
   }
 
+  function handleKeyPress(event) {
+    const key = event.key;
+    if (key >= "0" && key <= "9") {
+      addToPin(key);
+    } else if (key === "Backspace") {
+      deleteLastPin();
+    } else if (key === "Enter") {
+      confirmPin();
+    } else if (key === "Escape") {
+      clearPin();
+    }
+  }
+
+  function showPinModal(context) {
+    clearPin();
+    document.getElementById("pinContext").value = context;
+    $("#numpadModal").modal("show");
+    document.addEventListener("keydown", handleKeyPress);
+  }
+
+  function hidePinModal() {
+    $("#numpadModal").modal("hide");
+    document.removeEventListener("keydown", handleKeyPress);
+  }
+
+  function handleAddContext(pinInput) {
+    if (!isConfirmingPin) {
+      initialPin = pinInput;
+      isConfirmingPin = true;
+      clearPin();
+      alert("Please re-enter your PIN to confirm.");
+    } else {
+      if (pinInput === initialPin) {
+        $("#numpadModal").modal("hide");
+        document.getElementById("addPersonForm").submit();
+      } else {
+        alert("PINs do not match. Please try again.");
+        clearPin();
+        isConfirmingPin = false;
+      }
+    }
+  }
+
+  function handleEditContext(pinInput, context) {
+    $.ajax({
+      url: "{{ url_for('people_bp.verify_pin') }}",
+      type: "POST",
+      contentType: "application/json",
+      data: JSON.stringify({ pin: pinInput }),
+      success: function (response) {
+        if (response.is_admin) {
+          $("#numpadModal").modal("hide");
+          if (context === "edit_person") {
+            const editPersonForm = document.getElementById("editPersonForm");
+            if (editPersonForm) {
+              editPersonForm.submit();
+            } else {
+              const editPersonUrl = document.getElementById("editPersonUrl").value;
+              window.location.href = editPersonUrl;
+            }
+          } else if (context === "edit_chore") {
+            document.getElementById("editChoreForm").submit();
+          }
+        } else {
+          alert("Invalid PIN. Please try again.");
+          clearPin();
+        }
+      },
+      error: function () {
+        alert("Error verifying PIN. Please try again.");
+        clearPin();
+      },
+    });
+  }
+
+  function handleDeleteContext(pinInput) {
+    $.ajax({
+      url: "{{ url_for('people_bp.verify_pin') }}",
+      type: "POST",
+      contentType: "application/json",
+      data: JSON.stringify({ pin: pinInput }),
+      success: function (response) {
+        if (response.is_admin) {
+          $("#numpadModal").modal("hide");
+          document.getElementById("deletePersonForm").submit();
+        } else {
+          alert("Invalid PIN. Please try again.");
+          clearPin();
+        }
+      },
+      error: function () {
+        alert("Error verifying PIN. Please try again.");
+        clearPin();
+      },
+    });
+  }
+
   function confirmPin() {
     const pinInput = document.getElementById("pin").value;
     const context = document.getElementById("pinContext").value;
     console.log("context: ", context);
-    if (context === "add") {
-      if (!isConfirmingPin) {
-        initialPin = pinInput;
-        isConfirmingPin = true;
-        clearPin();
-        alert("Please re-enter your PIN to confirm.");
-      } else {
-        if (pinInput === initialPin) {
-          $("#numpadModal").modal("hide");
-          document.getElementById("addPersonForm").submit();
-        } else {
-          alert("PINs do not match. Please try again.");
-          clearPin();
-          isConfirmingPin = false;
-        }
-      }
-    } else {
-      $.ajax({
-        url: "{{ url_for('people_bp.verify_pin') }}",
-        type: "POST",
-        contentType: "application/json",
-        data: JSON.stringify({ pin: pinInput }),
-        success: function (response) {
-          if (response.is_admin) {
-            $("#numpadModal").modal("hide");
-            if (context === "edit_person") {
-              const editPersonForm = document.getElementById("editPersonForm");
-              if (editPersonForm) {
-                editPersonForm.submit();
-              } else {
-                const editPersonUrl =
-                  document.getElementById("editPersonUrl").value;
-                window.location.href = editPersonUrl;
-              }
-            } else if (context === "edit_chore") {
-              document.getElementById("editChoreForm").submit();
-            }
-          } else {
-            alert("Invalid PIN. Please try again.");
-            clearPin();
-          }
-        },
-        error: function () {
-          alert("Error verifying PIN. Please try again.");
-          clearPin();
-        },
-      });
+
+    switch (context) {
+      case "add_person":
+        handleAddContext(pinInput);
+        break;
+      case "edit_person":
+      case "edit_chore":
+        handleEditContext(pinInput, context);
+        break;
+      case "delete_person":
+        handleDeleteContext(pinInput);
+        break;
+      default:
+        console.error("Unknown context: ", context);
     }
   }
+
 </script>
