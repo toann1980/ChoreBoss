@@ -45,14 +45,7 @@ def add_person():
 @people_bp.route('/delete_person', methods=['POST'])
 def delete_person():
     person_id = request.form['person_id']
-    person_to_delete = people_service.get_person_by_id(person_id)
-    if person_to_delete:
-        people_service.delete_person(person_id)
-        # Adjust the sequence numbers of the remaining people
-        remaining_people = people_service.get_all_people_in_sequence_order()
-        for index, person in enumerate(remaining_people):
-            person.sequence_num = index + 1
-            people_service.update_person(person)
+    people_service.delete_person_and_adjust_sequence(person_id)
     return redirect(url_for('people_bp.get_people'))
 
 
