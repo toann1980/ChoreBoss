@@ -60,11 +60,10 @@ class PeopleRepository:
         try:
             max_sequence_num = session.query(
                 func.max(People.sequence_num)).scalar()
-
         finally:
             session.close()
 
-        return 1 if max_sequence_num is None else max_sequence_num
+        return 1 if max_sequence_num is None else max_sequence_num + 1
 
     def get_person_by_id(self, person_id):
         session = self.Session()
