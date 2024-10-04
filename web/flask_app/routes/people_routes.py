@@ -42,6 +42,20 @@ def add_person():
     return render_template('add_person.html', admins_exist=admins_exist)
 
 
+@people_bp.route('/delete_person', methods=['POST'])
+def delete_person():
+    person_id = request.form['person_id']
+    person_to_delete = people_service.get_person_by_id(person_id)
+    if person_to_delete:
+        people_service.delete_person(person_id)
+        # Adjust the sequence numbers of the remaining people
+        remaining_people = people_service.get_all_people_in_sequence_order()
+        for index, person in enumerate(remaining_people):
+            person.sequence_num = index + 1
+            people_service.update_person(person)
+    return redirect(url_for('people_bp.get_people'))
+
+
 @people_bp.route('/people/<int:person_id>/edit', methods=['GET', 'POST'])
 def edit_person(person_id):
     person = people_service.get_person_by_id(person_id)
