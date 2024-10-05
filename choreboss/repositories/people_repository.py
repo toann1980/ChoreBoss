@@ -54,6 +54,21 @@ class PeopleRepository:
         sorted_people = sorted(people, key=lambda x: x.sequence_num)
         return sorted_people
 
+    def get_next_person_by_person_id(self, current_person_id):
+        session = self.Session()
+        current_person = session.query(People).filter_by(
+            id=current_person_id
+        ).first()
+        next_person = session.query(People).filter(
+            People.sequence_num > current_person.sequence_num
+        ).order_by(People.sequence_num).first()
+        if not next_person:
+            next_person = session.query(People).order_by(
+                People.sequence_num
+            ).first()
+        session.close()
+        return next_person
+
     def get_next_sequence_num(self):
         session = self.Session()
         max_sequence_num = None
@@ -64,6 +79,18 @@ class PeopleRepository:
             session.close()
 
         return 1 if max_sequence_num is None else max_sequence_num + 1
+
+    def get_next_sequence_num_by_person_id(self):
+        session = self.Session()
+        try:
+            next_person = session.query(People).order_by(
+                People.sequence_num
+            ).first()
+            if next_person:
+                return next_person.id
+        finally:
+            session.close()
+        return None
 
     def get_person_by_id(self, person_id):
         session = self.Session()
@@ -82,6 +109,17 @@ class PeopleRepository:
             if bcrypt.checkpw(pin.encode('utf-8'), person.pin.encode('utf-8')):
                 return person
         return None
+
+    def is_admin(self, pin):
+        session = self.Session()
+        try:
+            admin = session.query(People).filter_by(is_admin=True).all()
+            for person in admin:
+                if person.verify_pin(pin):
+                    return True
+        finally:
+            session.close()
+        return False
 
     def update_person(self, person):
         session = self.Session()
@@ -106,7 +144,11 @@ class PeopleRepository:
         return person
 
     def verify_pin(self, person_id, pin):
-        person = self.get_person_by_id(person_id)
-        if person and person.verify_pin(pin):
-            return True
+        session = self.Session()
+        try:
+            person = session.query(People).filter_by(id=person_id).first()
+            if person and person.verify_pin(pin):
+                return True
+        finally:
+            session.close()
         return False

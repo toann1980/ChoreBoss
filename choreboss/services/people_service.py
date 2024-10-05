@@ -27,6 +27,12 @@ class PeopleService:
                     person.sequence_num -= 1
                     self.update_person(person)
 
+    def get_next_person_by_person_id(self, current_person_id):
+        return self.people_repository.get_next_person_by_person_id(current_person_id)
+
+    def get_next_sequence_num_by_person_id(self):
+        return self.people_repository.get_next_sequence_num_by_person_id()
+
     def get_all_people(self):
         return self.people_repository.get_all_people()
 
@@ -38,6 +44,9 @@ class PeopleService:
 
     def get_person_by_pin(self, pin):
         return self.people_repository.get_person_by_pin(pin)
+
+    def is_admin(self, pin):
+        return self.people_repository.is_admin(pin)
 
     def update_pin(self, person_id, new_pin):
         return self.people_repository.update_pin(person_id, new_pin)
