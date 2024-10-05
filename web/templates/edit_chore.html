@@ -37,9 +37,10 @@
       </div>
       <button type="button"
               class="btn btn-primary mt-2 w-100"
-              onclick="showPinModal()">Save Changes</button>
-      <input type="hidden" id="pinContext" name="pinContext" value="edit_chore" />
+              onclick="showPinModal('edit_chore')">Save Changes</button>
+      <input type="hidden" id="chore_id" name="chore_id" value="{{ chore.id }}" />
       <input type="hidden" id="pin" name="pin" required />
+      <input type="hidden" id="pinContext" name="pinContext" value="edit_chore" />
     </form>
   </div>
   {% include "pin_modal.html" %}

@@ -44,9 +44,9 @@
   let isConfirmingPin = false;
   let initialPin = "";
 
-
   function clearPin() {
     document.getElementById("pin").value = "";
+    document.getElementById("pinDisplay").value = "";
   }
 
   function deleteLastPin() {
@@ -113,78 +113,87 @@
     }
   }
 
-  function handleEditContext(pinInput, context) {
-    $.ajax({
-      url: "{{ url_for('people_bp.verify_pin') }}",
-      type: "POST",
-      contentType: "application/json",
-      data: JSON.stringify({ pin: pinInput }),
-      success: function (response) {
-        if (response.is_admin) {
-          $("#numpadModal").modal("hide");
-          if (context === "edit_person") {
-            const editPersonForm = document.getElementById("editPersonForm");
-            if (editPersonForm) {
-              editPersonForm.submit();
-            } else {
-              const editPersonUrl = document.getElementById("editPersonUrl").value;
-              window.location.href = editPersonUrl;
-            }
-          } else if (context === "edit_chore") {
-            document.getElementById("editChoreForm").submit();
-          }
-        } else {
-          alert("Invalid PIN. Please try again.");
-          clearPin();
-        }
-      },
-      error: function () {
-        alert("Error verifying PIN. Please try again.");
-        clearPin();
-      },
-    });
+  function handleCompleteChoreContext(pinInput) {
+    document.getElementById("completeChoreForm").submit();
   }
 
-  function handleDeleteContext(pinInput) {
-    $.ajax({
-      url: "{{ url_for('people_bp.verify_pin') }}",
-      type: "POST",
-      contentType: "application/json",
-      data: JSON.stringify({ pin: pinInput }),
-      success: function (response) {
-        if (response.is_admin) {
-          $("#numpadModal").modal("hide");
-          document.getElementById("deletePersonForm").submit();
+  function handleDeleteContext() {
+    $("#numpadModal").modal("hide");
+    document.getElementById("completeChoreForm").submit();
+  }
+
+  function handleEditContext(pinInput, context) {
+    $("#numpadModal").modal("hide");
+    if (context === "edit_person") {
+        const editPersonForm = document.getElementById("editPersonForm");
+        if (editPersonForm) {
+            editPersonForm.submit();
         } else {
-          alert("Invalid PIN. Please try again.");
-          clearPin();
+            const editPersonUrl = document.getElementById("editPersonUrl").value;
+            window.href = editPersonUrl;
         }
-      },
-      error: function () {
-        alert("Error verifying PIN. Please try again.");
-        clearPin();
-      },
-    });
+    } else if (context === "edit_chore") {
+        document.getElementById("editChoreForm").submit();
+    }
   }
 
   function confirmPin() {
-    const pinInput = document.getElementById("pin").value;
     const context = document.getElementById("pinContext").value;
-    console.log("context: ", context);
+    const pinInput = document.getElementById("pin").value;
 
-    switch (context) {
-      case "add_person":
-        handleAddContext(pinInput);
-        break;
-      case "edit_person":
-      case "edit_chore":
-        handleEditContext(pinInput, context);
-        break;
-      case "delete_person":
-        handleDeleteContext(pinInput);
-        break;
-      default:
-        console.error("Unknown context: ", context);
+    if (context === "add_person") {
+      if (!isConfirmingPin) {
+        initialPin = pinInput;
+        isConfirmingPin = true;
+        clearPin();
+        alert("Please re-enter your PIN to confirm.");
+      } else {
+        if (pinInput === initialPin) {
+          hidePinModal();
+          document.getElementById("addPersonForm").submit();
+        } else {
+          alert("PINs do not match. Please try again.");
+          clearPin();
+          isConfirmingPin = false;
+        }
+      }
+    } else {    
+      const choreIdElement = document.getElementById("chore_id");
+      const choreId = choreIdElement ? choreIdElement.value : null;
+      const personIdElement = document.getElementById("person_id");
+      const personId = personIdElement ? personIdElement.value : null;
+      fetch('/verify_pin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          pin: pinInput, context: context, chore_id: choreId, person_id: personId
+        }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('data: ', data);
+          if (data.status === 'success') {
+            switch (context) {
+              case "complete_chore":
+                handleCompleteChoreContext(pinInput);
+                break;              
+              case "delete_person":
+                handleDeleteContext();
+                break;
+              case "edit_person":
+              case "edit_chore":
+                handleEditContext(pinInput, context);
+                break;
+              default:
+                console.error("Unknown context: ", context);
+            }
+          } else {
+            alert('Invalid PIN. Please try again.');
+            clearPin();
+          }
+        });
     }
   }
 
