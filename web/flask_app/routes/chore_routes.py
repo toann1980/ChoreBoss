@@ -29,6 +29,18 @@ def add_chore():
     return render_template('add_chore.html')
 
 
+@chore_bp.route('/chore/<int:chore_id>/complete', methods=['POST'])
+def complete_chore(chore_id):
+    chore = chore_service.get_chore_by_id(chore_id)
+    if not chore:
+        return jsonify({'error': 'Chore not found'}), 404
+
+    next_person = people_service.get_next_person_by_person_id(chore.person_id)
+
+    chore_service.complete_chore(chore, next_person)
+    return redirect(url_for('chore_bp.get_chore', chore_id=chore.id))
+
+
 @chore_bp.route('/chores/<int:chore_id>/edit', methods=['GET', 'POST'])
 def edit_chore(chore_id):
     chore = chore_service.get_chore_by_id(chore_id)
@@ -43,7 +55,7 @@ def edit_chore(chore_id):
         chore_service.update_chore(chore)
         return redirect(url_for('chore_bp.get_chore', chore_id=chore.id))
 
-    people = people_service.get_all_people()
+    people = people_service.get_all_people_in_sequence_order()
     return render_template('edit_chore.html', chore=chore, people=people)
 
 
