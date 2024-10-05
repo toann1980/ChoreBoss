@@ -94,9 +94,10 @@ class PeopleRepository:
         Returns:
             List[People]: A list of all people in sequence order.
         """
-        people = self.get_all_people()
-        sorted_people = sorted(people, key=lambda x: x.sequence_num)
-        return sorted_people
+        session = self.Session()
+        people = session.query(People).order_by(People.sequence_num).all()
+        session.close()
+        return people
 
     def get_next_person_by_person_id(self, current_person_id: int) -> People:
         """Gets the next person by the current person's ID.
