@@ -1,3 +1,4 @@
+from datetime import datetime
 from choreboss.models.chore import Chore
 from choreboss.models import Base
 from sqlalchemy.orm import sessionmaker, joinedload
@@ -12,6 +13,16 @@ class ChoreRepository:
         chore = Chore(name=name, description=description)
         session.add(chore)
         session.commit()
+        session.close()
+
+    def complete_chore(self, chore, next_person):
+        session = self.Session()
+        existing_chore = session.query(Chore).filter_by(id=chore.id).first()
+        if existing_chore:
+            existing_chore.last_completed_id = chore.person_id
+            existing_chore.last_completed_date = datetime.now()
+            existing_chore.person_id = next_person.id if next_person else None
+            session.commit()
         session.close()
 
     def get_all_chores(self):
