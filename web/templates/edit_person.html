@@ -50,8 +50,9 @@
       <button type="button"
               class="btn btn-danger mt-2 w-100"
               onclick="showPinModal('delete_person')">Delete Person</button>
-      <input type="hidden" id="pinContext" name="pinContext" value="" />
+      <input type="hidden" id="person_id" name="person_id" value="{{ person.id }}" />
       <input type="hidden" id="pin" name="pin" required />
+      <input type="hidden" id="pinContext" name="pinContext" value="" />
     </form>
     <button type="button"
             class="btn btn-primary mt-3 w-100"
