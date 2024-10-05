@@ -95,48 +95,6 @@
     document.removeEventListener("keydown", handleKeyPress);
   }
 
-  function handleAddContext(pinInput) {
-    if (!isConfirmingPin) {
-      initialPin = pinInput;
-      isConfirmingPin = true;
-      clearPin();
-      alert("Please re-enter your PIN to confirm.");
-    } else {
-      if (pinInput === initialPin) {
-        $("#numpadModal").modal("hide");
-        document.getElementById("addPersonForm").submit();
-      } else {
-        alert("PINs do not match. Please try again.");
-        clearPin();
-        isConfirmingPin = false;
-      }
-    }
-  }
-
-  function handleCompleteChoreContext(pinInput) {
-    document.getElementById("completeChoreForm").submit();
-  }
-
-  function handleDeleteContext() {
-    $("#numpadModal").modal("hide");
-    document.getElementById("completeChoreForm").submit();
-  }
-
-  function handleEditContext(pinInput, context) {
-    $("#numpadModal").modal("hide");
-    if (context === "edit_person") {
-        const editPersonForm = document.getElementById("editPersonForm");
-        if (editPersonForm) {
-            editPersonForm.submit();
-        } else {
-            const editPersonUrl = document.getElementById("editPersonUrl").value;
-            window.href = editPersonUrl;
-        }
-    } else if (context === "edit_chore") {
-        document.getElementById("editChoreForm").submit();
-    }
-  }
-
   function confirmPin() {
     const context = document.getElementById("pinContext").value;
     const pinInput = document.getElementById("pin").value;
@@ -177,16 +135,19 @@
           if (data.status === 'success') {
             switch (context) {
               case "complete_chore":
-                handleCompleteChoreContext(pinInput);
+                document.getElementById("completeChoreForm").submit();
                 break;              
               case "delete_person":
-                handleDeleteContext();
+                document.getElementById("deletePersonForm").submit();
                 break;
               case "delete_chore":
                 document.getElementById("deleteChoreForm").submit();
+                break;
               case "edit_person":
+                document.getElementById("editPersonForm").submit();
+                break;
               case "edit_chore":
-                handleEditContext(pinInput, context);
+                document.getElementById("editChoreForm").submit();
                 break;
               default:
                 console.error("Unknown context: ", context);
