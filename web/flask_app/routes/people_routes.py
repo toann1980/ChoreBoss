@@ -113,8 +113,26 @@ def update_sequence():
 @people_bp.route('/verify_pin', methods=['POST'])
 def verify_pin():
     data = request.get_json()
+    print(f'data: {data}')
+    context = data.get('context')
     pin = data.get('pin')
-    person = people_service.get_person_by_pin(pin)
-    if person and person.is_admin:
-        return jsonify({'is_admin': True})
-    return jsonify({'is_admin': False})
+
+    if context == 'complete_chore':
+        chore_id = data.get('chore_id')
+        chore = chore_service.get_chore_by_id(chore_id)
+        next_person = \
+            people_service.get_next_person_by_person_id(chore.person_id)
+        if people_service.verify_pin(next_person.id, pin) or \
+                people_service.is_admin(pin):
+            return jsonify({'status': 'success'})
+    elif context in ('add_person', 'edit_chore', 'delete_person'):
+        if people_service.is_admin(pin) or not people_service.admins_exist():
+            return jsonify({'status': 'success'})
+    elif context == 'edit_person':
+        person = people_service.get_person_by_pin(pin)
+        print(f'person: {person.__dict__}')
+        if person and (person.is_admin or person.verify_pin(pin)):
+            return jsonify({'status': 'success'})
+        return jsonify({'is_admin': False})
+
+    return jsonify({'status': 'failure'})
