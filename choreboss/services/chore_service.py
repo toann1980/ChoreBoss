@@ -11,6 +11,9 @@ class ChoreService:
     def complete_chore(self, chore, next_person):
         self.chore_repository.complete_chore(chore, next_person)
 
+    def delete_chore(self, chore_id):
+        return self.chore_repository.delete_chore(chore_id)
+
     def get_all_chores(self):
         return self.chore_repository.get_all_chores()
 

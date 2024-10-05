@@ -25,6 +25,14 @@ class ChoreRepository:
             session.commit()
         session.close()
 
+    def delete_chore(self, chore_id):
+        session = self.Session()
+        chore = session.query(Chore).filter_by(id=chore_id).first()
+        if chore:
+            session.delete(chore)
+            session.commit()
+        session.close()
+
     def get_all_chores(self):
         session = self.Session()
         chores = session.query(Chore).options(

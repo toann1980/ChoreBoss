@@ -42,6 +42,13 @@
       <input type="hidden" id="pin" name="pin" required />
       <input type="hidden" id="pinContext" name="pinContext" value="edit_chore" />
     </form>
+    <form id="deleteChoreForm"
+          method="post"
+          action="{{ url_for('chore_bp.delete_chore', chore_id=chore.id) }}">
+      <button type="button"
+              class="btn btn-danger mt-2 w-100"
+              onclick="showPinModal('delete_chore')">Delete Chore</button>
+    </form>
   </div>
   {% include "pin_modal.html" %}
 {% endblock content %}

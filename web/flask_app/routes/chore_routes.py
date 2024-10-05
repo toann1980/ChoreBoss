@@ -41,6 +41,16 @@ def complete_chore(chore_id):
     return redirect(url_for('chore_bp.get_chore', chore_id=chore.id))
 
 
+@chore_bp.route('/delete_chore/<int:chore_id>', methods=['POST'])
+def delete_chore(chore_id):
+    chore = chore_service.get_chore_by_id(chore_id)
+    if not chore:
+        return jsonify({'error': 'Chore not found'}), 404
+
+    chore_service.delete_chore(chore_id)
+    return redirect(url_for('index_bp.home'))
+
+
 @chore_bp.route('/chores/<int:chore_id>/edit', methods=['GET', 'POST'])
 def edit_chore(chore_id):
     chore = chore_service.get_chore_by_id(chore_id)

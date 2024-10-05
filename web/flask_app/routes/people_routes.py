@@ -125,14 +125,16 @@ def verify_pin():
         if people_service.verify_pin(next_person.id, pin) or \
                 people_service.is_admin(pin):
             return jsonify({'status': 'success'})
-    elif context in ('add_person', 'edit_chore', 'delete_person'):
+    elif context == 'add_person':
         if people_service.is_admin(pin) or not people_service.admins_exist():
             return jsonify({'status': 'success'})
     elif context == 'edit_person':
         person = people_service.get_person_by_pin(pin)
-        print(f'person: {person.__dict__}')
         if person and (person.is_admin or person.verify_pin(pin)):
             return jsonify({'status': 'success'})
-        return jsonify({'is_admin': False})
+    elif context in ('delete_chore', 'delete_person', 'edit_chore'):
+        person = people_service.get_person_by_pin(pin)
+        if person and person.is_admin:
+            return jsonify({'status': 'success'})
 
     return jsonify({'status': 'failure'})
