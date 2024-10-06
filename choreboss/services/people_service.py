@@ -66,22 +66,6 @@ class PeopleService:
                     person.sequence_num -= 1
                     self.update_person(person)
 
-    def get_next_person_by_person_id(
-            self,
-            current_person_id: int
-    ) -> People:
-        """Gets the next person by the current person's ID.
-
-        Args:
-            current_person_id (int): The ID of the current person.
-
-        Returns:
-            People: The next person's data.
-        """
-        return self.people_repository.get_next_person_by_person_id(
-            current_person_id
-        )
-
     def get_all_people(self) -> List[People]:
         """Gets all people from the repository.
 
@@ -97,6 +81,22 @@ class PeopleService:
             List[dict]: A list of all people in sequence order.
         """
         return self.people_repository.get_all_people_in_sequence_order()
+
+    def get_next_person_by_person_id(
+            self,
+            current_person_id: int
+    ) -> People:
+        """Gets the next person by the current person's ID.
+
+        Args:
+            current_person_id (int): The ID of the current person.
+
+        Returns:
+            People: The next person's data.
+        """
+        return self.people_repository.get_next_person_by_person_id(
+            current_person_id
+        )
 
     def get_person_by_id(self, person_id: int) -> Optional[People]:
         """Gets a person by their ID.
