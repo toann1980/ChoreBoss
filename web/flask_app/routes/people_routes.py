@@ -2,6 +2,7 @@ from datetime import datetime
 from flask import (
     Blueprint, jsonify, redirect, request, render_template, url_for
 )
+import json
 from choreboss.repositories.chore_repository import ChoreRepository
 from choreboss.services.chore_service import ChoreService
 from choreboss.repositories.people_repository import PeopleRepository
@@ -105,6 +106,8 @@ def change_sequence():
 @people_bp.route('/update_sequence', methods=['POST'])
 def update_sequence():
     data = request.get_json()
+    print(f'data: {data}')
+    data = json.loads(data.get('sequence_data'))
     for item in data:
         people_service.update_sequence(item['id'], item['sequence'])
     return jsonify({'status': 'success'})
@@ -132,7 +135,7 @@ def verify_pin():
         person = people_service.get_person_by_pin(pin)
         if person and (person.is_admin or person.verify_pin(pin)):
             return jsonify({'status': 'success'})
-    elif context in ('delete_chore', 'delete_person', 'edit_chore'):
+    elif context in ('change_sequence', 'delete_chore', 'delete_person', 'edit_chore'):
         person = people_service.get_person_by_pin(pin)
         if person and person.is_admin:
             return jsonify({'status': 'success'})

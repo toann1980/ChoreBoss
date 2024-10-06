@@ -134,6 +134,26 @@
           console.log(`context: ${context}, status: ${data.status}`);
           if (data.status === 'success') {
             switch (context) {
+              case "change_sequence":
+                fetch('/update_sequence', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({sequence_data: document.getElementById('sequenceData').value}),
+                })
+                  .then(response => response.json())
+                  .then(result => {
+                    if (result.status === 'success') {
+                      alert('Sequence updated successfully!');
+                    } else {
+                      alert('Failed to update sequence.');
+                    }
+                  })
+                  .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                  });
+                break;
               case "complete_chore":
                 document.getElementById("completeChoreForm").submit();
                 break;              
@@ -152,6 +172,7 @@
               default:
                 console.error("Unknown context: ", context);
             }
+            hidePinModal();
           } else {
             alert('Invalid PIN. Please try again.');
             clearPin();

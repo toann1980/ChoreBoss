@@ -2,28 +2,38 @@
 {% block title %}
   Change Sequence
 {% endblock title %}
-{%
-block content %}
-<div class="container-lg">
-  <div class="row mt-3">
-    <div class="col-6">
-      <button class="btn btn-secondary"
-              onclick="location.href='{{ url_for("people_bp.get_people") }}'">Back</button>
+{% block content %}
+  <div class="container-lg">
+    <div class="row mt-3">
+      <div class="col-6">
+        <button class="btn btn-secondary"
+                onclick="location.href='{{ url_for("people_bp.get_people") }}'">Back</button>
+      </div>
     </div>
+    <h1 class="mt-5">Change Sequence</h1>
+    <ul id="sortable" class="list-group">
+      {% for person in people %}
+        <li class="list-group-item d-flex align-items-center"
+            data-id="{{ person.id }}">
+          <i class="fas fa-bars mr-3"></i>
+          {{ person.first_name }} {{ person.last_name }}
+        </li>
+      {% endfor %}
+    </ul>
+    <form id="sequenceForm"
+          method="post"
+          action="{{ url_for('people_bp.update_sequence') }}">
+      <button id="saveSequence" type="button" class="btn btn-primary mt-3">Save Sequence</button>
+      <input type="hidden" id="sequenceData" name="sequenceData" />
+      <input type="hidden"
+             id="pinContext"
+             name="pinContext"
+             value="change_sequence" />
+      <input type="hidden" id="pin" name="pin" required />
+    </form>
   </div>
-  <h1 class="mt-5">Change Sequence</h1>
-  <ul id="sortable" class="list-group">
-    {% for person in people %}
-      <li class="list-group-item d-flex align-items-center"
-          data-id="{{ person.id }}">
-        <i class="fas fa-bars mr-3"></i>
-        {{ person.first_name }} {{ person.last_name }}
-      </li>
-    {% endfor %}
-  </ul>
-  <button id="saveSequence" class="btn btn-primary mt-3">Save Sequence</button>
-</div>
-<script>
+  {% include "pin_modal.html" %}
+  <script>
   document.addEventListener('DOMContentLoaded', function () {
     const sortable = new Sortable(document.getElementById('sortable'), {
       animation: 150,
@@ -37,20 +47,12 @@ block content %}
         sequence: index + 1,
       }));
 
-      fetch('{{ url_for('people_bp.update_sequence') }}', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(sequenceData),
-      })
-        .then(response => response.json())
-        .then(data => {
-          if (data.status === 'success') {
-            alert('Sequence updated successfully!');
-          }
-        });
+      // Store sequence data in a hidden input
+      document.getElementById('sequenceData').value = JSON.stringify(sequenceData);
+
+      // Show the PIN modal
+      showPinModal('change_sequence');
     });
   });
-</script>
+  </script>
 {% endblock content %}
