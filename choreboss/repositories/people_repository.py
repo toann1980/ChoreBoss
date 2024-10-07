@@ -107,7 +107,7 @@ class PeopleRepository:
             return next_person
 
     def get_next_sequence_num(self) -> int:
-        """Gets the next sequence number.
+        """Gets the next sequence number. Used by add_person.
 
         Returns:
             int: The next sequence number.
