@@ -14,11 +14,11 @@ from choreboss.config import Config
 
 people_bp = Blueprint('people_bp', __name__)
 engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
-chore_repository = ChoreRepository(engine)
-chore_service = ChoreService(chore_repository)
 people_repository = PeopleRepository(engine)
 people_service = PeopleService(people_repository)
 people_schema = PeopleSchema()
+chore_repository = ChoreRepository(engine)
+chore_service = ChoreService(chore_repository, people_repository)
 
 
 @people_bp.route('/add_person', methods=['GET', 'POST'])

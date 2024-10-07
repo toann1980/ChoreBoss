@@ -11,11 +11,11 @@ from choreboss.config import Config
 
 chore_bp = Blueprint('chore_bp', __name__)
 engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
-chore_repository = ChoreRepository(engine)
-chore_service = ChoreService(chore_repository)
-chore_schema = ChoreSchema()
 people_repository = PeopleRepository(engine)
 people_service = PeopleService(people_repository)
+chore_repository = ChoreRepository(engine)
+chore_service = ChoreService(chore_repository, people_repository)
+chore_schema = ChoreSchema()
 
 
 @chore_bp.route('/chores', methods=['GET', 'POST'])
@@ -35,9 +35,7 @@ def complete_chore(chore_id):
     if not chore:
         return jsonify({'error': 'Chore not found'}), 404
 
-    next_person = people_service.get_next_person_by_person_id(chore.person_id)
-
-    chore_service.complete_chore(chore, next_person)
+    chore_service.complete_chore(chore)
     return redirect(url_for('chore_bp.get_chore', chore_id=chore.id))
 
 
