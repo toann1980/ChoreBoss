@@ -1,6 +1,7 @@
 from flask import Flask
 import os
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 from choreboss.config import Config
 from choreboss.models import Base
@@ -11,7 +12,7 @@ from web.flask_app.routes.chore_routes import chore_bp
 from web.flask_app.routes.index_routes import index_bp
 
 
-def create_app() -> Flask:
+def create_app(config_name: str = None) -> Flask:
     """
     Create and configure the Flask application.
     This function sets up the Flask application with the necessary
@@ -29,9 +30,19 @@ def create_app() -> Flask:
         )
     )
     app.secret_key = Config.SECRET_KEY
-    app.config.from_object(Config)
+    if config_name == 'testing':
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+        app.config['TESTING'] = True
+    else:
+        app.config.from_object(Config)
 
-    engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
+    app.secret_key = app.config['SECRET_KEY']
+    engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+    Base.metadata.create_all(engine)
+
+    # Store the engine and sessionmaker in the app config for use in tests
+    app.config['ENGINE'] = engine
+    app.config['SESSIONMAKER'] = sessionmaker(bind=engine)
     Base.metadata.create_all(engine)
 
     for bp in (people_bp, chore_bp, index_bp):
