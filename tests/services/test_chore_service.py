@@ -1,7 +1,7 @@
 from datetime import datetime
-import unittest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import unittest
 from choreboss.repositories.people_repository import PeopleRepository
 from choreboss.repositories.chore_repository import ChoreRepository
 from choreboss.models import Base
@@ -18,9 +18,9 @@ class TestChoreService(unittest.TestCase):
         self.Session = sessionmaker(bind=self.engine)
         self.session = self.Session()
         self.people_repository = PeopleRepository(self.engine)
-        self.people_service = PeopleService(self.people_repository)
         self.chore_repository = ChoreRepository(self.engine)
 
+        self.people_service = PeopleService(self.people_repository)
         self.chore_service = ChoreService(
             self.chore_repository, self.people_repository)
         for chore in [
