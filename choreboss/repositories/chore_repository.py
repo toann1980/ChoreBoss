@@ -22,11 +22,10 @@ class ChoreRepository:
             name (str): Name of the chore.
             description (str): Description of the chore.
         """
-        session = self.Session()
-        chore = Chore(name=name, description=description)
-        session.add(chore)
-        session.commit()
-        session.close()
+        with self.Session() as session:
+            chore = Chore(name=name, description=description)
+            session.add(chore)
+            session.commit()
 
     def complete_chore(self, chore: Chore) -> None:
         """
@@ -35,13 +34,13 @@ class ChoreRepository:
         Args:
             chore (Chore): The Chore object to mark as completed.
         """
-        session = self.Session()
-        existing_chore = session.query(Chore).filter_by(id=chore.id).first()
-        if existing_chore:
-            existing_chore.last_completed_id = chore.person_id
-            existing_chore.last_completed_date = datetime.now()
-            session.commit()
-        session.close()
+        with self.Session() as session:
+            existing_chore = session.query(
+                Chore).filter_by(id=chore.id).first()
+            if existing_chore:
+                existing_chore.last_completed_id = chore.person_id
+                existing_chore.last_completed_date = datetime.now()
+                session.commit()
 
     def delete_chore(self, chore_id: int) -> None:
         """
@@ -50,12 +49,11 @@ class ChoreRepository:
         Args:
             chore_id (int): ID of the chore to delete.
         """
-        session = self.Session()
-        chore = session.query(Chore).filter_by(id=chore_id).first()
-        if chore:
-            session.delete(chore)
-            session.commit()
-        session.close()
+        with self.Session() as session:
+            chore = session.query(Chore).filter_by(id=chore_id).first()
+            if chore:
+                session.delete(chore)
+                session.commit()
 
     def get_all_chores(self) -> list[Chore]:
         """
@@ -64,13 +62,12 @@ class ChoreRepository:
         Returns:
             list[Chore]: A list of all Chore objects.
         """
-        session = self.Session()
-        chores = session.query(Chore).options(
-            joinedload(Chore.person_id_foreign_key),
-            joinedload(Chore.last_completed_id_foreign_key)
-        ).all()
-        session.close()
-        return chores
+        with self.Session() as session:
+            chores = session.query(Chore).options(
+                joinedload(Chore.person_id_foreign_key),
+                joinedload(Chore.last_completed_id_foreign_key)
+            ).all()
+            return chores
 
     def get_chore_by_id(self, chore_id: int) -> Chore:
         """
@@ -82,13 +79,12 @@ class ChoreRepository:
         Returns:
             Chore: The Chore object with the given ID.
         """
-        session = self.Session()
-        chore = session.query(Chore).options(
-            joinedload(Chore.person_id_foreign_key),
-            joinedload(Chore.last_completed_id_foreign_key)
-        ).filter_by(id=chore_id).first()
-        session.close()
-        return chore
+        with self.Session() as session:
+            chore = session.query(Chore).options(
+                joinedload(Chore.person_id_foreign_key),
+                joinedload(Chore.last_completed_id_foreign_key)
+            ).filter_by(id=chore_id).first()
+            return chore
 
     def update_chore(self, chore: Chore) -> None:
         """
@@ -97,11 +93,11 @@ class ChoreRepository:
         Args:
             chore (Chore): The Chore object with updated information.
         """
-        session = self.Session()
-        existing_chore = session.query(Chore).filter_by(id=chore.id).first()
-        if existing_chore:
-            existing_chore.name = chore.name
-            existing_chore.description = chore.description
-            existing_chore.person_id = chore.person_id
-            session.commit()
-        session.close()
+        with self.Session() as session:
+            existing_chore = session.query(
+                Chore).filter_by(id=chore.id).first()
+            if existing_chore:
+                existing_chore.name = chore.name
+                existing_chore.description = chore.description
+                existing_chore.person_id = chore.person_id
+                session.commit()
