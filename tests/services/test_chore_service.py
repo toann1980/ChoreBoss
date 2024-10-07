@@ -9,6 +9,7 @@ from choreboss.models.chore import Chore
 from choreboss.models.people import People
 from choreboss.services.people_service import PeopleService
 from choreboss.services.chore_service import ChoreService
+from ..setup_memory_records import setup_memory_records
 
 
 class TestChoreService(unittest.TestCase):
@@ -23,48 +24,7 @@ class TestChoreService(unittest.TestCase):
         self.people_service = PeopleService(self.people_repository)
         self.chore_service = ChoreService(
             self.chore_repository, self.people_repository)
-        for chore in [
-            {
-                'name': 'Wash the dishes',
-                'description': 'Wash the dishes',
-            },
-            {
-                'name': 'Take out the trash',
-                'description': 'Take out the trash',
-            },
-            {
-                'name': 'Vacuum the floor',
-                'description': 'Vacuum the floor',
-            }
-        ]:
-            self.chore_service.add_chore(**chore)
-
-        self.session.commit()
-
-        for person in [
-            {
-                'first_name': 'John',
-                'last_name': 'Doe',
-                'birthday': datetime.strptime('2000-01-01', '%Y-%m-%d').date(),
-                'pin': '123456',
-                'is_admin': True
-            },
-            {
-                'first_name': 'Jane',
-                'last_name': 'Doe',
-                'birthday': datetime.strptime('2002-01-01', '%Y-%m-%d').date(),
-                'pin': '654321',
-                'is_admin': False
-            },
-            {
-                'first_name': 'Mary',
-                'last_name': 'Doe',
-                'birthday': datetime.strptime('2004-01-01', '%Y-%m-%d').date(),
-                'pin': '9876',
-                'is_admin': False
-            }
-        ]:
-            self.people_service.add_person(**person)
+        setup_memory_records(self.people_repository, self.chore_repository)
 
     def tearDown(self):
         self.session.close()

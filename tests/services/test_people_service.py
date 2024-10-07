@@ -7,6 +7,7 @@ from choreboss.models import Base
 from choreboss.models.chore import Chore
 from choreboss.models.people import People
 from choreboss.services.people_service import PeopleService
+from ..setup_memory_records import setup_memory_records
 
 
 class TestPeopleService(unittest.TestCase):
@@ -17,32 +18,7 @@ class TestPeopleService(unittest.TestCase):
         self.session = self.Session()
         self.people_repository = PeopleRepository(self.engine)
         self.people_service = PeopleService(self.people_repository)
-        for person in [
-            {
-                'first_name': 'John',
-                'last_name': 'Doe',
-                'birthday': datetime.strptime('2000-01-01', '%Y-%m-%d').date(),
-                'pin': '123456',
-                'is_admin': True
-            },
-            {
-                'first_name': 'Jane',
-                'last_name': 'Doe',
-                'birthday': datetime.strptime('2002-01-01', '%Y-%m-%d').date(),
-                'pin': '654321',
-                'is_admin': False
-            },
-            {
-                'first_name': 'Mary',
-                'last_name': 'Doe',
-                'birthday': datetime.strptime('2004-01-01', '%Y-%m-%d').date(),
-                'pin': '9876',
-                'is_admin': False
-            }
-        ]:
-            self.people_service.add_person(**person)
-
-        self.session.commit()
+        setup_memory_records(self.people_repository)
 
     def tearDown(self):
         self.session.close()
