@@ -82,7 +82,7 @@ def edit_pin(person_id):
         if new_pin != confirm_pin:
             return jsonify({'error': 'New PINs do not match'}), 400
 
-        if not people_service.verify_pin(person_id, current_pin):
+        if not person.verify_pin(current_pin):
             return jsonify({'error': 'Current PIN is incorrect'}), 400
 
         person.set_pin(new_pin)
@@ -126,8 +126,7 @@ def verify_pin():
         chore = chore_service.get_chore_by_id(chore_id)
         next_person = \
             people_service.get_next_person_by_person_id(chore.person_id)
-        if people_service.verify_pin(next_person.id, pin) or \
-                people_service.is_admin(pin):
+        if next_person.verify_pin(pin) or people_service.is_admin(pin):
             return jsonify({'status': 'success'})
     elif context == 'add_person':
         if people_service.is_admin(pin) or not people_service.admins_exist():

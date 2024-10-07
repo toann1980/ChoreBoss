@@ -149,15 +149,3 @@ class PeopleService:
             new_sequence (int): The new sequence number.
         """
         self.people_repository.update_sequence(person_id, new_sequence)
-
-    def verify_pin(self, person_id: int, pin: str) -> bool:
-        """Verifies a person's PIN.
-
-        Args:
-            person_id (int): The ID of the person.
-            pin (str): The PIN to verify.
-
-        Returns:
-            bool: True if the PIN is correct, False otherwise.
-        """
-        return self.people_repository.verify_pin(person_id, pin)
