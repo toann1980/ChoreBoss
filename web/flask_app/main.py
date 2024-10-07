@@ -11,7 +11,16 @@ from web.flask_app.routes.chore_routes import chore_bp
 from web.flask_app.routes.index_routes import index_bp
 
 
-def create_app():
+def create_app() -> Flask:
+    """
+    Create and configure the Flask application.
+    This function sets up the Flask application with the necessary
+    configurations, including static and template folders, secret key, and
+    SQLAlchemy database URI. It also registers the blueprints for different
+    parts of the application.
+    Returns:
+        Flask: The configured Flask application instance.
+    """
     app = Flask(
         __name__,
         static_folder=os.path.join(os.path.dirname(__file__), '..', 'static'),
