@@ -85,7 +85,8 @@ def edit_pin(person_id):
         if not people_service.verify_pin(person_id, current_pin):
             return jsonify({'error': 'Current PIN is incorrect'}), 400
 
-        people_service.update_pin(person_id, new_pin)
+        person.set_pin(new_pin)
+        people_service.update_person(person)
         return redirect(url_for('people_bp.edit_person', person_id=person_id))
 
     return render_template('edit_pin.html', person=person)

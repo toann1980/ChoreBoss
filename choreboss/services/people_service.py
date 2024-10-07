@@ -141,15 +141,6 @@ class PeopleService:
         """
         return self.people_repository.update_person(person)
 
-    def update_pin(self, person_id: int, new_pin: str) -> None:
-        """Updates a person's PIN.
-
-        Args:
-            person_id (int): The ID of the person.
-            new_pin (str): The new PIN of the person.
-        """
-        self.people_repository.update_pin(person_id, new_pin)
-
     def update_sequence(self, person_id: int, new_sequence: int) -> None:
         """Updates a person's sequence number.
 

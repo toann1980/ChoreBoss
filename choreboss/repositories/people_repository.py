@@ -196,18 +196,6 @@ class PeopleRepository:
 
             return person
 
-    def update_pin(self, person_id: int, new_pin: str) -> None:
-        """Updates a person's PIN.
-
-        Args:
-            person_id (int): The ID of the person.
-            new_pin (str): The new PIN of the person.
-        """
-        person = self.get_person_by_id(person_id)
-        if person:
-            person.set_pin(new_pin)
-            self.update_person(person)
-
     def update_sequence(self, person_id: int, new_sequence: int) -> None:
         """Updates a person's sequence number.
 
