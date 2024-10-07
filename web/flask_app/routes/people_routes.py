@@ -21,10 +21,6 @@ people_service = PeopleService(people_repository)
 people_schema = PeopleSchema()
 
 
-def fetch_people_in_sequence_order():
-    return people_service.get_all_people_in_sequence_order()
-
-
 @people_bp.route('/add_person', methods=['GET', 'POST'])
 def add_person():
     if request.method == 'POST':
@@ -94,13 +90,13 @@ def edit_pin(person_id):
 
 @people_bp.route('/people', methods=['GET'])
 def get_people():
-    people = fetch_people_in_sequence_order()
+    people = people_service.get_all_people()
     return render_template('edit_people.html', people=people)
 
 
 @people_bp.route('/change_sequence', methods=['GET'])
 def change_sequence():
-    people = fetch_people_in_sequence_order()
+    people = people_service.get_all_people()
     return render_template('change_sequence.html', people=people)
 
 

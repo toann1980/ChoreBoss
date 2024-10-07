@@ -65,7 +65,7 @@ def edit_chore(chore_id):
         chore_service.update_chore(chore)
         return redirect(url_for('chore_bp.get_chore', chore_id=chore.id))
 
-    people = people_service.get_all_people_in_sequence_order()
+    people = people_service.get_all_people()
     return render_template('edit_chore.html', chore=chore, people=people)
 
 

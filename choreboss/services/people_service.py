@@ -60,7 +60,7 @@ class PeopleService:
         if person_to_delete:
             deleted_person_sequence = person_to_delete.sequence_num
             self.delete_person(person_id)
-            remaining_people = self.get_all_people_in_sequence_order()
+            remaining_people = self.get_all_people()
             for person in remaining_people:
                 if person.sequence_num > deleted_person_sequence:
                     person.sequence_num -= 1
@@ -73,14 +73,6 @@ class PeopleService:
             List[People]: A list of all people.
         """
         return self.people_repository.get_all_people()
-
-    def get_all_people_in_sequence_order(self) -> List[People]:
-        """Gets all people in sequence order.
-
-        Returns:
-            List[dict]: A list of all people in sequence order.
-        """
-        return self.people_repository.get_all_people_in_sequence_order()
 
     def get_next_person_by_person_id(
             self,

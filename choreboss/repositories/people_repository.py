@@ -79,19 +79,6 @@ class PeopleRepository:
             List[People]: A list of all people.
         """
         with self.Session() as session:
-            people = session.query(People).options(
-                joinedload(People.chore_person_id_back_populate),
-                joinedload(People.last_completed_id_back_populate)
-            ).all()
-            return people
-
-    def get_all_people_in_sequence_order(self) -> List[People]:
-        """Gets all people in sequence order.
-
-        Returns:
-            List[People]: A list of all people in sequence order.
-        """
-        with self.Session() as session:
             people = session.query(People).order_by(People.sequence_num).all()
             return people
 
@@ -108,6 +95,8 @@ class PeopleRepository:
             current_person = session.query(People).filter_by(
                 id=current_person_id
             ).first()
+            if not current_person:
+                return None
             next_person = session.query(People).filter(
                 People.sequence_num > current_person.sequence_num
             ).order_by(People.sequence_num).first()
