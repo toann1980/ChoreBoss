@@ -2,7 +2,6 @@ from flask import (
     Blueprint, jsonify, redirect, render_template, request, url_for, Response
 )
 from sqlalchemy import create_engine
-from typing import Union
 from choreboss.repositories.chore_repository import ChoreRepository
 from choreboss.repositories.people_repository import PeopleRepository
 from choreboss.services.chore_service import ChoreService
@@ -20,7 +19,7 @@ chore_schema = ChoreSchema()
 
 
 @chore_bp.route('/chores', methods=['GET', 'POST'])
-def add_chore() -> Union[Response, str]:
+def add_chore() -> Response:
     """Add a new chore.
 
     If the request method is POST, add the chore and redirect to the home page.
@@ -39,7 +38,7 @@ def add_chore() -> Union[Response, str]:
 
 
 @chore_bp.route('/chore/<int:chore_id>/complete', methods=['POST'])
-def complete_chore(chore_id: int) -> Union[Response, tuple]:
+def complete_chore(chore_id: int) -> Response:
     """Mark a chore as complete.
 
     Args:
@@ -57,7 +56,7 @@ def complete_chore(chore_id: int) -> Union[Response, tuple]:
 
 
 @chore_bp.route('/delete_chore/<int:chore_id>', methods=['POST'])
-def delete_chore(chore_id: int) -> Union[Response, tuple]:
+def delete_chore(chore_id: int) -> Response:
     """Delete a chore.
 
     Args:
@@ -75,7 +74,7 @@ def delete_chore(chore_id: int) -> Union[Response, tuple]:
 
 
 @chore_bp.route('/chores/<int:chore_id>/edit', methods=['GET', 'POST'])
-def edit_chore(chore_id: int) -> Union[Response, str, tuple]:
+def edit_chore(chore_id: int) -> Response:
     """Edit a chore.
 
     If the request method is POST, update the chore and redirect to the chore
@@ -116,7 +115,7 @@ def get_all_chores() -> Response:
 
 
 @chore_bp.route('/chores/<int:chore_id>', methods=['GET'])
-def get_chore(chore_id: int) -> Union[Response, str, tuple]:
+def get_chore(chore_id: int) -> Response:
     """Get a specific chore by ID.
 
     Args:
