@@ -9,3 +9,9 @@ class Config:
         'DATABASE_URL', 'sqlite:///choreboss.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.getenv('SECRET_KEY')
+
+
+class TestingConfig(Config):
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    TESTING = True
+    SECRET_KEY = 'testing_secret_key'
