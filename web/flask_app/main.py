@@ -2,9 +2,9 @@ from flask import Flask
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
-from choreboss.config import Config, TestingConfig
 from choreboss import setup_services
+from choreboss.config import Config, TestingConfig
+from choreboss.models import Base
 from web.flask_app.routes.people_routes import people_bp
 from web.flask_app.routes.chore_routes import chore_bp
 from web.flask_app.routes.index_routes import index_bp
@@ -34,6 +34,7 @@ def create_app(config_name: str = None) -> Flask:
         app.config.from_object(Config)
 
     engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+    Base.metadata.create_all(engine)
     app.people_service, app.chore_service = setup_services(engine)
 
     # Store the engine and sessionmaker in the app config for use in tests
