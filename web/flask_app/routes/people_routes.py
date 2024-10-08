@@ -1,24 +1,12 @@
 from datetime import datetime
 from flask import (
-    Blueprint, jsonify, redirect, request, render_template, Response, url_for
+    Blueprint, current_app, jsonify, redirect, request, render_template,
+    Response, url_for
 )
 import json
-from choreboss.repositories.chore_repository import ChoreRepository
-from choreboss.services.chore_service import ChoreService
-from choreboss.repositories.people_repository import PeopleRepository
-from choreboss.repositories.people_repository import PeopleRepository
-from choreboss.services.people_service import PeopleService
-from choreboss.schemas.people_schema import PeopleSchema
-from sqlalchemy import create_engine
-from choreboss.config import Config
+
 
 people_bp = Blueprint('people_bp', __name__)
-engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
-people_repository = PeopleRepository(engine)
-people_service = PeopleService(people_repository)
-people_schema = PeopleSchema()
-chore_repository = ChoreRepository(engine)
-chore_service = ChoreService(chore_repository, people_repository)
 
 
 @people_bp.route('/add_person', methods=['GET', 'POST'])
@@ -36,12 +24,12 @@ def add_person() -> Response:
         pin = request.form['pin']
         is_admin = 'is_admin' in request.form
         birthday = datetime.strptime(birthday_str, '%Y-%m-%d').date()
-        people_service.add_person(
+        current_app.people_service.add_person(
             first_name, last_name, birthday, pin, is_admin)
         return redirect(url_for('index_bp.home'))
 
     # Check if there are any admins
-    admins_exist = people_service.admins_exist()
+    admins_exist = current_app.people_service.admins_exist()
     return render_template('add_person.html', admins_exist=admins_exist)
 
 
@@ -53,7 +41,7 @@ def delete_person() -> Response:
         Response: A redirect to the list of people.
     """
     person_id = request.form['person_id']
-    people_service.delete_person_and_adjust_sequence(person_id)
+    current_app.people_service.delete_person_and_adjust_sequence(person_id)
     return redirect(url_for('people_bp.get_people'))
 
 
@@ -68,7 +56,7 @@ def edit_person(person_id: int) -> Response:
         Response: The rendered template for editing a person or a redirect to
             the person's edit page.
     """
-    person = people_service.get_person_by_id(person_id)
+    person = current_app.people_service.get_person_by_id(person_id)
     if not person:
         return jsonify({'error': 'Person not found'}), 404
 
@@ -78,8 +66,8 @@ def edit_person(person_id: int) -> Response:
         birthday_str = request.form['birthday']
         person.birthday = datetime.strptime(birthday_str, '%Y-%m-%d').date()
         person.is_admin = 'is_admin' in request.form
-        people_service.update_person(person)
-        person = people_service.get_person_by_id(person_id)
+        current_app.people_service.update_person(person)
+        person = current_app.people_service.get_person_by_id(person_id)
 
     return render_template('edit_person.html', person=person)
 
@@ -95,7 +83,7 @@ def edit_pin(person_id: int) -> Response:
         Response: The rendered template for editing a person's PIN or a redirect
             to the person's edit page.
     """
-    person = people_service.get_person_by_id(person_id)
+    person = current_app.people_service.get_person_by_id(person_id)
     if not person:
         return jsonify({'error': 'Person not found'}), 404
 
@@ -111,7 +99,7 @@ def edit_pin(person_id: int) -> Response:
             return jsonify({'error': 'Current PIN is incorrect'}), 400
 
         person.set_pin(new_pin)
-        people_service.update_person(person)
+        current_app.people_service.update_person(person)
         return redirect(url_for('people_bp.edit_person', person_id=person_id))
 
     return render_template('edit_pin.html', person=person)
@@ -124,7 +112,7 @@ def get_people() -> Response:
     Returns:
         Response: The rendered template with the list of people.
     """
-    people = people_service.get_all_people()
+    people = current_app.people_service.get_all_people()
     return render_template('edit_people.html', people=people)
 
 
@@ -135,7 +123,7 @@ def change_sequence() -> Response:
     Returns:
         Response: The rendered template for changing the sequence of people.
     """
-    people = people_service.get_all_people()
+    people = current_app.people_service.get_all_people()
     return render_template('change_sequence.html', people=people)
 
 
@@ -150,7 +138,8 @@ def update_sequence() -> Response:
     print(f'data: {data}')
     data = json.loads(data.get('sequence_data'))
     for item in data:
-        people_service.update_sequence(item['id'], item['sequence'])
+        current_app.people_service.update_sequence(
+            item['id'], item['sequence'])
     return jsonify({'status': 'success'})
 
 
@@ -168,22 +157,25 @@ def verify_pin() -> Response:
 
     if context == 'complete_chore':
         chore_id = data.get('chore_id')
-        chore = chore_service.get_chore_by_id(chore_id)
+        chore = current_app.chore_service.get_chore_by_id(chore_id)
         next_person = \
-            people_service.get_next_person_by_person_id(chore.person_id)
-        if next_person.verify_pin(pin) or people_service.is_admin(pin):
+            current_app.people_service.get_next_person_by_person_id(
+                chore.person_id)
+        if next_person.verify_pin(pin) or \
+                current_app.people_service.is_admin(pin):
             return jsonify({'status': 'success'})
     elif context == 'add_person':
-        if people_service.is_admin(pin) or not people_service.admins_exist():
+        if current_app.people_service.is_admin(pin) or \
+                not current_app.people_service.admins_exist():
             return jsonify({'status': 'success'})
     elif context == 'edit_person':
-        person = people_service.get_person_by_pin(pin)
+        person = current_app.people_service.get_person_by_pin(pin)
         if person and (person.is_admin or person.verify_pin(pin)):
             return jsonify({'status': 'success'})
     elif context in (
         'change_sequence', 'delete_chore', 'delete_person', 'edit_chore'
     ):
-        person = people_service.get_person_by_pin(pin)
+        person = current_app.people_service.get_person_by_pin(pin)
         if person and person.is_admin:
             return jsonify({'status': 'success'})
 
