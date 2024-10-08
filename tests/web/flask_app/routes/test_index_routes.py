@@ -1,15 +1,7 @@
-from datetime import datetime
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 import unittest
 from web.flask_app.main import create_app
+from flask import current_app
 from choreboss.models import Base
-from choreboss.models.chore import Chore
-from choreboss.models.people import People
-from choreboss.repositories.people_repository import PeopleRepository
-from choreboss.repositories.chore_repository import ChoreRepository
-from choreboss.services.people_service import PeopleService
-from choreboss.services.chore_service import ChoreService
 from ....setup_memory_records import setup_memory_records
 
 
@@ -22,21 +14,20 @@ class TestIndexRoutes(unittest.TestCase):
 
         self.engine = self.app.config['ENGINE']
         self.Session = self.app.config['SESSIONMAKER']
+        self.Session.expire_on_commit = False
         self.session = self.Session()
 
-        self.people_repository = PeopleRepository(self.engine)
-        self.chore_repository = ChoreRepository(self.engine)
-        self.people_service = PeopleService(self.people_repository)
-        self.chore_service = ChoreService(
-            self.chore_repository, self.people_repository)
-
-        setup_memory_records(self.people_repository, self.chore_repository)
+        setup_memory_records(self.app.people_service, self.app.chore_service)
 
         self.client = self.app.test_client()
 
     def tearDown(self):
         self.session.close()
         Base.metadata.drop_all(self.engine)
+
+    def test_app(self):
+        self.assertIsNotNone(self.app)
+        self.assertEqual(current_app, self.app)
 
     def test_home_route(self):
         """
@@ -52,17 +43,16 @@ class TestIndexRoutes(unittest.TestCase):
             - The type of the response object.
         """
         response = self.client.get('/')
-        print(f'response type: {type(response)}')
+        self.assertEqual(response.request.path, '/')
 
     def test_home_route_json_response_is_none(self):
         """
-        Test the home route to ensure it returns the correct content type and 
+        Test the home route to ensure it returns the correct content type and
         that the JSON response is None.
         """
         response = self.client.get('/')
         self.assertEqual(response.content_type, 'text/html; charset=utf-8')
-        json_data = response.get_json()
-        self.assertIsNone(json_data)
+        self.assertIsNone(response.get_json())
 
     def test_home_route_post_method(self):
         """
