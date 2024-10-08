@@ -32,11 +32,12 @@
       </section>
       <section id="people">
         <h2>People</h2>
+        {% if not people %}<p>Are you the Boss?</p>{% endif %}
         <button class="btn btn-primary"
                 onclick="location.href='{{ url_for("people_bp.add_person") }}'">Add Person</button>
         <button class="btn btn-primary"
-                onclick="location.href='{{ url_for("people_bp.get_people") }}'">Edit People</button>
-        {% if not people %}<p>Are you the Boss?</p>{% endif %}
+                onclick="location.href='{{ url_for("people_bp.get_people") }}'"
+                {% if not people %}disabled{% endif %}>Edit People</button>
       </section>
     </div>
   </main>
