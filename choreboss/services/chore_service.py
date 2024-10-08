@@ -1,7 +1,5 @@
 from choreboss.repositories.chore_repository import ChoreRepository
-from choreboss.models.people import People
 from choreboss.repositories.people_repository import PeopleRepository
-from choreboss.services.people_service import PeopleService
 
 
 class ChoreService:
