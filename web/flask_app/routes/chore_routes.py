@@ -1,21 +1,10 @@
 from flask import (
-    Blueprint, jsonify, redirect, render_template, request, url_for, Response
+    Blueprint, current_app, jsonify, redirect, render_template, request,
+    Response, url_for
 )
-from sqlalchemy import create_engine
-from choreboss.repositories.chore_repository import ChoreRepository
-from choreboss.repositories.people_repository import PeopleRepository
-from choreboss.services.chore_service import ChoreService
-from choreboss.services.people_service import PeopleService
-from choreboss.schemas.chore_schema import ChoreSchema
-from choreboss.config import Config
+
 
 chore_bp = Blueprint('chore_bp', __name__)
-engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
-people_repository = PeopleRepository(engine)
-people_service = PeopleService(people_repository)
-chore_repository = ChoreRepository(engine)
-chore_service = ChoreService(chore_repository, people_repository)
-chore_schema = ChoreSchema()
 
 
 @chore_bp.route('/chores', methods=['GET', 'POST'])
@@ -31,7 +20,7 @@ def add_chore() -> Response:
     if request.method == 'POST':
         name = request.form['name']
         description = request.form['description']
-        chore_service.add_chore(name, description)
+        current_app.chore_service.add_chore(name, description)
         return redirect(url_for('index_bp.home'))
 
     return render_template('add_chore.html')
@@ -47,11 +36,11 @@ def complete_chore(chore_id: int) -> Response:
     Returns:
         Union[Response, tuple]: A redirect response or a JSON error message.
     """
-    chore = chore_service.get_chore_by_id(chore_id)
+    chore = current_app.chore_service.get_chore_by_id(chore_id)
     if not chore:
         return jsonify({'error': 'Chore not found'}), 404
 
-    chore_service.complete_chore(chore)
+    current_app.chore_service.complete_chore(chore)
     return redirect(url_for('chore_bp.get_chore', chore_id=chore.id))
 
 
@@ -65,11 +54,11 @@ def delete_chore(chore_id: int) -> Response:
     Returns:
         Union[Response, tuple]: A redirect response or a JSON error message.
     """
-    chore = chore_service.get_chore_by_id(chore_id)
+    chore = current_app.chore_service.get_chore_by_id(chore_id)
     if not chore:
         return jsonify({'error': 'Chore not found'}), 404
 
-    chore_service.delete_chore(chore_id)
+    current_app.chore_service.delete_chore(chore_id)
     return redirect(url_for('index_bp.home'))
 
 
@@ -87,7 +76,7 @@ def edit_chore(chore_id: int) -> Response:
         Union[Response, str, tuple]: The rendered template, a redirect response,
             or a JSON error message.
     """
-    chore = chore_service.get_chore_by_id(chore_id)
+    chore = current_app.chore_service.get_chore_by_id(chore_id)
     if not chore:
         return jsonify({'error': 'Chore not found'}), 404
 
@@ -96,10 +85,10 @@ def edit_chore(chore_id: int) -> Response:
         chore.description = request.form['description']
         assigned_to = request.form['assigned_to']
         chore.person_id = int(assigned_to) if assigned_to else None
-        chore_service.update_chore(chore)
+        current_app.chore_service.update_chore(chore)
         return redirect(url_for('chore_bp.get_chore', chore_id=chore.id))
 
-    people = people_service.get_all_people()
+    people = current_app.people_service.get_all_people()
     return render_template('edit_chore.html', chore=chore, people=people)
 
 
@@ -110,7 +99,7 @@ def get_all_chores() -> Response:
     Returns:
         Response: The rendered template with the list of chores.
     """
-    chores = chore_service.get_all_chores()
+    chores = current_app.chore_service.get_all_chores()
     return render_template('chores_list.html', chores=chores)
 
 
@@ -125,7 +114,7 @@ def get_chore(chore_id: int) -> Response:
         Union[Response, str, tuple]: The rendered template with the chore
             details, or a JSON error message.
     """
-    chore = chore_service.get_chore_by_id(chore_id)
+    chore = current_app.chore_service.get_chore_by_id(chore_id)
     if chore:
         return render_template('chore_detail.html', chore=chore)
     else:
