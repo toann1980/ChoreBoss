@@ -58,21 +58,14 @@ class TestPeopleRoutes(unittest.TestCase):
         """
         Test the POST request to add a new person.
 
-        This test simulates a client sending a POST request to the '/add_person'
-        endpoint with the necessary data to add a new person. It verifies that
-        the response status code is 200 (OK) and that the request path is
-        redirected to the root path ('/').
-
-        Test data:
-        - first_name: 'John'
-        - last_name: 'Smith'
-        - birthday: '2000-01-01'
-        - pin: '123456'
-        - is_admin: False
+        This test verifies that a new person can be added successfully via the
+        '/add_person' endpoint and that the application redirects to the home
+        page.
 
         Assertions:
-        - The response status code should be 200.
-        - The request path should be '/'.
+            - The response status code is 200.
+            - The request path after redirection is '/'.
+            - The total number of people in the service is 4.
         """
         with self.app.test_client() as client:
             response = client.post(
@@ -92,13 +85,17 @@ class TestPeopleRoutes(unittest.TestCase):
 
     def test_delete_person(self):
         """
-        Test the deletion of a person from the system.
+        Test the deletion of a person from the people service.
 
-        This test simulates a POST request to the '/delete_person' endpoint with
-        a person_id of 1. It verifies that the response status code is 200, the
-        number of people in the system is reduced to 2, the deleted person's
-        name ('John Doe') is not present in the response data, and the request
-        is redirected to the '/people' path.
+        This test verifies that a person can be successfully deleted and that
+        the application redirects to the correct path with the expected status
+        code.
+
+        Assertions:
+        - The response status code is 200.
+        - The number of people in the service is 2 after deletion.
+        - The deleted person's name ('John Doe') is not in the response data.
+        - The request path after deletion is '/people'.
         """
         response = self.client.post(
             '/delete_person', data={'person_id': 1}, follow_redirects=True)
@@ -109,21 +106,14 @@ class TestPeopleRoutes(unittest.TestCase):
 
     def test_edit_person_get(self):
         """
-        Test the GET request to the '/people/1/edit' route.
-
-        This test ensures that the GET request to the '/people/1/edit' route
-        returns a status code of 200 and that the response data contains the
-        expected information about the person with ID 1. Specifically, it checks
-        for the presence of the first name 'John', the last name 'Doe', and
-        birth date '2000-01-01' in the response data. Additionally, it verifies
-        that the request path is '/people/1/edit'.
+        Test the GET request to edit a person's details.
 
         Assertions:
-            - The response status code is 200.
-            - The response data contains the byte string 'John'.
-            - The response data contains the byte string 'Doe'.
-            - The response data contains the byte string '2000-01-01'.
-            - The request path is '/people/1/edit'.
+        - The response status code should be 200.
+        - The response data should contain the first name 'John'.
+        - The response data should contain the last name 'Doe'.
+        - The response data should contain the birth date '2000-01-01'.
+        - The request path should be '/people/1/edit'.
         """
         response = self.client.get('/people/1/edit', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
@@ -134,16 +124,11 @@ class TestPeopleRoutes(unittest.TestCase):
 
     def test_edit_person_get_invalid_id(self):
         """
-        Test the GET request to the '/people/99/edit' route.
-
-        This test ensures that the GET request to the '/people/99/edit' route
-        returns a status code of 404 (Not Found) when attempting to edit a person
-        with an invalid ID (99). It also verifies that the response data contains
-        the expected error message 'Person not found'.
+        Test the GET request to edit a person with an invalid ID.
 
         Assertions:
-            - The response status code is 404.
-            - The response data contains the byte string 'Person not found'.
+        - The response status code should be 404.
+        - The response data should contain the message 'Person not found'.
         """
         response = self.client.get('/people/99/edit', follow_redirects=True)
         self.assertEqual(response.status_code, 404)
@@ -153,16 +138,16 @@ class TestPeopleRoutes(unittest.TestCase):
         """
         Test the POST request to edit a person's details.
 
-        This test simulates a POST request to the '/people/1/edit' endpoint with
-        updated person details and verifies that the response status code is
-        200. It then performs a GET request to the same endpoint to ensure that
-        the changes have been successfully applied and the updated details are
-        present in the response data.
+        This test sends a POST request to the '/people/1/edit' endpoint with
+        updated person details and verifies that the changes are correctly
+        applied and reflected in the response and the database.
 
         Assertions:
-            - The response status code of the POST request is 200.
-            - The updated person's name ('John Smith') is present in the
-              response data of the subsequent GET request.
+        - The response status code is 200.
+        - The response data contains the updated first name, last name, and
+          birthday.
+        - The person's first name, last name, birthday, and admin status are
+          correctly updated in the database.
         """
         response = self.client.post(
             '/people/1/edit',
@@ -192,9 +177,14 @@ class TestPeopleRoutes(unittest.TestCase):
         """
         Test the GET request to the '/people/1/edit_pin' route.
 
-        This test checks if the response status code is 200 (OK) and verifies
-        that the response data contains the expected content, specifically
-        the name 'John Doe'.
+        This test checks if the response status code is 200 and verifies that
+        the response data contains the expected text fields for editing a PIN.
+
+        Assertions:
+            - Response status code should be 200.
+            - Response data should contain 'Current PIN'.
+            - Response data should contain 'New PIN'.
+            - Response data should contain 'Confirm New PIN'.
         """
         response = self.client.get('/people/1/edit_pin')
         self.assertEqual(response.status_code, 200)
@@ -204,20 +194,14 @@ class TestPeopleRoutes(unittest.TestCase):
 
     def test_edit_pin_get_invalid_id(self):
         """
-        Test the GET request to the '/people/99/edit_pin' route.
-
-        This test ensures that the GET request to the '/people/99/edit_pin' route
-        returns a status code of 404 (Not Found) when attempting to edit the PIN
-        of a person with an invalid ID (99). It also verifies that the response
-        data contains the expected error message 'Person not found'.
+        Test the GET request to edit a person's pin with an invalid ID.
 
         Assertions:
-            - The response status code is 404.
-            - The response data contains the byte string 'Person not found'.
+            - The response status code should be 404.
+            - The response data should contain 'Person not found'.
         """
         response = self.client.get(
-            '/people/99/edit_pin',
-            follow_redirects=True
+            '/people/99/edit_pin', follow_redirects=True
         )
         self.assertEqual(response.status_code, 404)
         self.assertIn(b'Person not found', response.data)
@@ -225,15 +209,19 @@ class TestPeopleRoutes(unittest.TestCase):
     def test_edit_pin_post(self):
         """
         Test the POST request to edit a person's PIN.
+        This test verifies the following scenarios:
+        1. Correct current PIN and matching new PINs.
+        2. Incorrect current PIN.
+        3. Mismatched new PINs.
 
-        This test simulates a POST request to the '/people/1/edit_pin' endpoint
-        with the current PIN, new PIN, and  of the new PIN. It verifies that:
-        - The response status code is 200 (OK).
-        - The response data matches the expected response data from the 
-          '/people/1/edit' endpoint.
-        - The person's PIN is successfully updated in the system.
-        - The old PIN is no longer valid.
-        - The new PIN is correctly set and valid.
+        Assertions:
+        - Response status code is 200 for correct PIN and matching new PINs.
+        - Response data matches the expected response for correct PIN.
+        - The person's PIN is updated correctly.
+        - Response status code is 400 for incorrect current PIN.
+        - Response contains error message for incorrect current PIN.
+        - Response status code is 400 for mismatched new PINs.
+        - Response contains error message for mismatched new PINs.
         """
         # Verify correct PIN
         response = self.client.post(
@@ -280,11 +268,16 @@ class TestPeopleRoutes(unittest.TestCase):
 
     def test_get_people(self):
         """
-        Test the GET /people route.
+        Test the GET /people endpoint.
 
-        This test verifies that the /people endpoint returns a 200 status code
-        and that the response data contains the expected people names: 
-        'John Doe', 'Jane Doe', and 'Mary Doe'.
+        This test checks if the endpoint returns a 200 status code and 
+        includes specific people in the response data.
+
+        Assertions:
+            - The response status code is 200.
+            - The response data contains 'John Doe'.
+            - The response data contains 'Jane Doe'.
+            - The response data contains 'Mary Doe'.
         """
         response = self.client.get('/people')
         self.assertEqual(response.status_code, 200)
@@ -294,12 +287,15 @@ class TestPeopleRoutes(unittest.TestCase):
 
     def test_change_sequence(self):
         """
-        Test the 'change_sequence' route.
+        Test the change_sequence route.
 
-        This test sends a GET request to the '/change_sequence' endpoint and 
-        verifies that the response status code is 200. It also checks that 
-        the response data contains the expected strings 'John Doe' and 
-        'Change Sequence'.
+        This test ensures that the /change_sequence endpoint is accessible and 
+        returns the expected content.
+
+        Assertions:
+            - The response status code should be 200.
+            - The response data should contain 'John Doe'.
+            - The response data should contain 'Change Sequence'.
         """
         response = self.client.get('/change_sequence')
         self.assertEqual(response.status_code, 200)
@@ -308,28 +304,18 @@ class TestPeopleRoutes(unittest.TestCase):
 
     def test_update_sequence_post(self):
         """
-        Test the POST request to update the sequence of people.
+        Test the POST request to update the sequence numbers of people.
 
-        This test verifies that the sequence numbers of two people can be
-        swapped successfully via a POST request to the '/update_sequence'
-        endpoint.
+        This test verifies that the sequence numbers of two people are correctly
+        updated when a POST request is made to the '/update_sequence' endpoint
+        with the appropriate data.
 
-        Steps:
-        1. Retrieve two people by their IDs and verify their initial sequence
-           numbers.
-        2. Send a POST request to the '/update_sequence' endpoint with the new
-           sequence data.
-        3. Verify that the response status code is 200 and contains the word
-           'success'.
-        4. Retrieve the two people again and verify that their sequence numbers
-           have been updated.
-
-        Asserts:
+        Assertions:
         - Initial sequence numbers of person_one and person_two are 1 and 2,
           respectively.
-        - Response status code is 200.
-        - Response data contains the word 'success'.
-        - Updated sequence numbers of person_one and person_two are 2 and 1,
+        - The response status code is 200.
+        - The response data contains the word 'success'.
+        - The updated sequence numbers of person_one and person_two are 2 and 1,
           respectively.
         """
         person_one = self.app.people_service.get_person_by_id(1)
@@ -355,16 +341,14 @@ class TestPeopleRoutes(unittest.TestCase):
     def test_verify_pin(self):
         """
         Test the /verify_pin endpoint for various contexts and PINs.
-        This test verifies the following scenarios:
-        - Completing a chore with admin and non-admin contexts.
-        - Adding a person with admin and non-admin contexts.
-        - Editing a person with admin, user, and non-admin contexts.
-        - Changing sequence with admin and non-admin contexts.
-        - Deleting a chore with admin and non-admin contexts.
-        - Editing a chore with admin and non-admin contexts.
-        The expected outcomes are:
-        - Successful verification with the correct admin PIN.
-        - Failure verification with incorrect or non-admin PINs.
+        This test verifies the behavior of the /verify_pin endpoint under
+        different contexts and PINs, ensuring that the correct status and
+        response data are returned.
+
+        Assertions:
+            - Status code is 200 for all requests.
+            - Response data contains 'success' or 'failure' based on the context
+              and PIN provided.
         """
         # complete_chore is admin context
         chore_one = self.app.chore_service.get_chore_by_id(1)
