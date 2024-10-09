@@ -135,7 +135,6 @@ def update_sequence() -> Response:
         Response: A JSON response indicating the status of the update.
     """
     data = request.get_json()
-    print(f'data: {data}')
     data = json.loads(data.get('sequence_data'))
     for item in data:
         current_app.people_service.update_sequence(
