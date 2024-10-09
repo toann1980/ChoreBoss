@@ -7,7 +7,6 @@ from ....setup_memory_records import setup_memory_records
 
 class TestIndexRoutes(unittest.TestCase):
     def setUp(self) -> None:
-
         self.app = create_app('testing')
         self.app_context = self.app.app_context()
         self.app_context.push()
