@@ -151,7 +151,6 @@ def verify_pin() -> Response:
         Response: A JSON response indicating the status of the verification.
     """
     data = request.get_json()
-    print(f'data: {data}')
     context = data.get('context')
     pin = data.get('pin')
 
