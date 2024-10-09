@@ -132,6 +132,23 @@ class TestPeopleRoutes(unittest.TestCase):
         self.assertIn(b'2000-01-01', response.data)
         self.assertEqual(response.request.path, '/people/1/edit')
 
+    def test_edit_person_get_invalid_id(self):
+        """
+        Test the GET request to the '/people/99/edit' route.
+
+        This test ensures that the GET request to the '/people/99/edit' route
+        returns a status code of 404 (Not Found) when attempting to edit a person
+        with an invalid ID (99). It also verifies that the response data contains
+        the expected error message 'Person not found'.
+
+        Assertions:
+            - The response status code is 404.
+            - The response data contains the byte string 'Person not found'.
+        """
+        response = self.client.get('/people/99/edit', follow_redirects=True)
+        self.assertEqual(response.status_code, 404)
+        self.assertIn(b'Person not found', response.data)
+
     def test_edit_person_post(self):
         """
         Test the POST request to edit a person's details.
@@ -185,6 +202,26 @@ class TestPeopleRoutes(unittest.TestCase):
         self.assertIn(b'New PIN', response.data)
         self.assertIn(b'Confirm New PIN', response.data)
 
+    def test_edit_pin_get_invalid_id(self):
+        """
+        Test the GET request to the '/people/99/edit_pin' route.
+
+        This test ensures that the GET request to the '/people/99/edit_pin' route
+        returns a status code of 404 (Not Found) when attempting to edit the PIN
+        of a person with an invalid ID (99). It also verifies that the response
+        data contains the expected error message 'Person not found'.
+
+        Assertions:
+            - The response status code is 404.
+            - The response data contains the byte string 'Person not found'.
+        """
+        response = self.client.get(
+            '/people/99/edit_pin',
+            follow_redirects=True
+        )
+        self.assertEqual(response.status_code, 404)
+        self.assertIn(b'Person not found', response.data)
+
     def test_edit_pin_post(self):
         """
         Test the POST request to edit a person's PIN.
@@ -198,6 +235,7 @@ class TestPeopleRoutes(unittest.TestCase):
         - The old PIN is no longer valid.
         - The new PIN is correctly set and valid.
         """
+        # Verify correct PIN
         response = self.client.post(
             '/people/1/edit_pin',
             data={
@@ -213,6 +251,32 @@ class TestPeopleRoutes(unittest.TestCase):
         edited_person = self.app.people_service.get_person_by_id(1)
         self.assertEqual(edited_person.verify_pin('123456'), False)
         self.assertEqual(edited_person.verify_pin('654321'), True)
+
+        # Verify incorrect PIN
+        response = self.client.post(
+            '/people/1/edit_pin',
+            data={
+                'current_pin': '000000',
+                'new_pin': '654321',
+                'confirm_pin': '654321'
+            },
+            follow_redirects=True
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertIn(b'Current PIN is incorrect', response.data)
+
+        # Verify mismatched new PIN
+        response = self.client.post(
+            '/people/1/edit_pin',
+            data={
+                'current_pin': '123456',
+                'new_pin': '654321',
+                'confirm_pin': '123456'
+            },
+            follow_redirects=True
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertIn(b'New PINs do not match', response.data)
 
     def test_get_people(self):
         """
@@ -461,7 +525,3 @@ class TestPeopleRoutes(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, b'{"status":"failure"}\n')
-
-
-if __name__ == '__main__':
-    unittest.main()
