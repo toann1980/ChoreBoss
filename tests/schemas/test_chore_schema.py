@@ -5,7 +5,6 @@ from choreboss.schemas.chore_schema import ChoreSchema
 
 
 class TestChoreSchema(unittest.TestCase):
-
     def setUp(self):
         self.schema = ChoreSchema()
 
@@ -28,45 +27,62 @@ class TestChoreSchema(unittest.TestCase):
             valid_data['last_completed_id']
         )
 
-    def test_invalid_data(self):
-        with self.assertRaises(ValidationError):
-            self.schema.load({
-                'id': 1,
-            })
-
-        with self.assertRaises(ValidationError):
-            self.schema.load({
-                'name': '',
-            })
-
-        with self.assertRaises(ValidationError):
-            self.schema.load({
-                'description': 'Clean all the dishes after dinner',
-            })
-
-        with self.assertRaises(ValidationError):
-            self.schema.load({
-                'id': 1,
-                'name': 'Wash the dishes',
-                'description': 'Clean all the dishes after dinner',
-            })
-
-        with self.assertRaises(ValidationError):
-            self.schema.load({
-                'id': 1,
-                'description': 'Clean all the dishes after dinner',
-                'person_id': '2',
-            })
-
+    def test_invalid_data_id(self):
         with self.assertRaises(ValidationError):
             self.schema.load({
                 'id': 1,
                 'name': 'Wash the dishes',
                 'description': 'Clean all the dishes after dinner',
                 'person_id': 2,
-                'last_completed_date': 'invalid-date',
+                'last_completed_date': datetime.now().date(),
+                'last_completed_id': 3
             })
 
+    def test_invalid_data_name(self):
+        with self.assertRaises(ValidationError):
+            self.schema.load({
+                'id': 1,
+                'name': '',
+                'description': 'Clean all the dishes after dinner',
+                'person_id': 2,
+                'last_completed_date': datetime.now().date(),
+                'last_completed_id': 3
+            })
+
+    def test_invalid_data_description(self):
+        with self.assertRaises(ValidationError):
+            self.schema.load({
+                'id': 1,
+                'name': 'Wash the dishes',
+                'description': '',
+                'person_id': 2,
+                'last_completed_date': datetime.now().date(),
+                'last_completed_id': 3
+            })
+
+    def test_invalid_data_person_id(self):
+        with self.assertRaises(ValidationError):
+            self.schema.load({
+                'id': 1,
+                'name': 'Wash the dishes',
+                'description': 'Clean all the dishes after dinner',
+                'person_id': '2',
+                'last_completed_date': datetime.now().date(),
+                'last_completed_id': 3
+            })
+
+    def test_invalid_data_last_completed_date(self):
+        with self.assertRaises(ValidationError):
+            self.schema.load({
+                'id': 1,
+                'name': 'Wash the dishes',
+                'description': 'Clean all the dishes after dinner',
+                'person_id': 2,
+                'last_completed_date': '2000-01-01',
+                'last_completed_id': 3
+            })
+
+    def test_invalid_data_last_completed_id(self):
         with self.assertRaises(ValidationError):
             self.schema.load({
                 'id': 1,
