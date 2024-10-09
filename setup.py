@@ -9,9 +9,8 @@ setup(
         'Flask',
         'SQLAlchemy',
         'marshmallow',
-        'user-agents',
-        'ua-parser',
-        'PyYAML'
+        'bcrypt',
+        'python-dotenv'
     ],
     entry_points={
         'console_scripts': [
