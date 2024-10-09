@@ -186,6 +186,18 @@ class TestPeopleRoutes(unittest.TestCase):
         self.assertIn(b'Confirm New PIN', response.data)
 
     def test_edit_pin_post(self):
+        """
+        Test the POST request to edit a person's PIN.
+
+        This test simulates a POST request to the '/people/1/edit_pin' endpoint
+        with the current PIN, new PIN, and  of the new PIN. It verifies that:
+        - The response status code is 200 (OK).
+        - The response data matches the expected response data from the 
+          '/people/1/edit' endpoint.
+        - The person's PIN is successfully updated in the system.
+        - The old PIN is no longer valid.
+        - The new PIN is correctly set and valid.
+        """
         response = self.client.post(
             '/people/1/edit_pin',
             data={
@@ -217,12 +229,45 @@ class TestPeopleRoutes(unittest.TestCase):
         self.assertIn(b'Mary Doe', response.data)
 
     def test_change_sequence(self):
+        """
+        Test the 'change_sequence' route.
+
+        This test sends a GET request to the '/change_sequence' endpoint and 
+        verifies that the response status code is 200. It also checks that 
+        the response data contains the expected strings 'John Doe' and 
+        'Change Sequence'.
+        """
         response = self.client.get('/change_sequence')
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'John Doe', response.data)
         self.assertIn(b'Change Sequence', response.data)
 
     def test_update_sequence_post(self):
+        """
+        Test the POST request to update the sequence of people.
+
+        This test verifies that the sequence numbers of two people can be
+        swapped successfully via a POST request to the '/update_sequence'
+        endpoint.
+
+        Steps:
+        1. Retrieve two people by their IDs and verify their initial sequence
+           numbers.
+        2. Send a POST request to the '/update_sequence' endpoint with the new
+           sequence data.
+        3. Verify that the response status code is 200 and contains the word
+           'success'.
+        4. Retrieve the two people again and verify that their sequence numbers
+           have been updated.
+
+        Asserts:
+        - Initial sequence numbers of person_one and person_two are 1 and 2,
+          respectively.
+        - Response status code is 200.
+        - Response data contains the word 'success'.
+        - Updated sequence numbers of person_one and person_two are 2 and 1,
+          respectively.
+        """
         person_one = self.app.people_service.get_person_by_id(1)
         person_two = self.app.people_service.get_person_by_id(2)
         self.assertEqual(person_one.sequence_num, 1)
@@ -244,6 +289,19 @@ class TestPeopleRoutes(unittest.TestCase):
         self.assertEqual(person_two.sequence_num, 1)
 
     def test_verify_pin(self):
+        """
+        Test the /verify_pin endpoint for various contexts and PINs.
+        This test verifies the following scenarios:
+        - Completing a chore with admin and non-admin contexts.
+        - Adding a person with admin and non-admin contexts.
+        - Editing a person with admin, user, and non-admin contexts.
+        - Changing sequence with admin and non-admin contexts.
+        - Deleting a chore with admin and non-admin contexts.
+        - Editing a chore with admin and non-admin contexts.
+        The expected outcomes are:
+        - Successful verification with the correct admin PIN.
+        - Failure verification with incorrect or non-admin PINs.
+        """
         # complete_chore is admin context
         chore_one = self.app.chore_service.get_chore_by_id(1)
         chore_one.person_id = 2
