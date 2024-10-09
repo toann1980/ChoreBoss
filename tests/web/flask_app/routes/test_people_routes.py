@@ -3,12 +3,6 @@ import json
 import unittest
 from web.flask_app.main import create_app
 from choreboss.models import Base
-from choreboss.models.chore import Chore
-from choreboss.models.people import People
-from choreboss.repositories.people_repository import PeopleRepository
-from choreboss.repositories.chore_repository import ChoreRepository
-from choreboss.services.people_service import PeopleService
-from choreboss.services.chore_service import ChoreService
 from ....setup_memory_records import setup_memory_records
 
 
@@ -132,9 +126,6 @@ class TestPeopleRoutes(unittest.TestCase):
             - The request path is '/people/1/edit'.
         """
         response = self.client.get('/people/1/edit', follow_redirects=True)
-        # print(f'response.data: {response.data.decode()}')
-        # print(f'response.request.path: {response.request.path}')
-        # print(f'response.status_code: {response.status_code}')
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'John', response.data)
         self.assertIn(b'Doe', response.data)
