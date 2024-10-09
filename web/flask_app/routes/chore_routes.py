@@ -83,24 +83,13 @@ def edit_chore(chore_id: int) -> Response:
     if request.method == 'POST':
         chore.name = request.form['name']
         chore.description = request.form['description']
-        assigned_to = request.form['assigned_to']
+        assigned_to = request.form.get('assigned_to')
         chore.person_id = int(assigned_to) if assigned_to else None
         current_app.chore_service.update_chore(chore)
         return redirect(url_for('chore_bp.get_chore', chore_id=chore.id))
 
     people = current_app.people_service.get_all_people()
     return render_template('edit_chore.html', chore=chore, people=people)
-
-
-@chore_bp.route('/chores', methods=['GET'])
-def get_all_chores() -> Response:
-    """Get all chores.
-
-    Returns:
-        Response: The rendered template with the list of chores.
-    """
-    chores = current_app.chore_service.get_all_chores()
-    return render_template('chores_list.html', chores=chores)
 
 
 @chore_bp.route('/chores/<int:chore_id>', methods=['GET'])
