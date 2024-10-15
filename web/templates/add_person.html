@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}
+  Add New Person
+{% endblock title %}
+{% block content %}
+  <div class="container-lg">
+    <div class="row mt-3">
+      <div class="col-12">
+        <button class="btn btn-secondary" onclick="window.history.back()">Back</button>
+      </div>
+    </div>
+    <h1 class="mt-5">Add New Person</h1>
+    <form id="addPersonForm"
+          method="post"
+          action="{{ url_for('people_bp.add_person') }}">
+      <div class="form-group">
+        <label for="first_name">First Name</label>
+        <input type="text"
+               class="form-control"
+               id="first_name"
+               name="first_name"
+               required />
+      </div>
+      <div class="form-group">
+        <label for="last_name">Last Name</label>
+        <input type="text"
+               class="form-control"
+               id="last_name"
+               name="last_name"
+               required />
+      </div>
+      <div class="form-group">
+        <label for="birthday">Birthday</label>
+        <input type="date"
+               class="form-control"
+               id="birthday"
+               name="birthday"
+               required />
+      </div>
+      {% if not admins_exist %}
+        <div class="form-group form-check">
+          <input type="checkbox"
+                 class="form-check-input"
+                 id="is_admin"
+                 name="is_admin" />
+          <label class="form-check-label" for="is_admin">Admin</label>
+        </div>
+      {% endif %}
+      <div class="form-group">
+        <div class="row">
+          <button type="button"
+                  class="btn btn-primary m-3 w-100"
+                  onclick="showPinModal('add_person')">Add Person</button>
+        </div>
+        <input type="hidden" id="pinContext" name="pinContext" value="add_person" />
+        <input type="hidden" id="pin" name="pin" required />
+      </div>
+    </form>
+  </div>
+  {% include "pin_modal.html" %}
+{% endblock content %}

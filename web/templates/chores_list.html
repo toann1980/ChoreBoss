@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}
+  Chores List
+{% endblock title %}
+{% block content %}
+  <div class="container">
+    <h1 class="mt-5">Chores List</h1>
+    <ul class="list-group">
+      {% for chore in chores %}
+        <li class="list-group-item">
+          <a href="{{ url_for('chore_bp.get_chore', chore_id=chore.id) }}">{{ chore.name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock content %}

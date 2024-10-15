@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}
+  Chore Details
+{% endblock title %}
+{% block content %}
+  <div class="container">
+    <h1 class="mt-5">{{ chore.name }}</h1>
+    <p>
+      <strong>Description:</strong> {{ chore.description }}
+    </p>
+    <p>
+      <strong>Assigned to:</strong>
+      {% if chore.person_id_foreign_key %}
+        {{
+        chore.person_id_foreign_key.first_name }} {{
+        chore.person_id_foreign_key.last_name }}
+      {% else %}
+        Unassigned
+      {% endif %}
+    </p>
+    <p>
+      <strong>Last completed by:</strong>
+      {% if chore.last_completed_id_foreign_key %}
+        {{ chore.last_completed_id_foreign_key.first_name }}
+        {{ chore.last_completed_id_foreign_key.last_name }} on
+        {{ chore.last_completed_date.strftime("%Y-%m-%d") }}
+      {% else %}
+        Never completed
+      {% endif %}
+    </p>
+    <button class="btn btn-secondary" onclick="window.history.back()">Back</button>
+    <a class="btn btn-primary"
+       href="{{ url_for('chore_bp.edit_chore', chore_id=chore.id) }}">Edit</a>
+    <button class="btn btn-success"
+            data-toggle="modal"
+            data-target="#completeModal"
+            {% if not chore.person_id_foreign_key %}disabled{% endif %}>Complete</button>
+  </div>
+  <!-- Complete Modal -->
+  <div class="modal fade"
+       id="completeModal"
+       tabindex="-1"
+       role="dialog"
+       aria-labelledby="completeModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="completeModalLabel">Complete Chore</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">Are you sure you want to mark this chore as complete?</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <form method="post"
+                id="completeChoreForm"
+                action="{{ url_for('chore_bp.complete_chore', chore_id=chore.id) }}">
+            <button type="button"
+                    class="btn btn-success"
+                    onclick="showPinModal('complete_chore')">Confirm</button>
+            <input type="hidden" id="chore_id" name="chore_id" value="{{ chore.id }}" />
+            <input type="hidden" id="pin" name="pin" required />
+            <input type="hidden"
+                   id="pinContext"
+                   name="pinContext"
+                   value="complete_chore" />
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% include "pin_modal.html" %}
+{% endblock content %}

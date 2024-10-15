@@ -1,0 +1,184 @@
+<div class="modal fade"
+     id="numpadModal"
+     tabindex="-1"
+     role="dialog"
+     aria-labelledby="numpadModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog custom-modal-width" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="numpadModalLabel">Enter PIN</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <input type="password"
+                 class="form-control text-center"
+                 id="pinDisplay"
+                 readonly />
+        </div>
+        <div class="numpad">
+          {% set buttons = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "C", "0", "←"] %}
+          {% for i in range(0, 12, 3) %}
+            <div class="row no-gutters">
+              {% for j in range(3) %}
+                <div class="col-4 p-1">
+                  <button class="btn btn-secondary w-100"
+                          onclick="addToPin('{{ buttons[i + j] }}')">{{ buttons[i + j] }}</button>
+                </div>
+              {% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="confirmPin()">Okay</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  let isConfirmingPin = false;
+  let initialPin = "";
+
+  function clearPin() {
+    document.getElementById("pin").value = "";
+    document.getElementById("pinDisplay").value = "";
+  }
+
+  function deleteLastPin() {
+    const pinInput = document.getElementById("pin");
+    const pinDisplay = document.getElementById("pinDisplay");
+    pinInput.value = pinInput.value.slice(0, -1);
+    pinDisplay.value = pinInput.value;
+  }
+
+  function addToPin(value) {
+    const pinInput = document.getElementById("pin");
+    const pinDisplay = document.getElementById("pinDisplay");
+
+    if (value === "C") {
+      clearPin();
+    } else if (value === "←") {
+      deleteLastPin();
+    } else if (pinInput.value.length < 6) {
+      pinInput.value += value;
+      pinDisplay.value = pinInput.value;
+    }
+  }
+
+  function handleKeyPress(event) {
+    const key = event.key;
+    if (key >= "0" && key <= "9") {
+      addToPin(key);
+    } else if (key === "Backspace") {
+      deleteLastPin();
+    } else if (key === "Enter") {
+      confirmPin();
+    } else if (key === "Escape") {
+      clearPin();
+    }
+  }
+
+  function showPinModal(context) {
+    clearPin();
+    document.getElementById("pinContext").value = context;
+    $("#numpadModal").modal("show");
+    document.addEventListener("keydown", handleKeyPress);
+  }
+
+  function hidePinModal() {
+    $("#numpadModal").modal("hide");
+    document.removeEventListener("keydown", handleKeyPress);
+  }
+
+  function confirmPin() {
+    const context = document.getElementById("pinContext").value;
+    const pinInput = document.getElementById("pin").value;
+
+    if (context === "add_person") {
+      if (!isConfirmingPin) {
+        initialPin = pinInput;
+        isConfirmingPin = true;
+        clearPin();
+        alert("Please re-enter your PIN to confirm.");
+      } else {
+        if (pinInput === initialPin) {
+          hidePinModal();
+          document.getElementById("addPersonForm").submit();
+        } else {
+          alert("PINs do not match. Please try again.");
+          clearPin();
+          isConfirmingPin = false;
+        }
+      }
+    } else {    
+      const choreIdElement = document.getElementById("chore_id");
+      const choreId = choreIdElement ? choreIdElement.value : null;
+      const personIdElement = document.getElementById("person_id");
+      const personId = personIdElement ? personIdElement.value : null;
+      fetch('/verify_pin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          pin: pinInput, context: context, chore_id: choreId, person_id: personId
+        }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log(`context: ${context}, status: ${data.status}`);
+          if (data.status === 'success') {
+            switch (context) {
+              case "change_sequence":
+                fetch('/update_sequence', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({sequence_data: document.getElementById('sequenceData').value}),
+                })
+                  .then(response => response.json())
+                  .then(result => {
+                    if (result.status === 'success') {
+                      alert('Sequence updated successfully!');
+                    } else {
+                      alert('Failed to update sequence.');
+                    }
+                  })
+                  .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                  });
+                break;
+              case "complete_chore":
+                document.getElementById("completeChoreForm").submit();
+                break;              
+              case "delete_person":
+                document.getElementById("deletePersonForm").submit();
+                break;
+              case "delete_chore":
+                document.getElementById("deleteChoreForm").submit();
+                break;
+              case "edit_person":
+                document.getElementById("editPersonForm").submit();
+                break;
+              case "edit_chore":
+                document.getElementById("editChoreForm").submit();
+                break;
+              default:
+                console.error("Unknown context: ", context);
+            }
+            hidePinModal();
+          } else {
+            alert('Invalid PIN. Please try again.');
+            clearPin();
+          }
+        });
+    }
+  }
+
+</script>
