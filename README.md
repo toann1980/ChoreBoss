@@ -1,8 +1,8 @@
 # ChoreBoss
 
-<div style="text-align: center;">
+<p align="center">
   <img src="web/static/images/chore-boss_v1.svg" alt="ChoreBoss Logo" height="512" style="width:auto;">
-</div>
+</p>
 ChoreBoss is a Flask Web App designed to help you track and manage chores between household members.
 
 ## Table of Contents
