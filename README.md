@@ -8,7 +8,7 @@ ChoreBoss is a Flask Web App designed to help you track and manage chores betwee
 ## Table of Contents
 
 - [Installation](#installation)
-- [Usage Details](#details)
+- [Usage Details](#Usage Details)
 - [License](#license)
 
 ## Installation
