@@ -141,3 +141,16 @@ class PeopleService:
             new_sequence (int): The new sequence number.
         """
         self.people_repository.update_sequence(person_id, new_sequence)
+
+    def validate_pin(self, pin: str) -> bool:
+        """
+        Validates a given PIN.
+        A valid PIN must be a string consisting of digits only and have a length
+        between 4 and 6 characters inclusive.
+        Args:
+            pin (str): The PIN to validate.
+        Returns:
+            bool: True if the PIN is valid, False otherwise.
+        """
+
+        return 4 <= len(pin) <= 6 and pin.isdigit()
