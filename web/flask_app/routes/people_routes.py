@@ -24,6 +24,11 @@ def add_person() -> Response:
         pin = request.form['pin']
         is_admin = 'is_admin' in request.form
         birthday = datetime.strptime(birthday_str, '%Y-%m-%d').date()
+
+        if not current_app.people_service.validate_pin(pin):
+            return jsonify({'error': 'Invalid PIN. PIN must be between 4 and 6 '
+                            'numeric characters.'}), 400
+
         current_app.people_service.add_person(
             first_name, last_name, birthday, pin, is_admin)
         return redirect(url_for('index_bp.home'))

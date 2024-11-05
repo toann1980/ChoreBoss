@@ -83,6 +83,49 @@ class TestPeopleRoutes(unittest.TestCase):
         self.assertEqual(response.request.path, '/')
         self.assertEqual(len(self.app.people_service.get_all_people()), 4)
 
+    def test_add_person_invalid_pin(self):
+        """
+        Test adding a person with an invalid PIN.
+
+        This test verifies that a person cannot be added with an invalid PIN
+        and that the application returns an error message.
+
+        Assertions:
+            - The response status code is 400.
+            - The response data contains the error message 'Invalid PIN'.
+            - The total number of people in the service is 3.
+        """
+        # Too short PIN
+        response = self.client.post(
+            '/add_person',
+            data={
+                'first_name': 'John',
+                'last_name': 'Smith',
+                'birthday': '2000-01-01',
+                'pin': '123',
+                'is_admin': False
+            },
+            follow_redirects=True
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertIn(b'Invalid PIN', response.data)
+        self.assertEqual(len(self.app.people_service.get_all_people()), 3)
+        # Too long PIN
+        response = self.client.post(
+            '/add_person',
+            data={
+                'first_name': 'John',
+                'last_name': 'Smith',
+                'birthday': '2000-01-01',
+                'pin': '1234567',
+                'is_admin': False
+            },
+            follow_redirects=True
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertIn(b'Invalid PIN', response.data)
+        self.assertEqual(len(self.app.people_service.get_all_people()), 3)
+
     def test_delete_person(self):
         """
         Test the deletion of a person from the people service.
