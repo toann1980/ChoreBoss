@@ -99,5 +99,6 @@ class ChoreRepository:
             if existing_chore:
                 existing_chore.name = chore.name
                 existing_chore.description = chore.description
-                existing_chore.person_id = chore.person_id
+                if chore.person_id is not None:
+                    existing_chore.person_id = chore.person_id
                 session.commit()
