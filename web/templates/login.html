@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}ChoreBoss - Login{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h2 class="mb-0">🏠 ChoreBoss</h2>
+        </div>
+        <div class="card-body">
+          <p class="text-muted mb-4">Enter your ID and PIN to login</p>
+          
+          <div id="error-alert" class="alert alert-danger d-none" role="alert">
+            <span id="error-text"></span>
+          </div>
+
+          <form id="login-form">
+            <div class="form-group">
+              <label for="person_id">Person ID</label>
+              <input 
+                type="number" 
+                class="form-control" 
+                id="person_id" 
+                name="person_id"
+                placeholder="e.g., 1, 2, 3"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="pin">PIN</label>
+              <input 
+                type="password" 
+                class="form-control" 
+                id="pin" 
+                name="pin"
+                placeholder="Your PIN"
+                required
+              />
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">
+              Login
+            </button>
+          </form>
+
+          <hr>
+          <p class="text-muted small">
+            <strong>Demo:</strong> Try Person ID 1, PIN 1234
+          </p>
+        </div>
+      </div>
+
+      <div class="alert alert-info mt-4">
+        <strong>⚙️ Testing FastAPI Backend</strong>
+        <p class="mb-0">This Flask interface connects to the FastAPI backend via HTTP.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const person_id = document.getElementById('person_id').value;
+  const pin = document.getElementById('pin').value;
+  const errorAlert = document.getElementById('error-alert');
+  const errorText = document.getElementById('error-text');
+
+  try {
+    const response = await fetch('/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ person_id, pin })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      // Success - redirect to dashboard
+      window.location.href = '/';
+    } else {
+      // Show error
+      errorText.textContent = data.error || 'Login failed';
+      errorAlert.classList.remove('d-none');
+    }
+  } catch (error) {
+    errorText.textContent = 'Error: ' + error.message;
+    errorAlert.classList.remove('d-none');
+  }
+});
+</script>
+{% endblock %}
