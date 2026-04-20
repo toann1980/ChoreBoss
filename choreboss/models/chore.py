@@ -28,6 +28,7 @@ class Chore(Base):
     def validate_id(self, key, value):
         if not isinstance(value, int):
             raise AttributeError(f'{key} must be an integer')
+        return value
 
     @validates('name')
     def validate_name(self, key, value):
@@ -43,7 +44,7 @@ class Chore(Base):
             raise AttributeError(f'{key} must be a string')
         if not 10 <= len(value) <= 500:
             raise AttributeError(
-                f'{key} must be between 20 and 500 characters')
+                f'{key} must be between 10 and 500 characters')
         return value
 
     @validates('person_id')

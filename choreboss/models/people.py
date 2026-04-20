@@ -49,7 +49,7 @@ class People(Base):
     def validate_birthday(self, key, value):
         """Validates the birthday attribute."""
         if not isinstance(value, datetime.date):
-            raise AttributeError(f'{key} must be a string')
+            raise AttributeError(f'{key} must be a datetime.date object')
         return value
 
     @validates('pin')
