@@ -1,104 +1,119 @@
+"""Async chore repository for database access."""
+
+from __future__ import annotations
+
 from datetime import datetime
-from sqlalchemy.orm import sessionmaker, joinedload
-from sqlalchemy.engine import Engine
+
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
+
 from choreboss.models.chore import Chore
-from choreboss.models import Base
 
 
 class ChoreRepository:
-    def __init__(self, engine: Engine) -> None:
-        """
-        Initialize the ChoreRepository with a database engine.
+    """Repository for Chore model database operations."""
 
-        :param engine: SQLAlchemy engine instance.
-        """
-        self.Session = sessionmaker(bind=engine)
-
-    def add_chore(self, name: str, description: str) -> None:
-        """
-        Add a new chore to the database.
+    def __init__(self, session: AsyncSession) -> None:
+        """Initialize repository with async session.
 
         Args:
-            name (str): Name of the chore.
-            description (str): Description of the chore.
+            session: AsyncSession for database access.
         """
-        with self.Session() as session:
-            chore = Chore(name=name, description=description)
-            session.add(chore)
-            session.commit()
+        self.session = session
 
-    def complete_chore(self, chore: Chore) -> None:
-        """
-        Mark a chore as completed.
-
-        Args:
-            chore (Chore): The Chore object to mark as completed.
-        """
-        with self.Session() as session:
-            existing_chore = session.query(
-                Chore).filter_by(id=chore.id).first()
-            if existing_chore:
-                existing_chore.last_completed_id = chore.person_id
-                existing_chore.last_completed_date = datetime.now()
-                session.commit()
-
-    def delete_chore(self, chore_id: int) -> None:
-        """
-        Delete a chore from the database.
+    async def add_chore(
+        self,
+        name: str,
+        description: str,
+        person_id: int | None = None,
+    ) -> Chore:
+        """Add a new chore to the database.
 
         Args:
-            chore_id (int): ID of the chore to delete.
-        """
-        with self.Session() as session:
-            chore = session.query(Chore).filter_by(id=chore_id).first()
-            if chore:
-                session.delete(chore)
-                session.commit()
-
-    def get_all_chores(self) -> list[Chore]:
-        """
-        Retrieve all chores from the database.
+            name: Name of the chore.
+            description: Description of the chore.
+            person_id: Optional person ID to assign chore to.
 
         Returns:
-            list[Chore]: A list of all Chore objects.
+            Chore: Created chore object.
         """
-        with self.Session() as session:
-            chores = session.query(Chore).options(
-                joinedload(Chore.person_id_foreign_key),
-                joinedload(Chore.last_completed_id_foreign_key)
-            ).all()
-            return chores
+        chore = Chore(
+            name=name,
+            description=description,
+            person_id=person_id,
+        )
+        self.session.add(chore)
+        await self.session.flush()
+        return chore
 
-    def get_chore_by_id(self, chore_id: int) -> Chore:
-        """
-        Retrieve a chore by its ID.
+    async def complete_chore(
+        self,
+        chore_id: int,
+        person_id: int,
+    ) -> Chore | None:
+        """Mark a chore as completed.
 
         Args:
-            chore_id (int): ID of the chore to retrieve.
+            chore_id: ID of chore to complete.
+            person_id: ID of person completing chore.
 
         Returns:
-            Chore: The Chore object with the given ID.
+            Chore: Updated chore object or None if not found.
         """
-        with self.Session() as session:
-            chore = session.query(Chore).options(
-                joinedload(Chore.person_id_foreign_key),
-                joinedload(Chore.last_completed_id_foreign_key)
-            ).filter_by(id=chore_id).first()
-            return chore
+        chore = await self.get_chore_by_id(chore_id)
+        if chore:
+            chore.last_completed_id = person_id
+            chore.last_completed_date = datetime.utcnow()
+            await self.session.flush()
+        return chore
 
-    def update_chore(self, chore: Chore) -> None:
-        """
-        Update an existing chore in the database.
+    async def delete_chore(self, chore_id: int) -> None:
+        """Delete a chore from the database.
 
         Args:
-            chore (Chore): The Chore object with updated information.
+            chore_id: ID of chore to delete.
         """
-        with self.Session() as session:
-            existing_chore = session.query(
-                Chore).filter_by(id=chore.id).first()
-            if existing_chore:
-                existing_chore.name = chore.name
-                existing_chore.description = chore.description
-                if chore.person_id is not None:
-                    existing_chore.person_id = chore.person_id
-                session.commit()
+        chore = await self.get_chore_by_id(chore_id)
+        if chore:
+            await self.session.delete(chore)
+            await self.session.flush()
+
+    async def get_all_chores(self) -> list[Chore]:
+        """Retrieve all chores from the database.
+
+        Returns:
+            list: All Chore objects.
+        """
+        stmt = select(Chore).options(
+            selectinload(Chore.person),
+        )
+        result = await self.session.execute(stmt)
+        return result.scalars().unique().all()
+
+    async def get_chore_by_id(self, chore_id: int) -> Chore | None:
+        """Retrieve a chore by its ID.
+
+        Args:
+            chore_id: ID of chore to retrieve.
+
+        Returns:
+            Chore: Chore object or None if not found.
+        """
+        stmt = select(Chore).where(Chore.id == chore_id).options(
+            selectinload(Chore.person),
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
+
+    async def update_chore(self, chore: Chore) -> Chore:
+        """Update an existing chore in the database.
+
+        Args:
+            chore: Chore object with updated information.
+
+        Returns:
+            Chore: Updated chore object.
+        """
+        await self.session.flush()
+        return chore

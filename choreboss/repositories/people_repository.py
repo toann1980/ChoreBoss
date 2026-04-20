@@ -1,199 +1,214 @@
+"""Async people repository for database access."""
+
+from __future__ import annotations
+
+from typing import Optional
+
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
+
 from choreboss.models.people import People
-from sqlalchemy.orm import sessionmaker, joinedload
-from sqlalchemy import func
-import bcrypt
-from typing import List, Optional
 
 
 class PeopleRepository:
-    def __init__(self, engine) -> None:
-        """Initializes the PeopleRepository with a database engine.
+    """Repository for People model database operations."""
+
+    def __init__(self, session: AsyncSession) -> None:
+        """Initialize repository with async session.
 
         Args:
-            engine: The SQLAlchemy engine to bind the session.
+            session: AsyncSession for database access.
         """
-        self.Session = sessionmaker(bind=engine)
+        self.session = session
 
-    def add_person(
+    async def add_person(
         self,
         first_name: str,
         last_name: str,
         birthday: str,
         pin: str,
-        is_admin: bool
+        is_admin: bool,
     ) -> People:
-        """Adds a new person to the database.
+        """Add a new person to the database.
 
         Args:
-            first_name (str): The first name of the person.
-            last_name (str): The last name of the person.
-            birthday (str): The birthday of the person.
-            pin (str): The PIN of the person.
-            is_admin (bool): Whether the person is an admin.
+            first_name: First name of the person.
+            last_name: Last name of the person.
+            birthday: Birthday of the person.
+            pin: PIN of the person (will be hashed).
+            is_admin: Whether the person is an admin.
 
         Returns:
-            People: The added person object.
+            People: Created person object.
         """
-        with self.Session() as session:
-            person = People(
-                first_name=first_name,
-                last_name=last_name,
-                birthday=birthday,
-                pin=pin,
-                is_admin=is_admin,
-                sequence_num=self.get_next_sequence_num()
-            )
-            person.set_pin(pin)
-            session.add(person)
-            session.commit()
-            session.close()
-            return person
+        next_seq = await self.get_next_sequence_num()
+        person = People(
+            first_name=first_name,
+            last_name=last_name,
+            birthday=birthday,
+            pin=pin,
+            is_admin=is_admin,
+            sequence_num=next_seq,
+        )
+        person.set_pin(pin)
+        self.session.add(person)
+        await self.session.flush()
+        return person
 
-    def admins_exist(self) -> bool:
-        """Checks if any admins exist in the database.
+    async def admins_exist(self) -> bool:
+        """Check if any admins exist in the database.
 
         Returns:
             bool: True if admins exist, False otherwise.
         """
-        with self.Session() as session:
-            admin_exists = session.query(People).filter_by(
-                is_admin=True).first() is not None
-            return admin_exists
+        stmt = select(People).where(People.is_admin is True)
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none() is not None
 
-    def delete_person(self, person_id: int) -> None:
-        """Deletes a person from the database by their ID.
-
-        Args:
-            person_id (int): The ID of the person to delete.
-        """
-        with self.Session() as session:
-            person = session.query(People).filter_by(id=person_id).first()
-            if person:
-                session.delete(person)
-                session.commit()
-
-    def get_all_people(self) -> List[People]:
-        """Gets all people from the database.
-
-        Returns:
-            List[People]: A list of all people.
-        """
-        with self.Session() as session:
-            people = session.query(People).order_by(People.sequence_num).all()
-            return people
-
-    def get_next_person_by_person_id(self, current_person_id: int) -> People:
-        """Gets the next person by the current person's ID.
+    async def delete_person(self, person_id: int) -> None:
+        """Delete a person from the database.
 
         Args:
-            current_person_id (int): The ID of the current person.
+            person_id: ID of person to delete.
+        """
+        person = await self.get_person_by_id(person_id)
+        if person:
+            await self.session.delete(person)
+            await self.session.flush()
+
+    async def get_all_people(self) -> list[People]:
+        """Get all people from the database.
 
         Returns:
-            People: The next People object.
+            list: All People objects ordered by sequence_num.
         """
-        with self.Session() as session:
-            current_person = session.query(People).filter_by(
-                id=current_person_id
-            ).first()
-            if not current_person:
-                return None
-            next_person = session.query(People).filter(
-                People.sequence_num > current_person.sequence_num
-            ).order_by(People.sequence_num).first()
-            if not next_person:
-                next_person = session.query(People).order_by(
-                    People.sequence_num
-                ).first()
-            return next_person
+        stmt = select(People).order_by(People.sequence_num).options(
+            selectinload(People.chores),
+        )
+        result = await self.session.execute(stmt)
+        return result.scalars().unique().all()
 
-    def get_next_sequence_num(self) -> int:
-        """Gets the next sequence number. Used by add_person.
-
-        Returns:
-            int: The next sequence number.
-        """
-        with self.Session() as session:
-            max_sequence_num = session.query(
-                func.max(People.sequence_num)
-            ).scalar()
-
-            return 1 if max_sequence_num is None else max_sequence_num + 1
-
-    def get_person_by_id(self, person_id: int) -> Optional[People]:
-        """Gets a person by their ID.
+    async def get_next_person_by_person_id(
+        self,
+        current_person_id: int,
+    ) -> People | None:
+        """Get the next person in sequence rotation.
 
         Args:
-            person_id (int): The ID of the person.
+            current_person_id: ID of current person.
 
         Returns:
-            Optional[People]: The person object or None if not found.
+            People: Next person in sequence or None.
         """
-        with self.Session() as session:
-            person = session.query(People).options(
-                joinedload(People.chore_person_id_back_populate),
-                joinedload(People.last_completed_id_back_populate)
-            ).filter(People.id == person_id).first()
-            return person
+        current = await self.get_person_by_id(current_person_id)
+        if not current:
+            return None
 
-    def get_person_by_pin(self, pin: str) -> Optional[People]:
-        """Gets a person by their PIN.
+        # Get next person by sequence
+        stmt = (
+            select(People)
+            .where(People.sequence_num > current.sequence_num)
+            .order_by(People.sequence_num)
+            .limit(1)
+        )
+        result = await self.session.execute(stmt)
+        next_person = result.scalar_one_or_none()
+
+        # If no one after, wrap to first
+        if not next_person:
+            stmt = select(People).order_by(People.sequence_num).limit(1)
+            result = await self.session.execute(stmt)
+            next_person = result.scalar_one_or_none()
+
+        return next_person
+
+    async def get_next_sequence_num(self) -> int:
+        """Get the next sequence number for a new person.
+
+        Returns:
+            int: Next sequence number.
+        """
+        stmt = select(func.max(People.sequence_num))
+        result = await self.session.execute(stmt)
+        max_seq = result.scalar()
+        return 1 if max_seq is None else max_seq + 1
+
+    async def get_person_by_id(self, person_id: int) -> People | None:
+        """Get a person by their ID.
 
         Args:
-            pin (str): The PIN of the person.
+            person_id: ID of person to retrieve.
 
         Returns:
-            Optional[People]: The person object or None if not found.
+            People: Person object or None if not found.
         """
-        with self.Session() as session:
-            people = session.query(People).all()
-            for person in people:
-                if bcrypt.checkpw(
-                    pin.encode('utf-8'),
-                    person.pin.encode('utf-8')
-                ):
-                    return person
+        stmt = select(People).where(People.id == person_id).options(
+            selectinload(People.chores),
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
+
+    async def get_person_by_pin(self, pin: str) -> Optional[People]:
+        """Get a person by their PIN.
+
+        Args:
+            pin: PIN to look up.
+
+        Returns:
+            People: Person object or None if not found.
+        """
+        stmt = select(People)
+        result = await self.session.execute(stmt)
+        people = result.scalars().all()
+
+        for person in people:
+            if person.verify_pin(pin):
+                return person
         return None
 
-    def is_admin(self, pin: str) -> bool:
-        """Checks if a person is an admin by their PIN.
+    async def is_admin(self, pin: str) -> bool:
+        """Check if a person with given PIN is an admin.
 
         Args:
-            pin (str): The PIN of the person.
+            pin: PIN to check.
 
         Returns:
-            bool: True if the person is an admin, False otherwise.
+            bool: True if person is admin, False otherwise.
         """
-        with self.Session() as session:
-            admin = session.query(People).filter_by(is_admin=True).all()
-            for person in admin:
-                if person.verify_pin(pin):
-                    return True
+        stmt = select(People).where(People.is_admin is True)
+        result = await self.session.execute(stmt)
+        admins = result.scalars().all()
+
+        for person in admins:
+            if person.verify_pin(pin):
+                return True
         return False
 
-    def update_person(self, person: People) -> People:
-        """Updates a person's data.
+    async def update_person(self, person: People) -> People:
+        """Update a person's data.
 
         Args:
-            person (People): The person object to update.
+            person: Person object with updated data.
 
         Returns:
-            People: The updated person object.
+            People: Updated person object.
         """
-        with self.Session() as session:
-            session.add(person)
-            session.commit()
+        await self.session.flush()
+        return person
 
-            return person
-
-    def update_sequence(self, person_id: int, new_sequence: int) -> None:
-        """Updates a person's sequence number.
+    async def update_sequence(
+        self,
+        person_id: int,
+        new_sequence: int,
+    ) -> None:
+        """Update a person's sequence number.
 
         Args:
-            person_id (int): The ID of the person.
-            new_sequence (int): The new sequence number.
+            person_id: ID of person to update.
+            new_sequence: New sequence number.
         """
-        with self.Session() as session:
-            person = session.query(People).filter_by(id=person_id).first()
-            if person:
-                person.sequence_num = new_sequence
-                session.commit()
+        person = await self.get_person_by_id(person_id)
+        if person:
+            person.sequence_num = new_sequence
+            await self.session.flush()

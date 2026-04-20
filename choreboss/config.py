@@ -1,17 +1,53 @@
-import os
-from dotenv import load_dotenv
+"""Application configuration."""
 
-load_dotenv()
+from __future__ import annotations
+
+from pydantic_settings import BaseSettings
 
 
+class Settings(BaseSettings):
+    """Application settings from environment variables."""
+
+    environment: str = "development"
+    debug: bool = True
+    database_url: str = "postgresql+asyncpg://localhost/choreboss"
+    secret_key: str = "your-secret-key-change-in-production"
+    jwt_algorithm: str = "HS256"
+    jwt_expiration_hours: int = 168  # 7 days
+
+    class Config:
+        """Pydantic config."""
+
+        env_file = ".env"
+
+
+_settings: Settings | None = None
+
+
+def get_config() -> Settings:
+    """Get application settings singleton.
+
+    Returns:
+        Settings: Application settings.
+    """
+    global _settings
+    if _settings is None:
+        _settings = Settings()
+    return _settings
+
+
+# Legacy config classes for backwards compatibility with tests
 class DevelopmentConfig:
-    SQLALCHEMY_DATABASE_URI = os.getenv(
-        'DATABASE_URL', 'sqlite:///choreboss.db')
+    """Legacy development config."""
+
+    SQLALCHEMY_DATABASE_URI = "sqlite:///choreboss.db"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = os.getenv('SECRET_KEY')
+    SECRET_KEY = "dev-secret-key"
 
 
 class TestingConfig:
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    """Legacy testing config."""
+
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
     TESTING = True
-    SECRET_KEY = 'testing_secret_key'
+    SECRET_KEY = "testing_secret_key"

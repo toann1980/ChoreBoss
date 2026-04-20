@@ -1,156 +1,196 @@
-from choreboss.repositories.people_repository import PeopleRepository
+"""Async people service for business logic."""
+
+from __future__ import annotations
+
+from typing import Optional
+
 from choreboss.models.people import People
-from typing import List, Optional
+from choreboss.repositories.people_repository import PeopleRepository
 
 
 class PeopleService:
+    """Service for people-related business logic."""
+
     def __init__(self, people_repository: PeopleRepository) -> None:
-        """Initializes the PeopleService with a PeopleRepository.
+        """Initialize people service.
 
         Args:
-            people_repository (PeopleRepository): The repository to manage
-                people data.
+            people_repository: Repository for people data access.
         """
         self.people_repository = people_repository
 
-    def add_person(
-            self,
-            first_name: str,
-            last_name: str,
-            birthday: str,
-            pin: str,
-            is_admin: bool
-    ) -> None:
-        """Adds a new person to the repository.
+    async def add_person(
+        self,
+        first_name: str,
+        last_name: str,
+        birthday: str,
+        pin: str,
+        is_admin: bool,
+    ) -> People:
+        """Add a new person.
 
         Args:
-            first_name (str): The first name of the person.
-            last_name (str): The last name of the person.
-            birthday (str): The birthday of the person.
-            pin (str): The PIN of the person.
-            is_admin (bool): Whether the person is an admin.
+            first_name: First name.
+            last_name: Last name.
+            birthday: Birthday.
+            pin: PIN (will be hashed).
+            is_admin: Admin flag.
+
+        Returns:
+            People: Created person object.
         """
-        return self.people_repository.add_person(
-            first_name, last_name, birthday, pin, is_admin
+        return await self.people_repository.add_person(
+            first_name=first_name,
+            last_name=last_name,
+            birthday=birthday,
+            pin=pin,
+            is_admin=is_admin,
         )
 
-    def admins_exist(self) -> bool:
-        """Checks if any admins exist in the repository.
+    async def admins_exist(self) -> bool:
+        """Check if any admins exist.
 
         Returns:
-            bool: True if admins exist, False otherwise.
+            bool: True if admins exist.
         """
-        return self.people_repository.admins_exist()
+        return await self.people_repository.admins_exist()
 
-    def delete_person(self, person_id: int) -> None:
-        """Deletes a person from the repository by their ID.
+    async def delete_person(self, person_id: int) -> None:
+        """Delete a person by ID.
 
         Args:
-            person_id (int): The ID of the person to delete.
+            person_id: ID of person to delete.
         """
-        self.people_repository.delete_person(person_id)
+        await self.people_repository.delete_person(person_id)
 
-    def delete_person_and_adjust_sequence(self, person_id: int) -> None:
-        """Deletes a person and adjusts the sequence numbers.
+    async def delete_person_and_adjust_sequence(
+        self,
+        person_id: int,
+    ) -> None:
+        """Delete a person and adjust sequence numbers.
 
         Args:
-            person_id (int): The ID of the person to delete.
+            person_id: ID of person to delete.
         """
-        person_to_delete = self.get_person_by_id(person_id)
+        person_to_delete = await self.get_person_by_id(person_id)
         if person_to_delete:
-            deleted_person_sequence = person_to_delete.sequence_num
-            self.delete_person(person_id)
-            remaining_people = self.get_all_people()
-            for person in remaining_people:
-                if person.sequence_num > deleted_person_sequence:
+            deleted_seq = person_to_delete.sequence_num
+            await self.delete_person(person_id)
+            remaining = await self.get_all_people()
+            for person in remaining:
+                if person.sequence_num > deleted_seq:
                     person.sequence_num -= 1
-                    self.update_person(person)
+                    await self.update_person(person)
 
-    def get_all_people(self) -> List[People]:
-        """Gets all people from the repository.
+    async def get_all_people(self) -> list[People]:
+        """Get all people.
 
         Returns:
-            List[People]: A list of all people.
+            list: All people objects.
         """
-        return self.people_repository.get_all_people()
+        return await self.people_repository.get_all_people()
 
-    def get_next_person_by_person_id(
-            self,
-            current_person_id: int
-    ) -> People:
-        """Gets the next person by the current person's ID.
+    async def get_next_person_by_person_id(
+        self,
+        current_person_id: int,
+    ) -> People | None:
+        """Get next person in sequence.
 
         Args:
-            current_person_id (int): The ID of the current person.
+            current_person_id: Current person ID.
 
         Returns:
-            People: The next person's data.
+            People: Next person or None.
         """
-        return self.people_repository.get_next_person_by_person_id(
+        return await self.people_repository.get_next_person_by_person_id(
             current_person_id
         )
 
-    def get_person_by_id(self, person_id: int) -> Optional[People]:
-        """Gets a person by their ID.
+    async def get_person_by_id(self, person_id: int) -> Optional[People]:
+        """Get person by ID.
 
         Args:
-            person_id (int): The ID of the person.
+            person_id: ID of person to retrieve.
 
         Returns:
-            Optional[dict]: The person's data or None if not found.
+            People: Person object or None.
         """
-        return self.people_repository.get_person_by_id(person_id)
+        return await self.people_repository.get_person_by_id(person_id)
 
-    def get_person_by_pin(self, pin: str) -> Optional[People]:
-        """Gets a person by their PIN.
+    async def get_person_by_pin(self, pin: str) -> Optional[People]:
+        """Get person by PIN.
 
         Args:
-            pin (str): The PIN of the person.
+            pin: PIN to look up.
 
         Returns:
-            Optional[People]: The person object or None if not found.
+            People: Person object or None.
         """
-        return self.people_repository.get_person_by_pin(pin)
+        return await self.people_repository.get_person_by_pin(pin)
 
-    def is_admin(self, pin: str) -> bool:
-        """Checks if a person is an admin by their PIN.
+    async def is_admin(self, pin: str) -> bool:
+        """Check if person with PIN is admin.
 
         Args:
-            pin (str): The PIN of the person.
+            pin: PIN to check.
 
         Returns:
-            bool: True if the person is an admin, False otherwise.
+            bool: True if admin.
         """
-        return self.people_repository.is_admin(pin)
+        return await self.people_repository.is_admin(pin)
 
-    def update_person(self, person: dict) -> People:
-        """Updates a person's data.
+    async def update_person(self, person: People) -> People:
+        """Update a person.
 
         Args:
-            person (dict): The person's data to update.
+            person: Person object with updated data.
+
         Returns:
-            People: The person object or None if not found.            
+            People: Updated person object.
         """
-        return self.people_repository.update_person(person)
+        return await self.people_repository.update_person(person)
 
-    def update_sequence(self, person_id: int, new_sequence: int) -> None:
-        """Updates a person's sequence number.
+    async def update_sequence(
+        self,
+        person_id: int,
+        new_sequence: int,
+    ) -> None:
+        """Update person's sequence number.
 
         Args:
-            person_id (int): The ID of the person.
-            new_sequence (int): The new sequence number.
+            person_id: ID of person.
+            new_sequence: New sequence number.
         """
-        self.people_repository.update_sequence(person_id, new_sequence)
+        await self.people_repository.update_sequence(person_id, new_sequence)
 
-    def validate_pin(self, pin: str) -> bool:
-        """
-        Validates a given PIN.
-        A valid PIN must be a string consisting of digits only and have a length
-        between 4 and 6 characters inclusive.
+    @staticmethod
+    def validate_pin(pin: str) -> bool:
+        """Validate a PIN.
+
+        A valid PIN must be 4-6 digit string.
+
         Args:
-            pin (str): The PIN to validate.
+            pin: PIN to validate.
+
         Returns:
-            bool: True if the PIN is valid, False otherwise.
+            bool: True if valid.
         """
-
         return 4 <= len(pin) <= 6 and pin.isdigit()
+
+    @staticmethod
+    def verify_pin(pin: str, hash: str) -> bool:
+        """Verify a PIN against a hash.
+
+        Args:
+            pin: Plain PIN.
+            hash: Hashed PIN.
+
+        Returns:
+            bool: True if PIN matches hash.
+        """
+        import bcrypt
+
+        return bcrypt.checkpw(
+            pin.encode("utf-8"),
+            hash.encode("utf-8"),
+        )

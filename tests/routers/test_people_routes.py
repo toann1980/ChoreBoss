@@ -1,0 +1,172 @@
+"""Tests for people routes."""
+
+from __future__ import annotations
+
+import pytest
+from fastapi import status
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from tests.setup_memory_records import setup_test_people
+
+
+@pytest.mark.asyncio
+async def test_list_people_authenticated(
+    test_client,
+    async_session: AsyncSession,
+) -> None:
+    """Test listing people with authentication.
+
+    Args:
+        test_client: FastAPI test client.
+        async_session: Database session.
+    """
+    # Setup
+    people = await setup_test_people(async_session, 2)
+    await async_session.commit()
+    admin = people[0]
+
+    # Login
+    login_response = test_client.post(
+        "/api/auth/login",
+        json={"person_id": admin.id, "pin": "1234"},
+    )
+    token = login_response.json()["access_token"]
+
+    # List people
+    response = test_client.get(
+        "/api/people/",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert len(data) >= 2
+
+
+@pytest.mark.asyncio
+async def test_list_people_unauthenticated(test_client) -> None:
+    """Test listing people without authentication.
+
+    Args:
+        test_client: FastAPI test client.
+    """
+    response = test_client.get("/api/people/")
+
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+@pytest.mark.asyncio
+async def test_get_person(
+    test_client,
+    async_session: AsyncSession,
+) -> None:
+    """Test getting a single person.
+
+    Args:
+        test_client: FastAPI test client.
+        async_session: Database session.
+    """
+    # Setup
+    people = await setup_test_people(async_session, 1)
+    await async_session.commit()
+    person = people[0]
+
+    # Login
+    login_response = test_client.post(
+        "/api/auth/login",
+        json={"person_id": person.id, "pin": "1234"},
+    )
+    token = login_response.json()["access_token"]
+
+    # Get person
+    response = test_client.get(
+        f"/api/people/{person.id}",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["first_name"] == person.first_name
+    assert data["last_name"] == person.last_name
+
+
+@pytest.mark.asyncio
+async def test_create_person_admin(
+    test_client,
+    async_session: AsyncSession,
+) -> None:
+    """Test creating person as admin.
+
+    Args:
+        test_client: FastAPI test client.
+        async_session: Database session.
+    """
+    # Setup
+    people = await setup_test_people(async_session, 1)
+    await async_session.commit()
+    admin = people[0]
+
+    # Login
+    login_response = test_client.post(
+        "/api/auth/login",
+        json={"person_id": admin.id, "pin": "1234"},
+    )
+    token = login_response.json()["access_token"]
+
+    # Create person
+    from datetime import date
+    response = test_client.post(
+        "/api/people/",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "first_name": "Jane",
+            "last_name": "Doe",
+            "birthday": "2015-05-15",  # String is OK, Pydantic will convert
+            "pin": "5678",
+            "is_admin": False,
+        },
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["first_name"] == "Jane"
+    assert data["last_name"] == "Doe"
+    assert data["is_admin"] is False
+
+
+@pytest.mark.asyncio
+async def test_create_person_non_admin(
+    test_client,
+    async_session: AsyncSession,
+) -> None:
+    """Test creating person as non-admin (should fail).
+
+    Args:
+        test_client: FastAPI test client.
+        async_session: Database session.
+    """
+    # Setup non-admin person
+    people = await setup_test_people(async_session, 2)
+    await async_session.commit()
+    non_admin = people[1]  # Jane is not admin
+
+    # Login
+    login_response = test_client.post(
+        "/api/auth/login",
+        json={"person_id": non_admin.id, "pin": "5678"},
+    )
+    token = login_response.json()["access_token"]
+
+    # Try to create person
+    response = test_client.post(
+        "/api/people/",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "first_name": "Jane",
+            "last_name": "Doe",
+            "birthday": "2015-05-15",  # String is OK, Pydantic will convert
+            "pin": "5678",
+        },
+    )
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
