@@ -1,0 +1,43 @@
+types:
+ Person:
+ required: [name]
+ optional: [timezone, role, expertise[], notes]
+
+ Project:
+ required: [name, type]
+ optional: [status, owner, description, roadmap[], tech_stack[]]
+
+ Repository:
+ required: [name, path]
+ optional: [url, branch, language[], purpose]
+
+relations:
+ owns:
+ from_types: [Person]
+ to_types: [Project, Repository]
+ cardinality: one_to_many
+ description: "Person is the owner/lead of a project or repo"
+
+ uses:
+ from_types: [Project]
+ to_types: [Repository]
+ cardinality: many_to_many
+ description: "Project depends on or uses a repository"
+
+ builds:
+ from_types: [Project]
+ to_types: [Project]
+ cardinality: many_to_many
+ description: "One project is a component of or supports another"
+
+ impacts:
+ from_types: [Project]
+ to_types: [Project, Person]
+ cardinality: many_to_many
+ description: "Project affects or depends on another project or person"
+
+ supports:
+ from_types: [Repository]
+ to_types: [Project]
+ cardinality: many_to_many
+ description: "Repository provides infrastructure or tooling for project"
