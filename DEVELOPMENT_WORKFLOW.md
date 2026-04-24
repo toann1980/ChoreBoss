@@ -188,8 +188,8 @@ None. / List issues.
 - Test at peak load before deploying
 - Add entry to API_RATE_LIMITS.md reference
 
-**Operational Hours (Envestero Standard):**
-- **Heavy window:** Weekdays 12am-7am ET, weekends 2am-8am ET (10 concurrent, 50ms delay)
+**Operational Hours (Envestero Standard) — ALL TIMES PST:**
+- **Heavy window:** Weekdays 12am-7am PST, weekends 2am-8am PST (10 concurrent, 50ms delay)
 - **Light hours:** All other times (2 concurrent, 500ms delay)
 - Use this for ALL future projects unless specified otherwise
 

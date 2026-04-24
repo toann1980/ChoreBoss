@@ -945,8 +945,8 @@ Follow these standards for consistency. One pattern for every project.
 
 ### Heavy Data Windows (Aggressive Data Pull Permission)
 Quiet hours when internet is less congested:
-- **Weekdays:** Midnight-7am ET (use 10 concurrent requests, 50ms delay)
-- **Weekends:** 2am-8am ET (use 10 concurrent requests, 50ms delay)
+- **Weekdays:** Midnight-7am PST (use 10 concurrent requests, 50ms delay)
+- **Weekends:** 2am-8am PST (use 10 concurrent requests, 50ms delay)
 
 ### Light Hours (Throttled Mode)
 During peak internet usage:

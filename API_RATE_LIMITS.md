@@ -15,10 +15,12 @@
 
 ## Operational Hours (Envestero Standard)
 
+**ALL TIMES ARE IN PST (Pacific Standard Time)**
+
 ### Heavy Data Window (Aggressive Mode)
 **Use when:** Data pulls can be intensive  
-**Weekdays:** 12:00am-7:00am ET (7 hours)  
-**Weekends:** 2:00am-8:00am ET (6 hours)
+**Weekdays:** 12:00am-7:00am PST (7 hours)  
+**Weekends:** 2:00am-8:00am PST (6 hours)
 
 **Settings:**
 - Max concurrent requests: **10**
