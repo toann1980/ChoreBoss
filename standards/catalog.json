@@ -1,0 +1,164 @@
+{
+  "version": "1.0",
+  "last_updated": "2026-04-24T06:15:00Z",
+  "standards": [
+    {
+      "id": "development-standards",
+      "tier": 1,
+      "category": "meta",
+      "title": "Development Standards - Core Principles",
+      "file": "standards/DEVELOPMENT_STANDARDS.md",
+      "status": "foundational",
+      "description": "Why we work the way we do. 10 core principles, decision drivers.",
+      "covers": [
+        "no-mock-data",
+        "type-safety",
+        "error-handling",
+        "commit-contracts",
+        "incremental-development",
+        "consistency",
+        "automation-focus",
+        "code-before-config",
+        "clear-communication",
+        "shared-memory"
+      ],
+      "related": [
+        "component-workflow",
+        "styling-conventions",
+        "error-handling"
+      ]
+    },
+    {
+      "id": "component-workflow",
+      "tier": 2,
+      "category": "frontend",
+      "title": "Component Development Workflow",
+      "file": "standards/frontend/COMPONENT_WORKFLOW.md",
+      "status": "stable",
+      "description": "5-phase process: API validation → component → testing → UI → commit. 22 min per component.",
+      "covers": [
+        "react-components",
+        "typescript",
+        "api-integration",
+        "error-handling",
+        "testing",
+        "commit-messages"
+      ],
+      "tags": ["components", "react", "development", "testing", "typescript"],
+      "related": [
+        "development-standards",
+        "styling-conventions",
+        "state-management",
+        "error-handling"
+      ],
+      "created": "2026-04-24"
+    }
+  ],
+  "planned": [
+    {
+      "id": "styling-conventions",
+      "tier": 2,
+      "category": "frontend",
+      "title": "Styling Conventions",
+      "file": "standards/frontend/STYLING_CONVENTIONS.md",
+      "status": "planned",
+      "description": "Color palette, spacing scale, typography rules (text-sm minimum, no text-xs)"
+    },
+    {
+      "id": "state-management",
+      "tier": 2,
+      "category": "frontend",
+      "title": "State Management Patterns",
+      "file": "standards/frontend/STATE_MANAGEMENT.md",
+      "status": "planned",
+      "description": "React hooks patterns, when to use useState vs useEffect vs context"
+    },
+    {
+      "id": "error-handling",
+      "tier": 2,
+      "category": "frontend",
+      "title": "Error Handling",
+      "file": "standards/frontend/ERROR_HANDLING.md",
+      "status": "planned",
+      "description": "How to display errors, types of errors, user-friendly messages"
+    },
+    {
+      "id": "endpoint-workflow",
+      "tier": 2,
+      "category": "backend",
+      "title": "Endpoint Development Workflow",
+      "file": "standards/backend/ENDPOINT_WORKFLOW.md",
+      "status": "planned",
+      "description": "Schema → route → test process for building FastAPI endpoints"
+    },
+    {
+      "id": "database-workflow",
+      "tier": 2,
+      "category": "backend",
+      "title": "Database Development Workflow",
+      "file": "standards/backend/DATABASE_WORKFLOW.md",
+      "status": "planned",
+      "description": "Migrations, seeding, testing, querying patterns"
+    },
+    {
+      "id": "fastapi-patterns",
+      "tier": 2,
+      "category": "backend",
+      "title": "FastAPI Patterns",
+      "file": "standards/backend/FASTAPI_PATTERNS.md",
+      "status": "planned",
+      "description": "Router setup, dependency injection, type hints, response models"
+    },
+    {
+      "id": "docker-patterns",
+      "tier": 2,
+      "category": "devops",
+      "title": "Docker Patterns",
+      "file": "standards/devops/DOCKER_PATTERNS.md",
+      "status": "planned",
+      "description": "Dockerfile, docker-compose, multi-stage builds, image optimization"
+    },
+    {
+      "id": "nginx-patterns",
+      "tier": 2,
+      "category": "devops",
+      "title": "Nginx Patterns",
+      "file": "standards/devops/NGINX_PATTERNS.md",
+      "status": "planned",
+      "description": "Reverse proxy, static files, routing, SSL termination"
+    },
+    {
+      "id": "deployment-workflow",
+      "tier": 2,
+      "category": "devops",
+      "title": "Deployment Workflow",
+      "file": "standards/devops/DEPLOYMENT_WORKFLOW.md",
+      "status": "planned",
+      "description": "Build → test → deploy process, rollback strategy"
+    },
+    {
+      "id": "commit-standards",
+      "tier": 2,
+      "category": "git",
+      "title": "Commit Message Standards",
+      "file": "standards/git/COMMIT_STANDARDS.md",
+      "status": "planned",
+      "description": "Message format, what to commit, atomic commits"
+    },
+    {
+      "id": "branching-strategy",
+      "tier": 2,
+      "category": "git",
+      "title": "Branching Strategy",
+      "file": "standards/git/BRANCHING_STRATEGY.md",
+      "status": "planned",
+      "description": "Branch naming, PR workflow, merging strategy"
+    }
+  ],
+  "metadata": {
+    "maintainers": ["Nova", "Kira"],
+    "next_review": "2026-05-08",
+    "how_to_update": "Edit relevant file, update this catalog, commit with message 'doc: Update [standard name]'",
+    "how_to_ingest_to_memorygraph": "See knowledge-graph/README.md"
+  }
+}

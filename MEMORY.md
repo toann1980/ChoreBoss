@@ -1,5 +1,31 @@
 # MEMORY.md - Core Pointers
 
+## 🏗️ Development Standards (Shared with Kira)
+
+**Location:** `/home/leto/.openclaw/workspace/standards/`
+
+**Read These First:**
+1. **DEVELOPMENT_STANDARDS.md** — 10 core principles (tier 1)
+   - API first (no mock data)
+   - Full type safety
+   - Error handling required
+   - Clear contracts via commits
+   - And 6 more...
+
+2. **standards/frontend/COMPONENT_WORKFLOW.md** — 5-phase process (tier 2)
+   - Validate API → Build → Test → UI → Commit
+   - 22 min per component
+   - No back-and-forth debugging loops
+
+3. **standards/catalog.json** — Searchable index of all standards
+   - What's documented
+   - What's planned
+   - Status of each standard
+
+**For New Standards:** See `MEMORY_ORGANIZATION_ARCHITECTURE.md` in `.openclaw/`
+
+---
+
 ## Infrastructure: /srv/openclaw_projects Share ✅
 
 **Status:** SMB share live, MemoryGraph mounted and confirmed (2026-04-23 19:41 UTC)
