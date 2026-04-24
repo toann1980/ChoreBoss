@@ -1,47 +1,23 @@
 {
   "Envestero": {
-    "status": "IN_PROGRESS",
-    "phase": 2,
+    "status": "PEER_REVIEW",
+    "phase": "1C (Intelligence Model)",
     "last_updated_by": "Nova",
-    "last_updated_at": "2026-04-21T02:38:00Z",
-    "next_action": "Run Phase 2 tests against live DB, then build Phase 3 (paper trading)",
+    "last_updated_at": "2026-04-21T06:05:00Z",
+    "decision_point": "Kira peer review + Toan approval needed on Intelligence Model architecture (3 phases, 9-12h)",
     "blocker": null,
-    "notes": "Phase 1: Foundation complete (20 tickers in DB, daily OHLCV 4.7K rows, 5m bars need retry). Phase 2: Code complete + 48 tests ready. Phase 3: Paper trading engine (next, ~3-4h)"
+    "summary": "PIVOT: Build Intelligence Model (executives + consumer sentiment + influence network) instead of traditional fundamentals. Phase 1C.1: Executive data (2-3h). Phase 1C.2: Consumer sentiment (3-4h). Phase 1C.3: Influence detection (4-5h). Uses existing APIs (free), builds on current OHLCV + sentiment. Predictive advantage: detect market moves 3-5 days early via leadership + consumer changes. Waiting for Kira review (PEER_REVIEW_KIRA.md) then Toan decision."
   },
   "BlendCraft": {
-    "status": "STABLE",
-    "phase": null,
-    "last_updated_by": "Nova",
-    "last_updated_at": "2026-04-20T00:00:00Z",
-    "next_action": "Maintain; support garment service automation",
-    "blocker": null,
-    "notes": "Well-tested, CI/CD mature. Core to garment service pipeline."
+    "status": "STABLE"
   },
   "ImageForge3D": {
-    "status": "STABLE",
-    "phase": null,
-    "last_updated_by": "Nova",
-    "last_updated_at": "2026-04-20T00:00:00Z",
-    "next_action": "Maintain; production-ready 3D ↔ AI pipeline",
-    "blocker": null,
-    "notes": "Blender → FastAPI → Stable Diffusion. GPU support, WebSocket relay. Code discipline: recent docstring/typehint push."
+    "status": "STABLE"
   },
   "ChoreBoss": {
-    "status": "COMPLETE",
-    "phase": 1,
-    "last_updated_by": "Nova",
-    "last_updated_at": "2026-04-20T21:00:00Z",
-    "next_action": "Phase 2 (React + Tailwind + shadcn/ui, 8-12h ready) when needed",
-    "blocker": null,
-    "notes": "Phase 1 Backend: 13 endpoints, JWT auth, async stack, full test coverage. 50K+ docs. Production-ready."
+    "status": "COMPLETE"
   },
   "HouseHunter": {
-    "status": "EARLY_STAGE",
-    "phase": null,
-    "last_updated_by": "Nova",
-    "last_updated_at": "2026-04-20T00:00:00Z",
-    "next_action": "Assessment needed; v2 refactor planned",
-    "blocker": "Minimal docs; needs scope clarification",
-    "notes": "Real estate search tool. Early-stage, minimal documentation."
+    "status": "EARLY_STAGE"
   }
 }
