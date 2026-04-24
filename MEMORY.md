@@ -992,3 +992,37 @@ YFINANCE_RATE_LIMIT=1900_per_hour
 6. Add to this MEMORY.md section
 
 ---
+
+---
+
+## Envestero Frontend + Throttling Complete (2026-04-24)
+
+### Frontend Live ✅
+- Dashboard at http://10.0.0.81:3000 (Windows-accessible)
+- 4 components: TopSignals, NewsFeed, Portfolio, TopCatalysts
+- Horizontal compact layouts (row-based, not vertical)
+- Mock data → ready for real API integration
+- Hot reload enabled (both API + frontend)
+
+### Network Throttling Live ✅
+- Heavy window: Weekdays midnight-7am PST, weekends 2am-8am PST
+- Light hours: 2 concurrent, 500ms delay (protect internet)
+- Intelligent adaptation: scheduler logs which mode is active
+- API rate limits: MarketAux (unlimited), Finnhub (60/min), yfinance (1900/hr)
+
+### Timezone Standard: PST ✅
+- **ALL times in PST only (no UTC, no ET)**
+- Scheduler uses America/Los_Angeles
+- This is mandatory for all future projects
+
+### Documentation
+- API_RATE_LIMITS.md: Complete provider reference + 20% buffer strategy
+- HEAVY_DATA_WINDOW_COMPLETE.md: Operational hours in PST
+- DEVELOPMENT_WORKFLOW.md: API limits checklist for new projects
+
+### For Future Projects
+- Always verify API rate limits before creating cron jobs
+- Apply 20% safety buffer to avoid 429 errors
+- Use heavy/light window pattern for data-intensive tasks
+- Document limits in code with "NEVER BREAK" comments
+- All times in PST (Pacific Standard Time)
