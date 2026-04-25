@@ -1,5 +1,49 @@
 # MEMORY.md - Core Pointers
 
+## 🔐 BACKUP STRATEGY (CRITICAL)
+
+### Nightly Backup
+- **Schedule:** Daily 2 AM PST via cron job `nova-nightly-backup`
+- **Backup script:** `/home/leto/.openclaw/backup-nova-personal.sh`
+- **Destination:** `/mnt/nas/openclaw/nova-personal-backup-YYYYMMDD-HHMMSS/`
+- **Contents:** MEMORY.md + 7 identity files + 85 memory files (including .dreams/ hidden)
+- **Retention:** Last 7 days of backups kept (auto-cleanup)
+- **Verification:** Script verifies file counts (7 identity, 85 memory, 1 config)
+
+### Initial Backup (Pre-Plugin Installation)
+- **Location:** `/mnt/nas/openclaw/nova-personal-backup-20260425-005200/`
+- **Size:** 3.2 MB
+- **Files:** 7 identity + 85 memory + 1 config
+- **Receipt:** RESTORATION_RECEIPT.md with complete restore instructions
+- **Status:** ✓ Verified and ready for offsite transfer
+
+### NAS Mount (Ubuntu 24)
+```bash
+sudo mount -t cifs //10.0.0.4/openclaw /mnt/nas/openclaw \
+  -o username=nova,vers=3.0,uid=leto,gid=leto
+```
+
+### Quick Restore (if needed)
+```bash
+cp -v /mnt/nas/openclaw/nova-personal-backup-*/identity/* ~/.openclaw/workspace/
+cp -rv /mnt/nas/openclaw/nova-personal-backup-*/memory/* ~/.openclaw/workspace/memory/
+cp -v /mnt/nas/openclaw/nova-personal-backup-*/config/openclaw.json ~/.openclaw/openclaw.json
+```
+
+⚠️ **CRITICAL:** Always use `cp -r` (recursive) to preserve `.dreams/` hidden directory
+
+---
+
+## 🔑 Key Abbreviations & Conventions
+
+**MS = Memory-Sync**
+- Location: `/srv/memory-sync/` (Nova) / `/mnt/memory-sync/` (Kira WSL2)
+- Purpose: Shared coordination folder for Nova ↔ Kira messaging and design reviews
+- Convention: See `MS-CONVENTIONS.md` in memory-sync folder
+- Always refer to memory-sync as "MS" in all contexts
+
+---
+
 ## 🏗️ Development Standards (Shared with Kira)
 
 **Location:** `/home/leto/.openclaw/workspace/standards/`
