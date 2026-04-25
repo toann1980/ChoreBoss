@@ -1318,3 +1318,56 @@ Don't assume auto-discovery from file placement. Read docs first!
 **Test Status:** 42/42 passing (M1 10 tests, M2 15 tests, M3 17 tests)  
 **Extraction Quality:** 91.9% precision/recall on ground-truth validation
 
+
+---
+
+## MemoryGraph: The Real Vision (2026-04-25 08:31 UTC)
+
+**Clarification:** MemoryGraph isn't just a memory tool—it's a **reasoning augmentation layer**.
+
+### What It Actually Does
+
+**Phase 1 (M1-M3, Live Now):**
+- Extract learnings from projects
+- Deduplicate automatically
+- Promote to MEMORY.md daily
+- Safe compaction with rollback
+
+**Phase 2 (M4-M6, Planned):**
+- Semantic clustering (group lessons by topic)
+- Knowledge graph (show connections)
+- Fact validation (check if new ideas contradict known principles)
+- Query augmentation (inject relevant context into chat automatically)
+- Response validation (ensure answers align with your learnings)
+
+### Why This Matters
+
+Current workflow:
+```
+You ask a question → LLM responds → You think "wait, I know this already"
+```
+
+With MemoryGraph (M4-M6):
+```
+You ask a question → System finds matching principles from MEMORY.md → Injects context → LLM responds (informed)
+```
+
+Every chat is grounded in what you've actually learned. Every decision is fact-checked against your experience.
+
+### Different From Memory-Core
+
+- **Memory-core:** Tracks THIS conversation (what happened in this chat?)
+- **MemoryGraph:** Learns FROM projects (what did I learn BUILDING this?)
+- **Together:** Chat is remembered + decisions are informed
+
+### The End Goal
+
+A reasoning system that:
+1. **Knows** what you've learned (extraction)
+2. **Organizes** it intelligently (clustering + graph)
+3. **Validates** new ideas against principles (fact-checking)
+4. **Augments** your reasoning with relevant context (chat integration)
+5. **Improves** over time (fine-tuned models from your learnings)
+
+This is different from generic AI. This is **personalized, experience-grounded reasoning support.**
+
