@@ -1,0 +1,644 @@
+{
+  "id": "envestero_20260425_023605",
+  "project": "envestero",
+  "extracted_at": "2026-04-25T02:36:05.701710",
+  "source_files": [
+    "PHASE_I_3_COMPLETE.md",
+    "PHASE_I_PLAN.md",
+    "QUICKSTART.md",
+    "COMPLETION_SUMMARY.md",
+    "BUILD_COMPLETE_PHASE_I_4.md",
+    "BUILD_COMPLETE_PHASE_I_1.md",
+    "RSS_FEEDS_NOKEY_GUIDE.md",
+    "PHASE_4_COMPLETE.md",
+    "CURRENT_STATUS.md",
+    "DASHBOARD_REDESIGN_ANALYSIS.md",
+    "FULL_STACK_DEPLOYMENT.md",
+    "PHASE_I_5_COMPLETE.md",
+    "PHASE_I_2_PLAN.md",
+    "PHASE_I_1_COMPLETE.md",
+    "PHASE_A1_COMPLETE.md",
+    "PHASE_1C_1_COMPLETE.md",
+    "HEAVY_DATA_WINDOW_COMPLETE.md",
+    "PHASE_0_FINAL_COMPLETION.md",
+    "COMPONENT_DEVELOPMENT_WORKFLOW.md",
+    "PHASE_I_4_COMPLETE.md",
+    "PHASE_3_TESTING_COMPLETE.md",
+    "PHASE_1C_REVISED_FREE_SOURCES.md",
+    "NETWORK_TROUBLESHOOTING.md",
+    "PHASE_A1_PLAN.md",
+    "PORT_MIGRATION_COMPLETE.md",
+    "PHASE_F_COMPLETE_FINAL.md",
+    "BACKEND_DEPLOYMENT_COMPLETE.md",
+    "PHASE_1C_1_REVISED_COMPLETE.md",
+    "URL_SOLUTION_SUMMARY.md",
+    "PHASE_E_SUMMARY.md",
+    "DEPRECATION_NOTICE.md",
+    "BUILD_COMPLETE_PHASE_I_5B.md",
+    "DEPLOYMENT_STATUS_PHASE_I.md",
+    "PHASE_I_3_PLAN.md",
+    "PHASE_I_1_STATUS.md",
+    "PHASE_0_PROGRESS.md",
+    "PHASE_1C_2_FINAL_REPORT.md",
+    "HOW_TO_ADD_NEWS_SOURCES.md",
+    "PHASE_I_5B_COMPLETE.md",
+    "ENDPOINTS.md",
+    "SCHEDULED_NEWS_SCRAPING_REPORT.md",
+    "PORT_CONFIGURATION.md",
+    "PORT_CHANGES.md",
+    "FINAL_SUMMARY_PHASE_I.md",
+    "PHASE_0_TASKS_0_2_TO_0_4_COMPLETE.md",
+    "PHASE_C_DECISION_POINT.md",
+    "PHASE_0_EXECUTIVE_SUMMARY.md",
+    "DEPLOYMENT_GUIDE_I_1_TO_I_5B.md",
+    "DEPLOYMENT_COMPLETE_LIVE_FINAL.md",
+    "README.md",
+    "PHASE_0_FINAL_REPORT.md",
+    "PHASE_3_INFRASTRUCTURE.md",
+    "PHASES_D_E_COMPLETE.md",
+    "SERVICE_ARCHITECTURE.md",
+    "PHASE_I_5_PLAN.md",
+    "PHASE_A2_COMPLETE.md",
+    "DEPLOYMENT_COMPLETE_LIVE.md",
+    "BUILD_COMPLETE_PHASE_I_3.md",
+    "POSTGRES_QUICK_START.md",
+    "PRODUCTION_READY_SUMMARY.md",
+    "PHASE_C_COMPLETE.md",
+    "PHASE_1C_2_COMPLETION_REPORT.md",
+    "PHASE_I_1_VISUAL_SUMMARY.md",
+    "PHASE_1C_1_REVISED_FINAL_REPORT.md",
+    "NEWS_COLLECTOR_ACTIVE.md",
+    "MIGRATION_PY313.md",
+    "NEWS_SOURCE_EXTENSIBILITY_GUIDE.md",
+    "FIREWALL_RECOVERY_PLAN.md",
+    "PHASE_I_4_PLAN.md",
+    "POSTGRES_DEPLOYMENT_GUIDE.md",
+    "DOCKER_DEPLOYMENT_SUMMARY.md",
+    "THROTTLE_QUIET_HOURS_COMPLETE.md",
+    "PROJECT_STATUS_FINAL.md",
+    "PHASE_H_SENTIMENT_COMPLETE.md",
+    "NEWS_SCRAPER_INTEGRATION_REPORT.md",
+    "PHASE_F_REGISTRY_COMPLETE.md",
+    "COMPLETION_REPORT.md",
+    "PHASE_1C_EXECUTION_PLAN.md",
+    "URL_RESOLUTION_ARCHITECTURE.md",
+    "NEWS_COLLECTOR_MILESTONE.md",
+    "PHASE_D_SUMMARY.md",
+    "PHASE_I_5B_PLAN.md",
+    "PHASE_I_2_COMPLETE.md",
+    "VALIDATION_REPORT.md",
+    "DEPLOYMENT_STATUS.md",
+    "SESSION_SUMMARY_PHASE_I_1.md",
+    "DOCKER_SETUP.md",
+    "PHASE_F_VISUAL_SUMMARY.md"
+  ],
+  "lessons": [
+    {
+      "id": "CURRENT_STATUS.md_87_never",
+      "text": "- **Watch expiry:** Soft (never auto-remove, cleanup job required)",
+      "source_file": "CURRENT_STATUS.md",
+      "source_line": 87,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.557133",
+      "redaction_result": null
+    },
+    {
+      "id": "CURRENT_STATUS.md_90_never",
+      "text": "- **Quality floor:** Publishers never drop below 50% weight",
+      "source_file": "CURRENT_STATUS.md",
+      "source_line": 90,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.557155",
+      "redaction_result": null
+    },
+    {
+      "id": "DASHBOARD_REDESIGN_ANALYSIS.md_147_pitfall",
+      "text": "News sentiment pie chart - automation doesn't consume this",
+      "source_file": "DASHBOARD_REDESIGN_ANALYSIS.md",
+      "source_line": 147,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.559080",
+      "redaction_result": null
+    },
+    {
+      "id": "DASHBOARD_REDESIGN_ANALYSIS.md_148_pitfall",
+      "text": "Market catalysts section - signals already incorporate this",
+      "source_file": "DASHBOARD_REDESIGN_ANALYSIS.md",
+      "source_line": 148,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.559088",
+      "redaction_result": null
+    },
+    {
+      "id": "DASHBOARD_REDESIGN_ANALYSIS.md_149_pitfall",
+      "text": "Ticker tape - not actionable",
+      "source_file": "DASHBOARD_REDESIGN_ANALYSIS.md",
+      "source_line": 149,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.559092",
+      "redaction_result": null
+    },
+    {
+      "id": "DASHBOARD_REDESIGN_ANALYSIS.md_150_pitfall",
+      "text": "Manual order entry - this is automated, not manual trading",
+      "source_file": "DASHBOARD_REDESIGN_ANALYSIS.md",
+      "source_line": 150,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.559095",
+      "redaction_result": null
+    },
+    {
+      "id": "DASHBOARD_REDESIGN_ANALYSIS.md_151_pitfall",
+      "text": "Interactive charting - not needed for automation oversight",
+      "source_file": "DASHBOARD_REDESIGN_ANALYSIS.md",
+      "source_line": 151,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.559098",
+      "redaction_result": null
+    },
+    {
+      "id": "DASHBOARD_REDESIGN_ANALYSIS.md_152_pitfall",
+      "text": "Detailed position analysis tools - secondary to execution log",
+      "source_file": "DASHBOARD_REDESIGN_ANALYSIS.md",
+      "source_line": 152,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.559101",
+      "redaction_result": null
+    },
+    {
+      "id": "PHASE_I_2_PLAN.md_258_never",
+      "text": "- \u2705 Never drops below 0.3x (old signals still valid)",
+      "source_file": "PHASE_I_2_PLAN.md",
+      "source_line": 258,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.563663",
+      "redaction_result": null
+    },
+    {
+      "id": "PHASE_A1_COMPLETE.md_36_never",
+      "text": "- Zero accuracy (0.0) \u2192 quality_score = baseline \u00d7 0.5 (never disabled)",
+      "source_file": "PHASE_A1_COMPLETE.md",
+      "source_line": 36,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.567948",
+      "redaction_result": null
+    },
+    {
+      "id": "PHASE_A1_COMPLETE.md_38_never",
+      "text": "**Design rationale:** Tier-1 sources never fully lose weight, preventing signal collapse when a trusted source temporarily underperforms.",
+      "source_file": "PHASE_A1_COMPLETE.md",
+      "source_line": 38,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.567958",
+      "redaction_result": null
+    },
+    {
+      "id": "COMPONENT_DEVELOPMENT_WORKFLOW.md_95_always",
+      "text": "- Always handle loading/error/empty states",
+      "source_file": "COMPONENT_DEVELOPMENT_WORKFLOW.md",
+      "source_line": 95,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.572286",
+      "redaction_result": null
+    },
+    {
+      "id": "COMPONENT_DEVELOPMENT_WORKFLOW.md_205_pitfall",
+      "text": "Build component before endpoint exists \u2192 endpoint doesn't exist, component shows \"no data\"",
+      "source_file": "COMPONENT_DEVELOPMENT_WORKFLOW.md",
+      "source_line": 205,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.572493",
+      "redaction_result": null
+    },
+    {
+      "id": "COMPONENT_DEVELOPMENT_WORKFLOW.md_206_pitfall",
+      "text": "Use `any` types \u2192 type mismatches at runtime",
+      "source_file": "COMPONENT_DEVELOPMENT_WORKFLOW.md",
+      "source_line": 206,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.572497",
+      "redaction_result": null
+    },
+    {
+      "id": "COMPONENT_DEVELOPMENT_WORKFLOW.md_207_pitfall",
+      "text": "Hardcode mock data \u2192 hides real errors",
+      "source_file": "COMPONENT_DEVELOPMENT_WORKFLOW.md",
+      "source_line": 207,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.572500",
+      "redaction_result": null
+    },
+    {
+      "id": "COMPONENT_DEVELOPMENT_WORKFLOW.md_208_pitfall",
+      "text": "Stack components vertically \u2192 doesn't fit viewport",
+      "source_file": "COMPONENT_DEVELOPMENT_WORKFLOW.md",
+      "source_line": 208,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.572503",
+      "redaction_result": null
+    },
+    {
+      "id": "COMPONENT_DEVELOPMENT_WORKFLOW.md_209_pitfall",
+      "text": "Use text-xs \u2192 can't read on dashboards",
+      "source_file": "COMPONENT_DEVELOPMENT_WORKFLOW.md",
+      "source_line": 209,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.572506",
+      "redaction_result": null
+    },
+    {
+      "id": "COMPONENT_DEVELOPMENT_WORKFLOW.md_210_pitfall",
+      "text": "Forget empty state handling \u2192 \"Cannot read property X of undefined\"",
+      "source_file": "COMPONENT_DEVELOPMENT_WORKFLOW.md",
+      "source_line": 210,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.572509",
+      "redaction_result": null
+    },
+    {
+      "id": "COMPONENT_DEVELOPMENT_WORKFLOW.md_211_pitfall",
+      "text": "Put URL in multiple places \u2192 inconsistent endpoints",
+      "source_file": "COMPONENT_DEVELOPMENT_WORKFLOW.md",
+      "source_line": 211,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.572512",
+      "redaction_result": null
+    },
+    {
+      "id": "COMPONENT_DEVELOPMENT_WORKFLOW.md_212_pitfall",
+      "text": "Fetch on every render \u2192 infinite API calls",
+      "source_file": "COMPONENT_DEVELOPMENT_WORKFLOW.md",
+      "source_line": 212,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.572515",
+      "redaction_result": null
+    },
+    {
+      "id": "NETWORK_TROUBLESHOOTING.md_16_pitfall",
+      "text": "**Windows (10.0.0.21) Side:** TCP BLOCKED",
+      "source_file": "NETWORK_TROUBLESHOOTING.md",
+      "source_line": 16,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.580567",
+      "redaction_result": null
+    },
+    {
+      "id": "BACKEND_DEPLOYMENT_COMPLETE.md_232_warning",
+      "text": "**Change for production deployment**",
+      "source_file": "BACKEND_DEPLOYMENT_COMPLETE.md",
+      "source_line": 232,
+      "confidence": 0.75,
+      "type": "pitfall",
+      "tags": [
+        "warning"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.586772",
+      "redaction_result": {
+        "has_sensitive_data": true,
+        "detections_count": 1
+      }
+    },
+    {
+      "id": "URL_SOLUTION_SUMMARY.md_227_never",
+      "text": "Copy the structure, use the same `docker-compose.yml` and `nginx.conf` patterns, and you'll never have hardcoded URL problems again.",
+      "source_file": "URL_SOLUTION_SUMMARY.md",
+      "source_line": 227,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.590477",
+      "redaction_result": null
+    },
+    {
+      "id": "PHASE_I_3_PLAN.md_277_warning",
+      "text": "Trade with caution \u2014 conflicting signals",
+      "source_file": "PHASE_I_3_PLAN.md",
+      "source_line": 277,
+      "confidence": 0.75,
+      "type": "pitfall",
+      "tags": [
+        "warning"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.599422",
+      "redaction_result": null
+    },
+    {
+      "id": "PORT_CONFIGURATION.md_33_never",
+      "text": "- **Never expose** API port directly to host",
+      "source_file": "PORT_CONFIGURATION.md",
+      "source_line": 33,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.613377",
+      "redaction_result": null
+    },
+    {
+      "id": "PORT_CHANGES.md_56_pitfall",
+      "text": "http://10.0.0.81:8000",
+      "source_file": "PORT_CHANGES.md",
+      "source_line": 56,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.613933",
+      "redaction_result": null
+    },
+    {
+      "id": "PORT_CHANGES.md_57_pitfall",
+      "text": "http://10.0.0.81:3000",
+      "source_file": "PORT_CHANGES.md",
+      "source_line": 57,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.613940",
+      "redaction_result": null
+    },
+    {
+      "id": "PRODUCTION_READY_SUMMARY.md_128_always",
+      "text": "**Decision:** OpenAI \u2192 Ollama \u2192 Heuristic (always produces result)",
+      "source_file": "PRODUCTION_READY_SUMMARY.md",
+      "source_line": 128,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.648184",
+      "redaction_result": {
+        "has_sensitive_data": true,
+        "detections_count": 1
+      }
+    },
+    {
+      "id": "PHASE_C_COMPLETE.md_42_never",
+      "text": "- Watch never auto-removes (soft expiry, explicit cleanup only)",
+      "source_file": "PHASE_C_COMPLETE.md",
+      "source_line": 42,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.650417",
+      "redaction_result": null
+    },
+    {
+      "id": "PHASE_C_COMPLETE.md_123_never",
+      "text": "- **Soft expiry:** Never auto-removes, cleanup job required",
+      "source_file": "PHASE_C_COMPLETE.md",
+      "source_line": 123,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.650599",
+      "redaction_result": null
+    },
+    {
+      "id": "FIREWALL_RECOVERY_PLAN.md_142_always",
+      "text": "- Can always revert with `sudo apt remove ufw`",
+      "source_file": "FIREWALL_RECOVERY_PLAN.md",
+      "source_line": 142,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.662718",
+      "redaction_result": null
+    },
+    {
+      "id": "THROTTLE_QUIET_HOURS_COMPLETE.md_50_pitfall",
+      "text": "All news scraping (MarketAux + Finnhub)",
+      "source_file": "THROTTLE_QUIET_HOURS_COMPLETE.md",
+      "source_line": 50,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.671574",
+      "redaction_result": null
+    },
+    {
+      "id": "URL_RESOLUTION_ARCHITECTURE.md_24_never",
+      "text": "**Key insight:** Everything goes through Nginx. The frontend never needs to know the backend's IP/port.",
+      "source_file": "URL_RESOLUTION_ARCHITECTURE.md",
+      "source_line": 24,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.684534",
+      "redaction_result": null
+    },
+    {
+      "id": "URL_RESOLUTION_ARCHITECTURE.md_207_always",
+      "text": "add_header Access-Control-Allow-Origin $host always;",
+      "source_file": "URL_RESOLUTION_ARCHITECTURE.md",
+      "source_line": 207,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.684871",
+      "redaction_result": null
+    },
+    {
+      "id": "URL_RESOLUTION_ARCHITECTURE.md_208_always",
+      "text": "add_header Access-Control-Allow-Methods \"GET, POST, PUT, DELETE, OPTIONS\" always;",
+      "source_file": "URL_RESOLUTION_ARCHITECTURE.md",
+      "source_line": 208,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.684879",
+      "redaction_result": null
+    },
+    {
+      "id": "URL_RESOLUTION_ARCHITECTURE.md_209_always",
+      "text": "add_header Access-Control-Allow-Headers \"Content-Type, Authorization\" always;",
+      "source_file": "URL_RESOLUTION_ARCHITECTURE.md",
+      "source_line": 209,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.684886",
+      "redaction_result": null
+    },
+    {
+      "id": "PHASE_I_5B_PLAN.md_376_never",
+      "text": "0.95  # Cap at 95% (never certain)",
+      "source_file": "PHASE_I_5B_PLAN.md",
+      "source_line": 376,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "envestero",
+      "extracted_at": "2026-04-25T02:36:05.690555",
+      "redaction_result": null
+    }
+  ],
+  "entities": {
+    "dates": [
+      "2026-04-23"
+    ],
+    "technologies": [
+      "PostgreSQL"
+    ],
+    "versions": [
+      "v22.22.2",
+      "v5.1.3"
+    ]
+  },
+  "relationships": [],
+  "statistics": {
+    "total_lessons": 37,
+    "lessons_by_type": {
+      "principle": 17,
+      "pitfall": 20
+    },
+    "total_entities": 3,
+    "source_files": 88,
+    "redacted_items": 2
+  }
+}

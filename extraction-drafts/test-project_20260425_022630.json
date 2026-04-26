@@ -1,0 +1,150 @@
+{
+  "id": "test-project_20260425_022630",
+  "project": "test-project",
+  "extracted_at": "2026-04-25T02:26:30.679979",
+  "source_files": [
+    ".openclaw/ARCHITECTURE.md",
+    ".openclaw/DECISIONS.md",
+    ".openclaw/PRINCIPLES.md"
+  ],
+  "lessons": [
+    {
+      "id": "DECISIONS.md_5_always",
+      "text": "ALWAYS route through Nginx for unified entry point.",
+      "source_file": "DECISIONS.md",
+      "source_line": 5,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "test-project",
+      "extracted_at": "2026-04-25T02:26:30.679721",
+      "redaction_result": null
+    },
+    {
+      "id": "DECISIONS.md_6_never",
+      "text": "Never expose services directly on separate ports.",
+      "source_file": "DECISIONS.md",
+      "source_line": 6,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "test-project",
+      "extracted_at": "2026-04-25T02:26:30.679732",
+      "redaction_result": null
+    },
+    {
+      "id": "PRINCIPLES.md_4_principle",
+      "text": "Always use type hints for clarity and catch bugs early",
+      "source_file": "PRINCIPLES.md",
+      "source_line": 4,
+      "confidence": 0.85,
+      "type": "best_practice",
+      "tags": [
+        "marked"
+      ],
+      "project": "test-project",
+      "extracted_at": "2026-04-25T02:26:30.679921",
+      "redaction_result": null
+    },
+    {
+      "id": "PRINCIPLES.md_5_principle",
+      "text": "Test-first development prevents late surprises",
+      "source_file": "PRINCIPLES.md",
+      "source_line": 5,
+      "confidence": 0.85,
+      "type": "best_practice",
+      "tags": [
+        "marked"
+      ],
+      "project": "test-project",
+      "extracted_at": "2026-04-25T02:26:30.679927",
+      "redaction_result": null
+    },
+    {
+      "id": "PRINCIPLES.md_6_pitfall",
+      "text": "Never hardcode API endpoints or keys",
+      "source_file": "PRINCIPLES.md",
+      "source_line": 6,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "test-project",
+      "extracted_at": "2026-04-25T02:26:30.679931",
+      "redaction_result": null
+    },
+    {
+      "id": "PRINCIPLES.md_7_pitfall",
+      "text": "Never commit credentials to git",
+      "source_file": "PRINCIPLES.md",
+      "source_line": 7,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "test-project",
+      "extracted_at": "2026-04-25T02:26:30.679935",
+      "redaction_result": null
+    },
+    {
+      "id": "PRINCIPLES.md_8_warning",
+      "text": "Be careful with database migrations in production",
+      "source_file": "PRINCIPLES.md",
+      "source_line": 8,
+      "confidence": 0.75,
+      "type": "pitfall",
+      "tags": [
+        "warning"
+      ],
+      "project": "test-project",
+      "extracted_at": "2026-04-25T02:26:30.679939",
+      "redaction_result": null
+    },
+    {
+      "id": "PRINCIPLES.md_10_always",
+      "text": "Key Rule: ALWAYS validate user input before processing",
+      "source_file": "PRINCIPLES.md",
+      "source_line": 10,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "test-project",
+      "extracted_at": "2026-04-25T02:26:30.679947",
+      "redaction_result": null
+    }
+  ],
+  "entities": {
+    "dates": [
+      "2026-04-23"
+    ],
+    "versions": [
+      "v2.1.0"
+    ],
+    "technologies": [
+      "Next.js",
+      "FastAPI",
+      "PostgreSQL",
+      "Redis"
+    ]
+  },
+  "relationships": [],
+  "statistics": {
+    "total_lessons": 8,
+    "lessons_by_type": {
+      "principle": 3,
+      "best_practice": 2,
+      "pitfall": 3
+    },
+    "total_entities": 3,
+    "source_files": 3,
+    "redacted_items": 0
+  }
+}

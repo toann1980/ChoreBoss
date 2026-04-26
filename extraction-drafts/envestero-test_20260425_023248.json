@@ -1,0 +1,201 @@
+{
+  "id": "envestero-test_20260425_023248",
+  "project": "envestero-test",
+  "extracted_at": "2026-04-25T02:32:48.515309",
+  "source_files": [
+    ".openclaw/PHASE_I_5_COMPLETE.md",
+    ".openclaw/QUICKSTART.md",
+    ".openclaw/RSS_FEEDS_NOKEY_GUIDE.md",
+    ".openclaw/PHASE_I_3_COMPLETE.md",
+    ".openclaw/PHASE_I_PLAN.md",
+    ".openclaw/CURRENT_STATUS.md",
+    ".openclaw/PHASE_4_COMPLETE.md",
+    ".openclaw/COMPLETION_SUMMARY.md",
+    ".openclaw/FULL_STACK_DEPLOYMENT.md",
+    ".openclaw/DASHBOARD_REDESIGN_ANALYSIS.md",
+    ".openclaw/BUILD_COMPLETE_PHASE_I_1.md",
+    ".openclaw/BUILD_COMPLETE_PHASE_I_4.md",
+    ".openclaw/PHASE_I_1_COMPLETE.md",
+    ".openclaw/PHASE_I_2_PLAN.md",
+    ".openclaw/PHASE_A1_COMPLETE.md"
+  ],
+  "lessons": [
+    {
+      "id": "CURRENT_STATUS.md_87_never",
+      "text": "- **Watch expiry:** Soft (never auto-remove, cleanup job required)",
+      "source_file": "CURRENT_STATUS.md",
+      "source_line": 87,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "envestero-test",
+      "extracted_at": "2026-04-25T02:32:48.495672",
+      "redaction_result": null
+    },
+    {
+      "id": "CURRENT_STATUS.md_90_never",
+      "text": "- **Quality floor:** Publishers never drop below 50% weight",
+      "source_file": "CURRENT_STATUS.md",
+      "source_line": 90,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "envestero-test",
+      "extracted_at": "2026-04-25T02:32:48.495692",
+      "redaction_result": null
+    },
+    {
+      "id": "DASHBOARD_REDESIGN_ANALYSIS.md_147_pitfall",
+      "text": "News sentiment pie chart - automation doesn't consume this",
+      "source_file": "DASHBOARD_REDESIGN_ANALYSIS.md",
+      "source_line": 147,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero-test",
+      "extracted_at": "2026-04-25T02:32:48.502949",
+      "redaction_result": null
+    },
+    {
+      "id": "DASHBOARD_REDESIGN_ANALYSIS.md_148_pitfall",
+      "text": "Market catalysts section - signals already incorporate this",
+      "source_file": "DASHBOARD_REDESIGN_ANALYSIS.md",
+      "source_line": 148,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero-test",
+      "extracted_at": "2026-04-25T02:32:48.502957",
+      "redaction_result": null
+    },
+    {
+      "id": "DASHBOARD_REDESIGN_ANALYSIS.md_149_pitfall",
+      "text": "Ticker tape - not actionable",
+      "source_file": "DASHBOARD_REDESIGN_ANALYSIS.md",
+      "source_line": 149,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero-test",
+      "extracted_at": "2026-04-25T02:32:48.502961",
+      "redaction_result": null
+    },
+    {
+      "id": "DASHBOARD_REDESIGN_ANALYSIS.md_150_pitfall",
+      "text": "Manual order entry - this is automated, not manual trading",
+      "source_file": "DASHBOARD_REDESIGN_ANALYSIS.md",
+      "source_line": 150,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero-test",
+      "extracted_at": "2026-04-25T02:32:48.502964",
+      "redaction_result": null
+    },
+    {
+      "id": "DASHBOARD_REDESIGN_ANALYSIS.md_151_pitfall",
+      "text": "Interactive charting - not needed for automation oversight",
+      "source_file": "DASHBOARD_REDESIGN_ANALYSIS.md",
+      "source_line": 151,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero-test",
+      "extracted_at": "2026-04-25T02:32:48.502970",
+      "redaction_result": null
+    },
+    {
+      "id": "DASHBOARD_REDESIGN_ANALYSIS.md_152_pitfall",
+      "text": "Detailed position analysis tools - secondary to execution log",
+      "source_file": "DASHBOARD_REDESIGN_ANALYSIS.md",
+      "source_line": 152,
+      "confidence": 0.85,
+      "type": "pitfall",
+      "tags": [
+        "marked"
+      ],
+      "project": "envestero-test",
+      "extracted_at": "2026-04-25T02:32:48.502974",
+      "redaction_result": null
+    },
+    {
+      "id": "PHASE_I_2_PLAN.md_258_never",
+      "text": "- \u2705 Never drops below 0.3x (old signals still valid)",
+      "source_file": "PHASE_I_2_PLAN.md",
+      "source_line": 258,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "envestero-test",
+      "extracted_at": "2026-04-25T02:32:48.513661",
+      "redaction_result": null
+    },
+    {
+      "id": "PHASE_A1_COMPLETE.md_36_never",
+      "text": "- Zero accuracy (0.0) \u2192 quality_score = baseline \u00d7 0.5 (never disabled)",
+      "source_file": "PHASE_A1_COMPLETE.md",
+      "source_line": 36,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "envestero-test",
+      "extracted_at": "2026-04-25T02:32:48.514950",
+      "redaction_result": null
+    },
+    {
+      "id": "PHASE_A1_COMPLETE.md_38_never",
+      "text": "**Design rationale:** Tier-1 sources never fully lose weight, preventing signal collapse when a trusted source temporarily underperforms.",
+      "source_file": "PHASE_A1_COMPLETE.md",
+      "source_line": 38,
+      "confidence": 0.9,
+      "type": "principle",
+      "tags": [
+        "strong_language"
+      ],
+      "project": "envestero-test",
+      "extracted_at": "2026-04-25T02:32:48.514960",
+      "redaction_result": null
+    }
+  ],
+  "entities": {
+    "dates": [
+      "2026-04-23"
+    ],
+    "technologies": [
+      "PostgreSQL"
+    ],
+    "versions": [
+      "v22.22.2",
+      "v5.1.3"
+    ]
+  },
+  "relationships": [],
+  "statistics": {
+    "total_lessons": 11,
+    "lessons_by_type": {
+      "principle": 5,
+      "pitfall": 6
+    },
+    "total_entities": 3,
+    "source_files": 15,
+    "redacted_items": 0
+  }
+}
