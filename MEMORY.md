@@ -1,5 +1,63 @@
 # MEMORY.md - Core Pointers
 
+## 🔴 CRITICAL: MemoryGraph as Augmentation, Not Substitution (2026-04-26 02:39 UTC)
+
+**Risk:** Learning systems can degrade reasoning if used as substitutes instead of augmentation.
+
+**Failure modes:**
+- Pattern-match to stored lessons without re-examining context
+- Apply stale memory confidently to new problems  
+- Stop verifying against code/reality
+- Defer to "I learned this" instead of "the code shows"
+
+**Fix:** Memory is reference, not authority. Always verify stored patterns against current artifacts.
+
+**When context resets (cache compacted):**
+1. Check actual project state first (tests, code, commits)
+2. Don't trust fuzzy memory narratives
+3. Verify old lessons still apply  
+4. THEN use memory for reference
+
+**Red flags:**
+🚩 Confident decisions based on fuzzy memory  
+🚩 Explaining reasoning from stored lessons, not from code  
+🚩 Applying past patterns without checking if context changed  
+
+**Full analysis:** `memory/CRITICAL_MEMORY_AUGMENTATION_RISK.md`  
+**DevOps guide:** `OCP/.openclaw/DEVOPS_OPERATIONAL_LESSONS.md`
+
+---
+
+# MEMORY.md - Core Pointers
+
+## 🎯 PATTERN BREAKTHROUGH: "How does the system do it?" not "Can I detect it?" (2026-04-26 02:24 UTC)
+
+**Session achievement:** Real OpenClaw semantic embeddings working (768-dimensional vectors), 78/78 tests passing.
+
+**Critical insight:** I was building detection/checking infrastructure when the answer was to use the platform's existing interface.
+
+**Pattern I'm breaking:**
+- ❌ OLD: Add detection logic → check availability → fallback
+- ✅ NEW: Ask "how does the system already do this?" → use that interface → done
+
+**Example:** Instead of:
+```typescript
+// 300 lines: detect Ollama, check gateway, try HTTP, fall back
+if (ollamaRunning) { ... } else if (gatewayAvailable) { ... } else { useTfidf() }
+```
+
+Just:
+```typescript
+// Call OpenClaw's /v1/embeddings endpoint (how OpenClaw uses embeddings internally)
+await fetch('/v1/embeddings', { Authorization: token, ... })
+```
+
+**Result:** Simpler code, fewer bugs, immediate working.
+
+**Full analysis:** `memory/SESSION_LESSONS_20260426.md`
+
+---
+
 ## 🔐 BACKUP STRATEGY (CRITICAL)
 
 ### Nightly Backup
@@ -259,6 +317,25 @@ Each step is independent, testable, and composable.
 2. Test augmentation with real queries
 3. Collect feedback on intent detection
 4. Plan M7+: ML-based intent, pattern mining, fine-tuned models
+
+---
+
+## KEY INSIGHT: OpenClaw Embedding Provider (2026-04-26 00:56 UTC)
+
+**Problem:** We were building complex provider detection (checking what's running, HTTP calls, auth headers).
+
+**Solution:** OpenClaw has a native embedding provider system. When MemoryGraph runs as a plugin, it gets direct access via `MemoryEmbeddingProvider` interface.
+
+**Implementation:**
+- `embedding-client.ts` — Wraps OpenClaw's embedQuery/embedBatch
+- `embedding-adapter.ts` — Falls back to TF-IDF if unavailable (hash-based, no dependencies)
+- No setup needed, no provider detection, no HTTP calls
+
+**Result:** Clustering works with whatever embeddings you configured in OpenClaw (Ollama, OpenAI, local, etc). If unavailable, gracefully uses TF-IDF.
+
+**Lesson:** Don't manage external systems. Use the platform's native abstractions instead.
+
+Full docs: `/srv/openclaw_projects/MemoryGraph-TS/.openclaw/EMBEDDING_SOLUTION.md`
 
 ---
 
