@@ -1,8 +1,8 @@
-from web.flask_app.main import create_app
-
+"""ChoreBoss entry point — FastAPI via uvicorn."""
+import uvicorn
+from api.main import create_app
 
 app = create_app()
 
-
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=8055)
+    uvicorn.run("run:app", host="0.0.0.0", port=8055, reload=False)

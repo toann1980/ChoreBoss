@@ -14,11 +14,14 @@ class Settings(BaseSettings):
     secret_key: str = "your-secret-key-change-in-production"
     jwt_algorithm: str = "HS256"
     jwt_expiration_hours: int = 168  # 7 days
+    host: str = "0.0.0.0"
+    port: int = 8055
 
     class Config:
         """Pydantic config."""
 
         env_file = ".env"
+        extra = "ignore"
 
 
 _settings: Settings | None = None

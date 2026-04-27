@@ -141,7 +141,7 @@ async def update_chore(
     return result
 
 
-@router.delete("/{chore_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{chore_id}", status_code=status.HTTP_204_NO_CONTENT, response_model=None)
 async def delete_chore(
     chore_id: int,
     session: AsyncSession = Depends(get_session),

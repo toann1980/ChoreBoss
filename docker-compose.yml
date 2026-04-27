@@ -5,9 +5,17 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    env_file:
-      - .env
+    container_name: choreboss-app
+    restart: unless-stopped
     ports:
       - "8055:8055"
+    env_file:
+      - .env
     volumes:
       - .:/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8055/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
