@@ -47,6 +47,36 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 
 ---
 
+## NUC Network Configuration (2026-04-26)
+
+**Three Ethernet paths, segmented by purpose:**
+
+| IP | Interface | Purpose | Protocols |
+|---|-----------|---------|----------|
+| **10.0.0.28** | enp5s0 | SSH + Admin | SSH (terminal, git, deploys) |
+| **10.0.0.22** | eno1 | App Traffic | HTTP/HTTPS (Envestero frontend/backend) |
+| **10.0.0.81** | wlp6s0 | Backup/Secondary | Fallback if wired NICs down |
+
+**Quick reference:**
+```bash
+# SSH (always use 10.0.0.28)
+ssh leto@10.0.0.28
+
+# Services (Envestero on 10.0.0.22)
+http://10.0.0.22:3000  # Frontend (Next.js)
+http://10.0.0.22:8000  # Backend (FastAPI)
+```
+
+**Why this setup:**
+- Wired NICs = stable, low-latency for SSH & app traffic
+- Separate planes = SSH control doesn't compete with app data
+- Built-in failover = services can shift to enp5s0 if eno1 fails
+- Future expansion = reserve enp5s0 secondary for new services (ImageForge3D, MemoryGraph jobs)
+
+**Persistence:** DHCP via systemd-networkd (survives reboots, MAC-based assignment stable)
+
+---
+
 ## Telegram Outbound Messaging
 
 **Quick Send Command:**

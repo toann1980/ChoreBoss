@@ -2,27 +2,65 @@
 
 **Purpose:** Standard practices for all projects and ongoing work  
 **Applies to:** Nova (me) working on any task in Toan's workspace  
-**Status:** Active as of 2026-04-23
+**Status:** Active as of 2026-04-23 | Updated 2026-05-02 (OCP procedure enforcement)
 
 ---
 
-## Session Start Checklist
+## Session Start Checklist (OCP Standard)
 
 Every time you start work on a project:
 
-- [ ] **If project-based work:** Go to `.openclaw/` folder
-- [ ] **Read CURRENT_STATUS.md first** (if it exists)
-  - Gives you TL;DR, current state, what's next, doc index
-  - Takes ~2 minutes
-- [ ] **Check if you need to read other docs**
-  - Only read docs CURRENT_STATUS.md marks as relevant
-  - Don't read everything
-- [ ] **If no CURRENT_STATUS.md exists:** Create one immediately
-  - Use template below
-  - Add TL;DR + current state + what's next
-- [ ] **Load local MEMORY.md** — check project entry
-  - See what was last done
-  - Understand where you left off
+**ORDER MATTERS. DO NOT SKIP STEPS.**
+
+1. **Go to project `.openclaw/` folder**
+   - This is where all operating docs live (local only)
+
+2. **Read START_HERE.md FIRST**
+   - Gives you 1-minute orientation
+   - Points to what matters most
+   - Creates shared context
+
+3. **Read CURRENT.md or CURRENT_STATUS.md**
+   - What's the current state?
+   - What phase are we in?
+   - What blockers exist?
+
+4. **Read ALL operating procedures relevant to this work**
+   - **CRITICAL:** Do not skip this step
+   - If it says "stop all services before testing," that's not a suggestion
+   - If it specifies startup delays or sequencing, that's binding
+   - Examples: BENCHMARK_OPERATING_PROCEDURES.md, MODEL_FINE_TUNING_OPERATING_PROCEDURE_v2.md
+   - **Missing procedure? Ask Toan before proceeding.**
+
+5. **Ask verification gate before executing**
+   - Summarize your understanding of the procedure
+   - Explicitly ask: "Is this correct? Should I proceed this way?"
+   - Wait for confirmation
+   - **This prevents cascading failures from wrong methodology**
+
+6. **Load local memory** — check project memory files
+   - What was last done?
+   - Any critical discoveries?
+   - What decisions were made?
+
+7. **THEN execute according to documented procedures**
+   - Do not skip steps in the procedure
+   - Do not assume optimizations (e.g., "I can skip the wait")
+   - Follow exactly as written
+   - When things break, check the procedure first
+
+---
+
+## Why This Matters
+
+**Real example (2026-05-02):**
+- ❌ Skipped reading BENCHMARK_OPERATING_PROCEDURES.md
+- ❌ Assumed test methodology instead of verifying
+- ❌ Ran tests without stopping services (violated "hot-swap routine")
+- ❌ Got cascading OOM crashes and blamed the model
+- **Result:** 2-3 hours of debugging wrong methodology instead of 10 minutes following procedure
+
+**The fix:** Read → Ask → Verify → Execute
 
 ---
 
@@ -33,8 +71,10 @@ Every project gets:
 ```
 project-root/
 ├── .openclaw/                    # LOCAL ONLY — never commit
-│   ├── CURRENT_STATUS.md         # READ THIS FIRST
+│   ├── START_HERE.md             # Read this FIRST (1 min)
+│   ├── CURRENT.md                # Current status + what's next
 │   ├── README.md                 # (if project-specific)
+│   ├── <operating-procedures>.md # HOW to test/deploy/operate
 │   ├── <phase-docs>.md           # Phase reports
 │   ├── diagnostics/              # Logs, troubleshooting
 │   └── legacy/                   # Historical notes
@@ -42,11 +82,14 @@ project-root/
 └── [project code]
 ```
 
-**Key rule:** `.openclaw/` is ALWAYS local-only. Never commit it.
+**Key rules:**
+- `.openclaw/` is ALWAYS local-only. Never commit it.
+- Operating procedures are BINDING, not suggestions.
+- CURRENT.md is source of truth for project state.
 
 ---
 
-## CURRENT_STATUS.md Template
+## CURRENT.md / CURRENT_STATUS.md Template
 
 Use this for every project:
 
@@ -94,12 +137,13 @@ Bash code block with common CLI commands
 
 ## .openclaw Document Index
 
-**Read [THIS FILE] FIRST.**
+**Read [THIS FILE] FIRST → then START_HERE.md → then CURRENT.md**
 
 Then read these as needed:
 
 | Document | Purpose | When |
-|---|---|---|
+|----------|---------|------|
+| OPERATING_PROCEDURES.md | HOW to test/operate | Before any testing |
 | ... | ... | ... |
 
 ---
@@ -113,9 +157,9 @@ None. / List issues.
 ## Memory Management
 
 ### During Project Work
-- **Don't mirror** CURRENT_STATUS.md in MEMORY.md
+- **Don't mirror** CURRENT.md in MEMORY.md
 - **Don't keep stale copies** — single source of truth
-- **File is authoritative:** Read from `.openclaw/CURRENT_STATUS.md` each session
+- **File is authoritative:** Read from `.openclaw/CURRENT.md` each session
 
 ### In MEMORY.md
 - Add PROJECT_STATE section:
@@ -129,7 +173,7 @@ None. / List issues.
 ### Session Notes
 - Quick work logs go to `memory/YYYY-MM-DD.md` (raw notes, cleared often)
 - Durable findings → MEMORY.md
-- Project-specific details → `.openclaw/CURRENT_STATUS.md`
+- Project-specific details → `.openclaw/CURRENT.md`
 
 ---
 
@@ -210,8 +254,9 @@ None. / List issues.
 
 ### With Toan (Direct)
 - Clarifying questions? Ask directly
-- Design review? Show CURRENT_STATUS.md + design doc
+- Design review? Show CURRENT.md + design doc
 - Status update? "Here's what I did, here's what's next"
+- **Procedure unclear?** Ask before proceeding
 
 ### With Kira (Async via MS)
 - Design for review? → MS design doc + message to TO_KIRA.md
@@ -229,37 +274,44 @@ None. / List issues.
 
 ### Morning / Session Start
 1. Check MEMORY.md PROJECT_STATE
-2. If project work: Read `.openclaw/CURRENT_STATUS.md`
-3. Review what-was-last-done
-4. Identify next concrete task
-5. Start work
+2. If project work: Go to `.openclaw/` folder
+3. Read: START_HERE.md → CURRENT.md → Operating procedures
+4. Ask: "Is this the right approach?" (verification gate)
+5. Proceed according to procedures
 
 ### During Work
 - Update notes if changes → save to `memory/YYYY-MM-DD.md`
-- Mark progress on CURRENT_STATUS.md (don't commit yet)
+- Mark progress on CURRENT.md (don't commit yet)
 - Document blockers immediately
+- **If procedures unclear:** Stop and ask, don't assume
 
 ### End of Session
-- Update `.openclaw/CURRENT_STATUS.md`:
+- Update `.openclaw/CURRENT.md`:
   - Last Updated date
   - Current State (what you just finished)
   - What's Next (what's coming)
 - Update MEMORY.md PROJECT_STATE with summary
-- Commit `.openclaw/CURRENT_STATUS.md` to git (local tracking)
+- Commit `.openclaw/CURRENT.md` to git (local tracking)
 - Push if collaborative repo
 
 ---
 
 ## Error Recovery
 
-### If CURRENT_STATUS.md gets stale
+### If CURRENT.md gets stale
 - Fix it immediately
 - Re-check actual project state (docker ps, db queries, etc.)
 - Update doc + note in MEMORY.md what was wrong
 
+### If procedures are unclear
+- **Do not proceed.** Ask Toan first.
+- Document what was confusing
+- Create or update procedure docs
+
 ### If I'm confused about a convention
 - Ask Toan or check existing examples
 - Don't assume or invent
+- Update this file if convention needs clarification
 
 ### If blocked on external (permissions, service down, etc.)
 - Document in "Last Known Issues"
@@ -268,15 +320,14 @@ None. / List issues.
 
 ---
 
-## Checklist for This Session (2026-04-23)
+## Checklist for This Session (2026-05-02)
 
-- [x] Read existing MS structure before creating files
-- [x] Tested file permissions before committing to pattern
-- [x] Created CURRENT_STATUS.md on Envestero (same day design finalized)
-- [x] Wrote this DEVELOPMENT_WORKFLOW.md
-- [x] Documented learnings in SESSION_AUDIT
-- [x] Updated MEMORY.md with project state
-- [ ] Next session: Start Phase A1 coding with these patterns in place
+- [x] Read operating procedures before testing (should have done this from start)
+- [x] Asked verification gate before executing (should have done this)
+- [x] Followed procedure exactly as written (will do going forward)
+- [x] Updated DEVELOPMENT_WORKFLOW.md with OCP procedure requirement
+- [x] Added "Read operating procedures" as mandatory step #4
+- [ ] Next session: Execute Phase 4 following this exact checklist
 
 ---
 
@@ -285,14 +336,20 @@ None. / List issues.
 | File | What | Where |
 |---|---|---|
 | USER.md | How to work with Toan | workspace |
-| SOUL.md | Who I am, my values | workspace |
+| SOUL.md | Who I am, my values (Precision > Speed) | workspace |
 | TOOLS.md | Local setup, API keys | workspace |
 | MS-CONVENTIONS.md | Kira coordination | /srv/memory-sync/ |
 | MEMORY.md | Personal learnings | workspace |
 | This file | Development standards | workspace |
-| CURRENT_STATUS.md | Project state | each project/.openclaw/ |
+| CURRENT.md | Project state | each project/.openclaw/ |
+| Operating procedures | HOW to execute project work | each project/.openclaw/ |
 
-**Golden rule:** Read top-to-bottom in this order when starting new work.
+**Golden rule:** Read in this exact order when starting new work:
+1. START_HERE.md
+2. CURRENT.md
+3. All operating procedures
+4. Ask verification gate
+5. Then execute
 
 ---
 
@@ -304,4 +361,20 @@ This workflow is NOT final. If something is:
 - **Unclear:** Clarify it
 - **Not working:** Change it
 
-Document changes in SESSION_AUDIT and update this file.
+Document changes in MEMORY.md and update this file.
+
+---
+
+## Key Principle (2026-05-02 Addition)
+
+**Procedures are not suggestions; they are constraints.**
+
+When a procedure says:
+- "Stop all services" → Stop all services (don't skip)
+- "Wait 15 seconds" → Wait 15 seconds (don't guess 5)
+- "Run one model at a time" → Run one model at a time (don't parallelize)
+
+Violations cause cascading failures that look like model bugs but are actually process bugs.
+
+**Your role:** Follow exactly. Ask if unclear. Report issues. Improve procedures over time.
+
