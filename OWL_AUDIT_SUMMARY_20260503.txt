@@ -1,0 +1,55 @@
+OWL MODE REPORT SAVED
+================================================================================
+Generated: 2026-05-03 16:18 PDT
+Files created in /home/leto/.openclaw/workspace/
+
+1. LLAMA_CPP_AUDIT_20260503.md (7.4 KB)
+   ├─ Complete service inventory
+   ├─ Model directory audit
+   ├─ Migration impact analysis
+   ├─ Step-by-step migration plan
+   └─ Pre-flight checklist
+
+2. LLAMA_MIGRATION_COMMANDS.md (3.2 KB)
+   ├─ Copy-paste ready commands
+   ├─ All 9 service updates
+   ├─ Verification tests
+   └─ Rollback procedure
+
+3. migrate_llama_models.sh (2.9 KB)
+   ├─ Automated migration script
+   ├─ Interactive prompts
+   └─ Built-in verification
+
+AUDIT FINDINGS
+================================================================================
+
+🚨 CRITICAL ISSUE: 9 llama.cpp services have broken model paths
+
+  OLD: /home/leto/.openclaw/models/gguf  (0 files - EMPTY)
+  NEW: /home/leto/models/gguf            (16 files - 42 GB, ALL PRESENT ✅)
+
+SERVICES AFFECTED (All 9 are BROKEN):
+  1. llama-cq-gemma4-e2b        (Port 11448)
+  2. llama-embedding-q8         (Port 11449) ← Embedding service
+  3. llama-gemma4-e2b-q5m       (Port 11445) 🔧 FALLBACK
+  4. llama-hermes-2-pro         (Port 11447) ⭐ PRIMARY INFERENCE
+  5. llama-llama3-2-moe         (Port 11450)
+  6. llama-mistral-7b           (Port 11446)
+  7. llama-nemotron             (Port 11451)
+  8. llama-phi                  (Port 11452)
+  9. llama-qwen2-5-4b           (Port 11444)
+
+MODELS VERIFIED AT NEW LOCATION:
+  ✅ All 9 required models found at /home/leto/models/gguf
+  ✅ 7 additional spare models also present
+  ✅ Total: 16 files, 42 GB
+  ✅ Ready for immediate migration
+
+IMPACT ASSESSMENT:
+  Risk level: LOW (graceful shutdown, reversible, tested procedure)
+  Time: ~2 minutes total
+  Consequence of delay: Services will fail on next restart/reboot
+
+NEXT: Execute migration commands when approved
+================================================================================

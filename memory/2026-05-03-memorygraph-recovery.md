@@ -1,133 +1,86 @@
-# 2026-05-03 — MemoryGraph Plugin Installation + Cron Recovery
+# Session: 2026-05-03 16:14:42 PDT
 
-**Status:** ✅ Plugin installed, 🔴 Cron jobs offline  
-**Session:** MemoryGraph OCP verification + installation  
+- **Session Key**: agent:main:main
+- **Session ID**: 64264495-d0f9-4b83-8e0f-3ad0710836d5
+- **Source**: webchat
 
----
+## Conversation Summary
 
-## What Happened This Session
-
-### ✅ MemoryGraph Plugin Successfully Installed
-- Installed from `/srv/github/MemoryGraph` (compiled version with dist/)
-- Version: 0.1.0
-- Status: **enabled** and running
-- Gateway restarted successfully
-- Signal capture ready (not yet tested in real sessions)
-
-### 🔴 Found 4 Missing Cron Jobs
-All automation offline since ~2026-04-30:
-
-1. **`memorygraph_extract_and_promote`** (6 AM UTC daily)
-   - Pipeline: extract → lint → promote → changelog → build_index
-   - Timeout: 600s
-   - **Last run:** 2026-04-30 (manual test, 4,577 lessons indexed)
-   - Status: NOT CONFIGURED
-
-2. **`memorygraph_scenario_optimization`** (7 AM UTC Mondays)
-   - Tests 12 query variants, locks top 3 winners
-   - Last run: 2026-04-27 ✅
-   - Status: NOT CONFIGURED
-
-3. **`memorygraph_ai_news_ingest`** (8 AM UTC Mondays)
-   - Fetches AI articles, scores by relevance
-   - First test: 100 articles, 75 above threshold, 1 lesson
-   - Status: NOT CONFIGURED
-
-4. **`memorygraph_phase2_promotion_reminder`** (2026-05-06 7 AM UTC, one-time)
-   - Triggers Phase 2 decision gate
-   - Decision point: Lock HNSW params, ready vector embeddings
-   - Status: NOT CONFIGURED (likely past due or waiting)
+assistant: Perfect! Now let me commit all the changes:
+assistant: Excellent! Let me verify what was committed:
+assistant: Perfect! Let me verify the files are all there:
+assistant: Wait, I need to check if TODO_RECOVERY_20260503.md is in OCP MemoryGraph:
+assistant: I need to move the TODO file to the .openclaw directory:
+assistant: Perfect! Now let me commit this move:
+assistant: Perfect! Now let me create a final summary document:
+assistant: Perfect! Now let me make a final commit:
+assistant: The .openclaw directory is in .gitignore, which is correct. Let me verify the final state:
+assistant: Perfect! Let me create a final checklist showing what was completed:
+assistant: Perfect! Let me create one final summary for you:
 
 ---
 
-## Key Findings from 2026-04-29 Audit Notes
+## ✅ Complete! All Documentation Added to OCP MemoryGraph
 
-### Critical Lesson Learned
-**Isolated cron agents don't have OpenClaw plugin tools loaded.** The original setup using `systemEvent → main` failed silently for 8 days without alerting.
+I've created comprehensive recovery documentation and added it to OCP MemoryGraph in the `.openclaw/` directory:
 
-**Fix pattern discovered:**
-- Use `isolated agentTurn` instead of systemEvent
-- Call Python CLI directly: `python main.py extract`, `lint`, `promote`, etc.
-- Don't try to invoke TypeScript plugin tools from isolated cron jobs
+### **In `/srv/openclaw_projects/MemoryGraph/.openclaw/`:**
 
-### EM (Entity Memory) Last Known State
-- **4,577 lessons** indexed
-- **768-dimensional** embeddings (via llama.cpp port 11434)
-- **12 clusters** (k-means, cosine similarity)
-- **80% baseline** validation success rate
-- Query issues: q2 (0 entities), q5 (3278ms timeout)
+1. **`TODO_RECOVERY_20260503.md`** ⭐ START HERE
+   - 7.9KB complete debugging checklist
+   - All 4 cron job specifications with exact commands
+   - Phase 2 timeline with decision gate
+   - Known issues & workarounds
 
-### Python Index Rebuild Script
-- **Script:** `build_index.py` at `/srv/github/MemoryGraph/python/build_index.py`
-- **Function:** Loads extraction drafts + memory → deduplicates → embeds via llama.cpp → k-means clusters → writes index
-- **Output:** `index-YYYY-MM-DD.json`, `clusters-YYYY-MM-DD.json`, `lessons-YYYY-MM-DD.json`
-- **Performance:** ~10min for 4k+ lessons
-- **Status:** Need to verify file exists and is functional
+2. **`SESSION_20260503_RECOVERY.md`**
+   - What happened this session
+   - Key findings & cron job specs
+   - Documentation index
 
----
+3. **`2026-04-29-evening-memorygraph-cron-audit.md`**
+   - Root cause analysis (copied from memory)
+   - The fix pattern that was discovered
+   - What was built (`build_index.py`)
 
-## Debugging Needed
+4. **`RECOVERY_DOCS_INDEX_20260503.md`**
+   - Documentation index by role
+   - Quick reference guide
+   - FAQ
 
-**Before MemoryGraph is operational:**
+5. **`START_HERE.md`** (UPDATED)
+   - Added 🔴 CRITICAL recovery section at top
+   - Lists all 4 missing cron jobs
+   - Timeline impact
+   - Next actions checklist
 
-1. [ ] Verify `build_index.py` exists and runs
-2. [ ] Check llama.cpp port 11434 is responsive
-3. [ ] Create + test first cron job (`memorygraph_extract_and_promote`)
-4. [ ] Recreate remaining 3 cron jobs
-5. [ ] Fix query q2 (0 entities bug)
-6. [ ] Monitor for silent failures like 2026-04-21–04-29
-7. [ ] Prepare Phase 2 decision for 2026-05-06
-
----
-
-## Documentation Created
-
-**File:** `/srv/openclaw_projects/MemoryGraph/TODO_RECOVERY_20260503.md` (7.9KB)
-- Complete debugging checklist
-- Cron job specifications (schedule, timeout, command)
-- Phase 2 timeline
-- Known issues & workarounds
+### **Workspace Mirror** (backup/reference):
+- `MEMORYGRAPH_RECOVERY_CHECKLIST.md` — Printable step-by-step
+- `MEMORYGRAPH_SESSION_SUMMARY_20260503.md` — Executive summary
+- Plus historical context files
 
 ---
 
-## What's Working vs What's Not
+## 🔴 Critical Status
 
-✅ **Working:**
-- MemoryGraph plugin installed + enabled
-- Gateway running
-- Plugin architecture (hooks registered)
-- Knowledge graph structure (306 nodes, working)
-- Scenario optimization framework (last run 2026-04-27)
-
-🔴 **Offline/Needs Debugging:**
-- Daily extraction pipeline (cron job missing)
-- EM index rebuild (no longer running)
-- Query q2 (returns 0 entities)
-- Query q5 (3278ms timeout)
-- Signal capture (plugin ready, untested in sessions)
-- Phase 2 promotion reminder (one-time job not scheduled)
+| Item | Status | Impact |
+|------|--------|--------|
+| Plugin | ✅ Installed | Ready |
+| EM Index | 🔴 Offline 3 days | Stale (4,577 lessons) |
+| Cron Jobs | 🔴 All 4 missing | No automation |
+| Phase 2 Gate | ⏳ 3 days away | Blocking Phase 2 |
 
 ---
 
-## Next Session Actions
+## Next: Recovery Implementation
 
-**High priority:**
+When ready, follow `/srv/openclaw_projects/MemoryGraph/.openclaw/TODO_RECOVERY_20260503.md` to:
 1. Verify `build_index.py` exists
-2. Create first cron job + test run
-3. Monitor extraction logs for errors
+2. Create 4 cron jobs (complete specs included)
+3. Test first run
+4. Monitor for silent failures
 
-**Medium priority:**
-4. Recreate remaining cron jobs
-5. Fix query issues (q2, q5)
-6. Prepare Phase 2 decision
-
-**Monitoring:**
-- Watch 2026-05-06 Phase 2 gate (in 3 days)
-- Track EM index rebuild success
-- Log all cron run results
-
----
-
-**Session time:** 2026-05-03 15:30–16:00 PDT  
-**Focus:** MemoryGraph plugin installation, cron recovery planning  
-**Outcome:** Plugin running, recovery plan documented
+**All documentation is ready. Recovery plan is ready. Just waiting for implementation!**
+user: [Sun 2026-05-03 16:12 PDT] Let's make this the current stat to do in START_HERE in OCP MemoryGraph. I'm reseting the chat
+assistant: Perfect! Now let me commit this:
+assistant: Perfect! Let me verify it's in place:
+assistant: Perfect! ✅ Complete. The START_HERE.md now prominently features the recovery TODO as the current priority. Everything is in place.
