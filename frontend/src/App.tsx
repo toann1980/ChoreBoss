@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ApiError, login, loadChores, toSession } from './api';
+import { ApiError, login, loadChores, loadPeople, toSession } from './api';
 import './App.css';
 import type { AuthSession, ChoreRead } from './types';
 
@@ -31,6 +31,7 @@ function App() {
     pin: '',
   });
   const [chores, setChores] = useState<ChoreRead[]>([]);
+  const [peopleCount, setPeopleCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [dashboardLoading, setDashboardLoading] = useState(false);
   const [message, setMessage] = useState<string>('');
@@ -56,10 +57,12 @@ function App() {
 
       try {
         const nextChores = await loadChores(session.access_token);
+        const nextPeople = await loadPeople(session.access_token);
         if (!isCurrent) {
           return;
         }
         setChores(nextChores);
+        setPeopleCount(nextPeople.length);
         setMessage(`Welcome, ${session.loginName}`);
       } catch (error: unknown) {
         if (!isCurrent) {
@@ -102,6 +105,7 @@ function App() {
     window.localStorage.removeItem(STORAGE_KEY);
     setSession(null);
     setChores([]);
+    setPeopleCount(null);
     setLoginForm({ loginName: '', pin: '' });
     setMessage('Signed out');
   }
@@ -143,6 +147,10 @@ function App() {
             <div className="list-card-header">
               <h3>Chores</h3>
               {dashboardLoading ? <span>Loading…</span> : <span>{chores.length} items</span>}
+            </div>
+            <div className="list-card-header summary-line">
+              <h3>People</h3>
+              <span>{peopleCount === null ? 'Loading…' : `${peopleCount} people`}</span>
             </div>
             <ul className="chore-list">
               {chores.map((chore) => (

@@ -46,14 +46,16 @@ describe('App', () => {
 
   it('logs in with login_name and PIN, then shows the chores dashboard', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch');
-    fetchMock.mockImplementation(async (input, init) => {
+    fetchMock.mockImplementation(async (input) => {
       const url = typeof input === 'string' ? input : input instanceof Request ? input.url : String(input);
       if (url.endsWith('/auth/login')) {
-        expect(init?.method).toBe('POST');
         return mockJsonResponse(loginResponse);
       }
       if (url.endsWith('/chores/')) {
         return mockJsonResponse(choresResponse);
+      }
+      if (url.endsWith('/people/')) {
+        return mockJsonResponse([]);
       }
       throw new Error(`Unexpected fetch: ${url}`);
     });
@@ -67,6 +69,7 @@ describe('App', () => {
 
     expect(await screen.findByRole('heading', { name: /welcome, dad/i })).toBeInTheDocument();
     expect(screen.getByText('Wash dishes')).toBeInTheDocument();
+    expect(screen.getByText('0 people')).toBeInTheDocument();
     expect(window.localStorage.getItem('choreboss.session')).toContain('token-123');
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());
   });

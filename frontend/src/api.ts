@@ -1,4 +1,5 @@
-import type { AuthSession, ChoreRead, LoginResponse } from './types';
+import { API_ENDPOINTS } from './endpoints';
+import type { AuthSession, ChoreRead, LoginResponse, PersonRead } from './types';
 
 const DEFAULT_API_BASE_URL = 'http://localhost:8055/api';
 
@@ -50,14 +51,14 @@ async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export async function login(loginName: string, pin: string): Promise<LoginResponse> {
-  return requestJson<LoginResponse>('/auth/login', {
+  return requestJson<LoginResponse>(API_ENDPOINTS.authLogin, {
     method: 'POST',
     body: JSON.stringify({ login_name: loginName, pin }),
   });
 }
 
 export async function loadChores(token: string): Promise<ChoreRead[]> {
-  const response = await fetch(`${getApiBaseUrl()}/chores/`, {
+  const response = await fetch(`${getApiBaseUrl()}${API_ENDPOINTS.chores}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -68,6 +69,20 @@ export async function loadChores(token: string): Promise<ChoreRead[]> {
   }
 
   return (await response.json()) as ChoreRead[];
+}
+
+export async function loadPeople(token: string): Promise<PersonRead[]> {
+  const response = await fetch(`${getApiBaseUrl()}${API_ENDPOINTS.people}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new ApiError(await parseResponseError(response), response.status);
+  }
+
+  return (await response.json()) as PersonRead[];
 }
 
 export function toSession(loginName: string, loginResponse: LoginResponse): AuthSession {

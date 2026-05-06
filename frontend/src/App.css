@@ -37,6 +37,10 @@
   gap: 12px;
 }
 
+.summary-line {
+  margin-top: 4px;
+}
+
 .eyebrow {
   margin: 0 0 8px;
   text-transform: uppercase;
