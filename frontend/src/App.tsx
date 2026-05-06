@@ -11,6 +11,7 @@ import {
   toSession,
 } from './api';
 import './App.css';
+import { AppLayout } from './components/AppLayout';
 import { DashboardPage } from './pages/DashboardPage';
 import { LoginPage } from './pages/LoginPage';
 import type {
@@ -290,22 +291,7 @@ function App() {
   };
 
   return (
-    <main className="app-shell">
-      <header className="hero-card">
-        <div>
-          <p className="eyebrow">ChoreBoss</p>
-          <h1>TypeScript frontend</h1>
-          <p className="subhead">
-            FastAPI backend, typed UI, and a clean path away from the Flask bridge.
-          </p>
-        </div>
-        {session ? (
-          <button type="button" className="secondary-button" onClick={handleLogout}>
-            Sign out
-          </button>
-        ) : null}
-      </header>
-
+    <AppLayout session={session} onLogout={handleLogout}>
       {isAuthenticated && session ? (
         <DashboardPage
           loginName={session.loginName}
@@ -352,7 +338,7 @@ function App() {
           }}
         />
       )}
-    </main>
+    </AppLayout>
   );
 }
 
