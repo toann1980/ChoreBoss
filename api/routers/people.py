@@ -6,6 +6,7 @@ from datetime import date
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.dependencies import get_admin_person, get_current_person, get_session
@@ -14,6 +15,7 @@ from choreboss.repositories import PeopleRepository
 from choreboss.services import PeopleService
 
 router = APIRouter()
+optional_bearer = HTTPBearer(auto_error=False)
 
 
 @router.get("/", response_model=list[PersonRead])
@@ -71,7 +73,7 @@ async def get_person(
 async def create_person(
     person: PersonCreate,
     session: AsyncSession = Depends(get_session),
-    admin: dict[str, Any] = Depends(get_admin_person),
+    credentials: HTTPAuthorizationCredentials | None = Depends(optional_bearer),
 ) -> Any:
     """Create a new person (admin only).
 
@@ -85,6 +87,24 @@ async def create_person(
     """
     people_repo = PeopleRepository(session)
     service = PeopleService(people_repo)
+
+    admins_exist = await service.admins_exist()
+    if admins_exist:
+        if credentials is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Authentication required",
+            )
+
+        from api.dependencies import get_current_person
+
+        current_person = await get_current_person(credentials)
+        if not current_person["is_admin"]:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Admin privileges required",
+            )
+
     result = await service.add_person(
         first_name=person.first_name,
         last_name=person.last_name,

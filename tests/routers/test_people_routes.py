@@ -137,6 +137,30 @@ async def test_create_person_admin(
 
 
 @pytest.mark.asyncio
+async def test_create_first_person_without_auth_when_no_admins_exist(
+    test_client,
+    async_session: AsyncSession,
+) -> None:
+    """Test bootstrap person creation without auth when no admins exist."""
+    response = test_client.post(
+        "/api/people/",
+        json={
+            "first_name": "First",
+            "last_name": "User",
+            "login_name": "firstuser",
+            "birthday": "2015-05-15",
+            "pin": "5678",
+            "is_admin": True,
+        },
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["login_name"] == "firstuser"
+    assert data["is_admin"] is True
+
+
+@pytest.mark.asyncio
 async def test_create_person_non_admin(
     test_client,
     async_session: AsyncSession,

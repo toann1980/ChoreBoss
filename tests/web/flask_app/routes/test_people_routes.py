@@ -73,6 +73,7 @@ class TestPeopleRoutes(unittest.TestCase):
                 data={
                     'first_name': 'John',
                     'last_name': 'Smith',
+                    'login_name': 'johnny',
                     'birthday': '2000-01-01',
                     'pin': '123456',
                     'is_admin': False

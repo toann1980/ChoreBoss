@@ -20,6 +20,7 @@ def add_person() -> Response:
     if request.method == 'POST':
         first_name = request.form['first_name']
         last_name = request.form['last_name']
+        login_name = request.form['login_name']
         birthday_str = request.form['birthday']
         pin = request.form['pin']
         is_admin = 'is_admin' in request.form
@@ -30,12 +31,12 @@ def add_person() -> Response:
                             'numeric characters.'}), 400
 
         current_app.people_service.add_person(
-            first_name, last_name, birthday, pin, is_admin)
+            first_name, last_name, birthday, pin, is_admin, login_name)
         return redirect(url_for('index_bp.home'))
 
     # Check if there are any admins
     admins_exist = current_app.people_service.admins_exist()
-    return render_template('add_person.html', admins_exist=admins_exist)
+    return render_template('add_person.html', admins_exist=admins_exist, form_action=url_for('people_bp.add_person'))
 
 
 @people_bp.route('/delete_person', methods=['POST'])

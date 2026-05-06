@@ -284,27 +284,25 @@ def person_detail(person_id):
 
 @app.route('/people/add', methods=['GET', 'POST'])
 def add_person():
-    """Add new person (admin only)."""
-    if 'token' not in session:
-        return redirect(url_for('login'))
-    
+    """Add new person."""
     if request.method == 'POST':
         data = request.get_json()
         status, result = api_call('POST', '/people/', {
             'first_name': data.get('first_name'),
             'last_name': data.get('last_name'),
+            'login_name': data.get('login_name'),
             'birthday': data.get('birthday'),
             'pin': data.get('pin'),
             'is_admin': data.get('is_admin', False)
         })
         
-        if status == 201:
+        if status == 201 or status == 200:
             return jsonify({'success': True, 'person_id': result.get('id')})
         else:
             return jsonify({'error': result.get('error', 'Failed to add person')}), status
     
     # GET: Show form
-    return render_template('add_person.html')
+    return render_template('add_person.html', form_action=url_for('add_person'))
 
 
 @app.route('/api/health')

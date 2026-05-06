@@ -48,7 +48,13 @@
           </form>
 
           <hr>
-          <p class="text-muted small">
+          <div class="d-flex flex-column align-items-start">
+            <a class="btn btn-outline-secondary mb-2" href="{{ url_for('add_person') }}">Register</a>
+            <p class="text-muted small mb-0">
+              Need a new account? Use Register to add a person.
+            </p>
+          </div>
+          <p class="text-muted small mt-3">
             <strong>Demo:</strong> Try login name <code>alice</code>, PIN 1234
           </p>
         </div>
