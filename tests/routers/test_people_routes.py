@@ -6,7 +6,8 @@ import pytest
 from fastapi import status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from tests.setup_memory_records import setup_test_people
+from choreboss.models.chore import Chore
+from tests.setup_memory_records import setup_test_people, setup_test_chores
 
 
 @pytest.mark.asyncio
@@ -88,6 +89,38 @@ async def test_get_person(
     data = response.json()
     assert data["first_name"] == person.first_name
     assert data["last_name"] == person.last_name
+
+
+@pytest.mark.asyncio
+async def test_delete_person_unassigns_chores(
+    test_client,
+    async_session: AsyncSession,
+) -> None:
+    """Test deleting a person unassigns their chores instead of breaking them."""
+    people = await setup_test_people(async_session, 1)
+    chores = await setup_test_chores(async_session, 1)
+    await async_session.commit()
+    admin = people[0]
+    chore = chores[0]
+    chore.person_id = admin.id
+    chore.last_completed_id = admin.id
+    await async_session.commit()
+
+    login_response = test_client.post(
+        "/api/auth/login",
+        json={"login_name": admin.login_name, "pin": "1234"},
+    )
+    token = login_response.json()["access_token"]
+
+    response = test_client.delete(
+        f"/api/people/{admin.id}",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+    updated_chore = (await async_session.get(Chore, chore.id))
+    assert updated_chore.person_id is None
+    assert updated_chore.last_completed_id is None
 
 
 @pytest.mark.asyncio

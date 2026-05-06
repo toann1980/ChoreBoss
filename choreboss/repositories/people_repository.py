@@ -4,10 +4,11 @@ from __future__ import annotations
 
 from typing import Optional
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from choreboss.models.chore import Chore
 from choreboss.models.people import People
 
 
@@ -76,6 +77,14 @@ class PeopleRepository:
         Args:
             person_id: ID of person to delete.
         """
+        await self.session.execute(
+            update(Chore)
+            .where(
+                (Chore.person_id == person_id)
+                | (Chore.last_completed_id == person_id)
+            )
+            .values(person_id=None, last_completed_id=None)
+        )
         person = await self.get_person_by_id(person_id)
         if person:
             await self.session.delete(person)
