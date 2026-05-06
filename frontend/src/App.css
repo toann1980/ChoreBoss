@@ -58,7 +58,8 @@ p {
 
 .subhead,
 .status,
-.chore-list p {
+.chore-list p,
+.people-list p {
   color: #4b5563;
 }
 
@@ -113,7 +114,8 @@ p {
   color: #166534;
 }
 
-.chore-list {
+.chore-list,
+.people-list {
   list-style: none;
   padding: 0;
   margin: 0;
@@ -121,11 +123,18 @@ p {
   gap: 12px;
 }
 
-.chore-list li {
+.chore-list li,
+.people-list li {
   padding: 14px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.8);
   border: 1px solid rgba(17, 24, 39, 0.08);
+  display: grid;
+  gap: 6px;
+}
+
+.people-list li {
+  grid-template-columns: 1fr;
 }
 
 @media (max-width: 640px) {

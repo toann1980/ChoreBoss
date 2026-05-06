@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ApiError, login, loadChores, loadPeople, toSession } from './api';
 import './App.css';
-import type { AuthSession, ChoreRead } from './types';
+import type { AuthSession, ChoreRead, PersonRead } from './types';
 
 const STORAGE_KEY = 'choreboss.session';
 
@@ -31,7 +31,7 @@ function App() {
     pin: '',
   });
   const [chores, setChores] = useState<ChoreRead[]>([]);
-  const [peopleCount, setPeopleCount] = useState<number | null>(null);
+  const [people, setPeople] = useState<PersonRead[]>([]);
   const [loading, setLoading] = useState(false);
   const [dashboardLoading, setDashboardLoading] = useState(false);
   const [message, setMessage] = useState<string>('');
@@ -56,13 +56,15 @@ function App() {
       setMessage('Loading chores…');
 
       try {
-        const nextChores = await loadChores(session.access_token);
-        const nextPeople = await loadPeople(session.access_token);
+        const [nextChores, nextPeople] = await Promise.all([
+          loadChores(session.access_token),
+          loadPeople(session.access_token),
+        ]);
         if (!isCurrent) {
           return;
         }
         setChores(nextChores);
-        setPeopleCount(nextPeople.length);
+        setPeople(nextPeople);
         setMessage(`Welcome, ${session.loginName}`);
       } catch (error: unknown) {
         if (!isCurrent) {
@@ -105,7 +107,7 @@ function App() {
     window.localStorage.removeItem(STORAGE_KEY);
     setSession(null);
     setChores([]);
-    setPeopleCount(null);
+    setPeople([]);
     setLoginForm({ loginName: '', pin: '' });
     setMessage('Signed out');
   }
@@ -148,15 +150,31 @@ function App() {
               <h3>Chores</h3>
               {dashboardLoading ? <span>Loading…</span> : <span>{chores.length} items</span>}
             </div>
-            <div className="list-card-header summary-line">
-              <h3>People</h3>
-              <span>{peopleCount === null ? 'Loading…' : `${peopleCount} people`}</span>
-            </div>
             <ul className="chore-list">
               {chores.map((chore) => (
                 <li key={chore.id}>
                   <strong>{chore.name}</strong>
                   <p>{chore.description}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="list-card">
+            <div className="list-card-header">
+              <h3>People</h3>
+              {dashboardLoading ? <span>Loading…</span> : <span>{people.length} people</span>}
+            </div>
+            <ul className="people-list">
+              {people.map((person) => (
+                <li key={person.id}>
+                  <strong>
+                    {person.first_name} {person.last_name}
+                  </strong>
+                  <p>@{person.login_name}</p>
+                  <span className={person.is_admin ? 'badge badge-admin' : 'badge'}>
+                    {person.is_admin ? 'Admin' : 'Member'}
+                  </span>
                 </li>
               ))}
             </ul>

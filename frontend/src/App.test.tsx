@@ -25,6 +25,31 @@ const choresResponse = [
   },
 ];
 
+const peopleResponse = [
+  {
+    id: 5,
+    first_name: 'Toan',
+    last_name: 'Nguyen',
+    login_name: 'dad',
+    birthday: '1980-05-25',
+    is_admin: true,
+    sequence_num: 1,
+    created_at: '2026-05-06T00:00:00',
+    updated_at: '2026-05-06T00:00:00',
+  },
+  {
+    id: 6,
+    first_name: 'Kid',
+    last_name: 'Nguyen',
+    login_name: 'kid',
+    birthday: '2010-01-01',
+    is_admin: false,
+    sequence_num: 2,
+    created_at: '2026-05-06T00:00:00',
+    updated_at: '2026-05-06T00:00:00',
+  },
+];
+
 function mockJsonResponse<T>(body: T, init?: ResponseInit): Response {
   return new Response(JSON.stringify(body), {
     headers: {
@@ -44,7 +69,7 @@ describe('App', () => {
     vi.restoreAllMocks();
   });
 
-  it('logs in with login_name and PIN, then shows the chores dashboard', async () => {
+  it('logs in with login_name and PIN, then shows the chores dashboard and people list', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch');
     fetchMock.mockImplementation(async (input) => {
       const url = typeof input === 'string' ? input : input instanceof Request ? input.url : String(input);
@@ -55,7 +80,7 @@ describe('App', () => {
         return mockJsonResponse(choresResponse);
       }
       if (url.endsWith('/people/')) {
-        return mockJsonResponse([]);
+        return mockJsonResponse(peopleResponse);
       }
       throw new Error(`Unexpected fetch: ${url}`);
     });
@@ -69,7 +94,9 @@ describe('App', () => {
 
     expect(await screen.findByRole('heading', { name: /welcome, dad/i })).toBeInTheDocument();
     expect(screen.getByText('Wash dishes')).toBeInTheDocument();
-    expect(screen.getByText('0 people')).toBeInTheDocument();
+    expect(screen.getByText('2 people')).toBeInTheDocument();
+    expect(screen.getByText('Toan Nguyen')).toBeInTheDocument();
+    expect(screen.getByText('Kid Nguyen')).toBeInTheDocument();
     expect(window.localStorage.getItem('choreboss.session')).toContain('token-123');
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());
   });

@@ -1,5 +1,12 @@
 import { API_ENDPOINTS } from './endpoints';
-import type { AuthSession, ChoreRead, LoginResponse, PersonRead } from './types';
+import type {
+  AuthSession,
+  ChoreRead,
+  LoginResponse,
+  PersonCreateInput,
+  PersonRead,
+  PersonUpdateInput,
+} from './types';
 
 const DEFAULT_API_BASE_URL = 'http://localhost:8055/api';
 
@@ -50,6 +57,26 @@ async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
   return (await response.json()) as T;
 }
 
+async function requestVoid(path: string, init: RequestInit): Promise<void> {
+  const response = await fetch(`${getApiBaseUrl()}${path}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...(init.headers ?? {}),
+    },
+    ...init,
+  });
+
+  if (!response.ok) {
+    throw new ApiError(await parseResponseError(response), response.status);
+  }
+}
+
+function authorizedHeaders(token: string): HeadersInit {
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+}
+
 export async function login(loginName: string, pin: string): Promise<LoginResponse> {
   return requestJson<LoginResponse>(API_ENDPOINTS.authLogin, {
     method: 'POST',
@@ -59,9 +86,7 @@ export async function login(loginName: string, pin: string): Promise<LoginRespon
 
 export async function loadChores(token: string): Promise<ChoreRead[]> {
   const response = await fetch(`${getApiBaseUrl()}${API_ENDPOINTS.chores}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: authorizedHeaders(token),
   });
 
   if (!response.ok) {
@@ -73,9 +98,7 @@ export async function loadChores(token: string): Promise<ChoreRead[]> {
 
 export async function loadPeople(token: string): Promise<PersonRead[]> {
   const response = await fetch(`${getApiBaseUrl()}${API_ENDPOINTS.people}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: authorizedHeaders(token),
   });
 
   if (!response.ok) {
@@ -83,6 +106,40 @@ export async function loadPeople(token: string): Promise<PersonRead[]> {
   }
 
   return (await response.json()) as PersonRead[];
+}
+
+export async function getPerson(token: string, personId: number): Promise<PersonRead> {
+  return requestJson<PersonRead>(API_ENDPOINTS.personById(personId), {
+    method: 'GET',
+    headers: authorizedHeaders(token),
+  });
+}
+
+export async function createPerson(token: string, person: PersonCreateInput): Promise<PersonRead> {
+  return requestJson<PersonRead>(API_ENDPOINTS.people, {
+    method: 'POST',
+    headers: authorizedHeaders(token),
+    body: JSON.stringify(person),
+  });
+}
+
+export async function updatePerson(
+  token: string,
+  personId: number,
+  person: PersonUpdateInput,
+): Promise<PersonRead> {
+  return requestJson<PersonRead>(API_ENDPOINTS.personById(personId), {
+    method: 'PUT',
+    headers: authorizedHeaders(token),
+    body: JSON.stringify(person),
+  });
+}
+
+export async function deletePerson(token: string, personId: number): Promise<void> {
+  await requestVoid(API_ENDPOINTS.personById(personId), {
+    method: 'DELETE',
+    headers: authorizedHeaders(token),
+  });
 }
 
 export function toSession(loginName: string, loginResponse: LoginResponse): AuthSession {

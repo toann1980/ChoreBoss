@@ -10,6 +10,23 @@ export interface PersonRead {
   updated_at: string;
 }
 
+export interface PersonCreateInput {
+  first_name: string;
+  last_name: string;
+  login_name: string;
+  birthday: string;
+  is_admin?: boolean;
+  pin: string;
+}
+
+export interface PersonUpdateInput {
+  first_name?: string;
+  last_name?: string;
+  login_name?: string;
+  birthday?: string;
+  is_admin?: boolean;
+}
+
 export interface ChoreRead {
   id: number;
   name: string;
