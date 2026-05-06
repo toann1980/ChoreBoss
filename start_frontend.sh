@@ -18,14 +18,18 @@ fi
 echo "✅ Activating virtual environment..."
 source .venv/bin/activate
 
-# Set database to SQLite (async)
-export DATABASE_URL="sqlite+aiosqlite:///choreboss.db"
+# Set defaults for the ChoreBoss integration harness
+export DATABASE_URL="${DATABASE_URL:-sqlite+aiosqlite:///choreboss.db}"
+export API_BASE_URL="${API_BASE_URL:-http://localhost:8055/api}"
+export FLASK_PORT="${FLASK_PORT:-8056}"
 
 echo "✅ Database: $DATABASE_URL"
+echo "✅ API backend: $API_BASE_URL"
+echo "✅ Frontend port: $FLASK_PORT"
 echo ""
 echo "🌐 Starting Flask frontend..."
-echo "    Frontend will be available at: http://localhost:8055"
-echo "    API backend should be running at: http://localhost:8000"
+echo "    Frontend will be available at: http://localhost:${FLASK_PORT}"
+echo "    API backend should be running at: ${API_BASE_URL}"
 echo ""
 echo "Login credentials:"
 echo "    Person ID: 1"
