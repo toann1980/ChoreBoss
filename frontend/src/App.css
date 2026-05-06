@@ -48,6 +48,7 @@
 h1,
 h2,
 h3,
+h4,
 p {
   margin: 0;
 }
@@ -59,19 +60,47 @@ p {
   color: #4b5563;
 }
 
-.login-form {
+.login-form,
+.people-form,
+.people-edit-form {
   display: grid;
   gap: 16px;
-  max-width: 360px;
+  max-width: 520px;
 }
 
-.login-form label {
+.people-form,
+.people-edit-form {
+  max-width: none;
+  padding: 16px;
+  margin: 16px 0;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(17, 24, 39, 0.08);
+}
+
+.people-form-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.login-form label,
+.people-form label,
+.people-edit-form label {
   display: grid;
   gap: 8px;
   font-weight: 600;
 }
 
-.login-form input {
+.checkbox-row {
+  align-items: center;
+  grid-auto-flow: column;
+  justify-content: start;
+}
+
+.login-form input,
+.people-form input,
+.people-edit-form input {
   font: inherit;
   padding: 12px 14px;
   border-radius: 12px;
@@ -81,7 +110,8 @@ p {
 
 .login-form button,
 .secondary-button,
-.chore-action {
+.chore-action,
+.people-form button {
   font: inherit;
   border: none;
   border-radius: 999px;
@@ -131,8 +161,10 @@ p {
   gap: 6px;
 }
 
-.people-list li {
-  grid-template-columns: 1fr;
+.people-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .chore-action {
