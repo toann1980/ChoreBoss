@@ -12,6 +12,10 @@ import {
 } from './api';
 import './App.css';
 import { AppLayout } from './components/AppLayout';
+import {
+  type PersonCreateFormState,
+  type PersonEditFormState,
+} from './components/PeoplePanel';
 import { DashboardPage } from './pages/DashboardPage';
 import { LoginPage } from './pages/LoginPage';
 import type {
@@ -27,23 +31,6 @@ const STORAGE_KEY = 'choreboss.session';
 interface LoginFormState {
   loginName: string;
   pin: string;
-}
-
-interface PersonCreateFormState {
-  first_name: string;
-  last_name: string;
-  login_name: string;
-  birthday: string;
-  pin: string;
-  is_admin: boolean;
-}
-
-interface PersonEditFormState {
-  first_name: string;
-  last_name: string;
-  login_name: string;
-  birthday: string;
-  is_admin: boolean;
 }
 
 const EMPTY_PERSON_CREATE_FORM: PersonCreateFormState = {
@@ -279,14 +266,14 @@ function App() {
     setMessage('Signed out');
   }
 
-  const updateCreateForm = (next: Partial<PersonCreateInput>): void => {
+  const updateCreateForm = (next: Partial<PersonCreateFormState>): void => {
     setPersonCreateForm((current) => ({
       ...current,
       ...next,
     }));
   };
 
-  const updateEditForm = (next: Partial<PersonUpdateInput>): void => {
+  const updateEditForm = (next: Partial<PersonEditFormState>): void => {
     setPersonEditForm((current) => (current ? { ...current, ...next } : current));
   };
 
