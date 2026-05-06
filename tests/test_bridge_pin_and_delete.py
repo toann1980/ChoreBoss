@@ -10,7 +10,7 @@ def test_verify_pin_allows_admin_delete_context(monkeypatch) -> None:
         if method == 'POST' and endpoint == '/auth/login':
             assert data == {'login_name': 'admin', 'pin': '1111'}
             return 200, {
-                'access_token': 'token',
+                'access_token': 'fresh-token',
                 'token_type': 'bearer',
                 'person_id': 1,
                 'is_admin': True,
@@ -20,13 +20,17 @@ def test_verify_pin_allows_admin_delete_context(monkeypatch) -> None:
     monkeypatch.setattr('flask_bridge.api_call', fake_api_call)
 
     with client.session_transaction() as sess:
-        sess['token'] = 'token'
+        sess['token'] = 'stale-token'
         sess['login_name'] = 'admin'
 
     response = client.post('/verify_pin', json={'context': 'delete_chore', 'pin': '1111'})
 
     assert response.status_code == 200
     assert response.get_json() == {'status': 'success'}
+    with client.session_transaction() as sess:
+        assert sess['token'] == 'fresh-token'
+        assert sess['person_id'] == 1
+        assert sess['is_admin'] is True
 
 
 def test_verify_pin_rejects_bad_pin(monkeypatch) -> None:

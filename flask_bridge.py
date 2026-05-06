@@ -369,6 +369,13 @@ def verify_pin():
     if status != 200 or not isinstance(auth_result, dict):
         return jsonify({'status': 'failure'})
 
+    # Refresh the bridge session with the latest backend token/role so a
+    # just-promoted admin can immediately perform admin actions.
+    session['token'] = auth_result.get('access_token')
+    session['person_id'] = auth_result.get('person_id')
+    session['is_admin'] = bool(auth_result.get('is_admin'))
+    session['login_name'] = session.get('login_name') or data.get('login_name')
+
     is_admin = bool(auth_result.get('is_admin'))
     if context == 'add_person':
         status2, people_data = api_call('GET', '/people/')
