@@ -286,20 +286,33 @@ def person_detail(person_id):
 def add_person():
     """Add new person."""
     if request.method == 'POST':
-        data = request.get_json()
-        status, result = api_call('POST', '/people/', {
+        data = request.get_json(silent=True) or request.form
+        payload = {
             'first_name': data.get('first_name'),
             'last_name': data.get('last_name'),
             'login_name': data.get('login_name'),
             'birthday': data.get('birthday'),
             'pin': data.get('pin'),
             'is_admin': data.get('is_admin', False)
-        })
+        }
+        if hasattr(payload['is_admin'], 'lower'):
+            payload['is_admin'] = str(payload['is_admin']).lower() in ('1', 'true', 'on', 'yes')
+        status, result = api_call('POST', '/people/', payload)
         
         if status == 201 or status == 200:
-            return jsonify({'success': True, 'person_id': result.get('id')})
+            if request.is_json:
+                return jsonify({'success': True, 'person_id': result.get('id')})
+            return redirect(url_for('login'))
         else:
-            return jsonify({'error': result.get('error', 'Failed to add person')}), status
+            message = result.get('error', 'Failed to add person')
+            if status in (401, 403) and not request.is_json:
+                message = (
+                    'Please log in as an admin to add a person, or use the '
+                    'bootstrap registration path when no admins exist.'
+                )
+            if request.is_json:
+                return jsonify({'error': message}), status
+            return render_template('add_person.html', form_action=url_for('add_person'), error=message), status
     
     # GET: Show form
     return render_template('add_person.html', form_action=url_for('add_person'))

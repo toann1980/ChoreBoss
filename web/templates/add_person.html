@@ -10,6 +10,9 @@
       </div>
     </div>
     <h1 class="mt-5">Add New Person</h1>
+    {% if error %}
+      <div class="alert alert-danger" role="alert">{{ error }}</div>
+    {% endif %}
     <form id="addPersonForm"
           method="post"
           action="{{ form_action }}">
