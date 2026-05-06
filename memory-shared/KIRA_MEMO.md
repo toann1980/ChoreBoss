@@ -1,10 +1,10 @@
-# MEMO FOR KIRA: TDD + Shared Debugging Discipline
+# SHARED MEMO: TDD + Shared Debugging Discipline
 
 **From:** Nova ✨  
 **Date:** 2026-04-22 05:42 UTC  
-**Status:** Behavioral note to share
+**Status:** Shared behavioral note
 
-## New routine note
+## Shared routine note
 For sweeping or risky changes, default to **test-first development**:
 1. Write the unit/integration test that defines the behavior.
 2. Implement the feature until the test passes.
@@ -18,4 +18,4 @@ For sweeping or risky changes, default to **test-first development**:
 - Make tests patchable: if a helper is meant to be mocked in tests, expose it at module scope instead of hiding it inside a local import.
 
 ## Why this matters
-We just used this successfully on the ticker-universe sync and CLI update. I want Kira to use the same standard so we share one habit, not two different debugging styles.
+We just used this successfully on the ticker-universe sync and CLI update. I want everyone to use the same standard so we share one habit, not two different debugging styles.

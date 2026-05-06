@@ -1,7 +1,7 @@
 # DEVELOPMENT_WORKFLOW.md
 
-**Purpose:** Standard practices for all projects and ongoing work  
-**Applies to:** Nova (me) working on any task in Toan's workspace  
+**Purpose:** Standard practices for all projects and ongoing work
+**Applies to:** Anyone working on any task in Toan's workspace
 **Status:** Active as of 2026-04-23 | Updated 2026-05-02 (OCP procedure enforcement)
 
 ---
@@ -38,12 +38,16 @@ Every time you start work on a project:
    - Wait for confirmation
    - **This prevents cascading failures from wrong methodology**
 
-6. **Load local memory** — check project memory files
+6. **Use the shared routine index when relevant**
+   - See `OCP_ROUTINES.md` for the team-wide routines
+   - If the work changes docs, conventions, or shared behavior, run the Documentation Verification Routine before notifying anyone
+
+7. **Load local memory** - check project memory files
    - What was last done?
    - Any critical discoveries?
    - What decisions were made?
 
-7. **THEN execute according to documented procedures**
+8. **THEN execute according to documented procedures**
    - Do not skip steps in the procedure
    - Do not assume optimizations (e.g., "I can skip the wait")
    - Follow exactly as written
@@ -70,7 +74,7 @@ Every project gets:
 
 ```
 project-root/
-├── .openclaw/                    # LOCAL ONLY — never commit
+├── .openclaw/                    # LOCAL ONLY - never commit
 │   ├── START_HERE.md             # Read this FIRST (1 min)
 │   ├── CURRENT.md                # Current status + what's next
 │   ├── README.md                 # (if project-specific)
@@ -94,15 +98,15 @@ project-root/
 Use this for every project:
 
 ```markdown
-# [Project Name] — Current Status & Quick Reference
+# [Project Name] - Current Status & Quick Reference
 
-**Last Updated:** YYYY-MM-DD HH:MM UTC  
+**Last Updated:** YYYY-MM-DD HH:MM UTC
 **Status:** [One-liner: what phase, what's next]
 
 ---
 
-## TL;DR — What's Happening Now
-- 3–5 bullet points max
+## TL;DR - What's Happening Now
+- 3-5 bullet points max
 - What's running
 - What's next
 
@@ -158,7 +162,7 @@ None. / List issues.
 
 ### During Project Work
 - **Don't mirror** CURRENT.md in MEMORY.md
-- **Don't keep stale copies** — single source of truth
+- **Don't keep stale copies** - single source of truth
 - **File is authoritative:** Read from `.openclaw/CURRENT.md` each session
 
 ### In MEMORY.md
@@ -168,7 +172,7 @@ None. / List issues.
   - Envestero: Phase 3 done → News design final → Ready Phase A1
   ```
 - Update at **session end** with: what was accomplished, what's next, any decisions
-- Keep entries brief (1–2 lines per project)
+- Keep entries brief (1-2 lines per project)
 
 ### Session Notes
 - Quick work logs go to `memory/YYYY-MM-DD.md` (raw notes, cleared often)
@@ -179,7 +183,7 @@ None. / List issues.
 
 ## Memory-Sync (MS) Conventions
 
-**Location:** `/srv/memory-sync/` (NUC) or `/mnt/memory-sync/` (Kira's WSL2)
+**Location:** `/srv/memory-sync/` (NUC) or the other agent's WSL2
 
 ### Files & Patterns
 
@@ -189,27 +193,27 @@ None. / List issues.
 - Persists: Forever (or until superseded)
 
 **Messages (temporary):**
-- Nova → Kira: Write to `TO_KIRA.md` with `[UNREAD]` tag, Kira deletes after reading
-- Kira → Nova: Write to `TO_NOVA.md` with `[UNREAD]` tag, Nova deletes after reading
+- Agent A → Agent B: Write to `TO_B.md` with `[UNREAD]` tag; Agent B deletes after reading
+- Agent B → Agent A: Write to `TO_A.md` with `[UNREAD]` tag; Agent A deletes after reading
 
 **Durable references:**
 - DECISIONS.md (locked, append-only)
 - KIRA.md, MS-CONVENTIONS.md (workflow docs)
 
-### Workflow: Nova Sending Design to Kira
+### Workflow: Sending Design to Another Agent
 
 1. Create `<project>-<phase>-design.md` in `/srv/memory-sync/`
-2. Write message to `TO_KIRA.md`:
+2. Write message to the matching inbox file:
    ```
    [UNREAD]
-   **From:** Nova  
-   **Date:** YYYY-MM-DD HH:MM UTC  
+   **From:** sending agent
+   **Date:** YYYY-MM-DD HH:MM UTC
    **Re:** [Topic]
-   
+
    [Summary + pointer to design doc]
    ```
-3. **Do not assume Kira sees it** — Toan will loop her in or she'll check
-4. After Kira reads: She deletes the message, optionally responds in `TO_NOVA.md`
+3. **Do not assume the other agent sees it** - Toan will loop them in or they'll check
+4. After the other agent reads: They delete the message, optionally respond in the matching inbox file
 
 ---
 
@@ -232,7 +236,7 @@ None. / List issues.
 - Test at peak load before deploying
 - Add entry to API_RATE_LIMITS.md reference
 
-**Operational Hours (Envestero Standard) — ALL TIMES PST:**
+**Operational Hours (Envestero Standard) - ALL TIMES PST:**
 - **Heavy window:** Weekdays 12am-7am PST, weekends 2am-8am PST (10 concurrent, 50ms delay)
 - **Light hours:** All other times (2 concurrent, 500ms delay)
 - Use this for ALL future projects unless specified otherwise
@@ -258,11 +262,11 @@ None. / List issues.
 - Status update? "Here's what I did, here's what's next"
 - **Procedure unclear?** Ask before proceeding
 
-### With Kira (Async via MS)
+### With Another Agent (Async via MS)
 - Design for review? → MS design doc + message to TO_KIRA.md
 - Decisions needed? → Message to TO_KIRA.md with specific questions
 - Responses? → She replies in TO_NOVA.md
-- **Don't assume sync** — work continues, she responds when ready
+- **Don't assume sync** - work continues, she responds when ready
 
 ### External (Telegram)
 - Alerts/reminders? → `openclaw message send --target telegram:8718656405`
@@ -338,7 +342,7 @@ None. / List issues.
 | USER.md | How to work with Toan | workspace |
 | SOUL.md | Who I am, my values (Precision > Speed) | workspace |
 | TOOLS.md | Local setup, API keys | workspace |
-| MS-CONVENTIONS.md | Kira coordination | /srv/memory-sync/ |
+| MS-CONVENTIONS.md | memory-sync coordination | /srv/memory-sync/ |
 | MEMORY.md | Personal learnings | workspace |
 | This file | Development standards | workspace |
 | CURRENT.md | Project state | each project/.openclaw/ |

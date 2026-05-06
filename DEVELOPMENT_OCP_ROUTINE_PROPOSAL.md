@@ -1,8 +1,8 @@
 # DEVELOPMENT_OCP_ROUTINE - Testing & Project Work (2026-05-01)
 
-**Purpose:** Systematic workflow for testing in development and working with OCP projects  
-**Status:** PROPOSAL (awaiting your approval before enacting)  
-**Owner:** Nova  
+**Purpose:** Systematic workflow for testing in development and working with OCP projects
+**Status:** Shared draft (available to everyone)
+**Audience:** Everyone doing dev/OCP work
 **Frequency:** Every session when doing dev/OCP work
 
 ---
@@ -84,19 +84,19 @@
 
 ## Red Flags (Stop & Recheck Documentation)
 
-🚩 **Using different IP addresses without noting why**  
+🚩 **Using different IP addresses without noting why**
 → Check TOOLS.md for documented network configuration
 
-🚩 **Changing test methodology between models**  
+🚩 **Changing test methodology between models**
 → Check project MASTER.md for standard protocol
 
-🚩 **Getting different results each run with same setup**  
+🚩 **Getting different results each run with same setup**
 → Check if methodology drifted; re-read documentation
 
-🚩 **Making assumptions about model names/ports**  
+🚩 **Making assumptions about model names/ports**
 → Check project registry files for exact names
 
-🚩 **Testing without a written plan**  
+🚩 **Testing without a written plan**
 → Create `.openclaw/TESTING_PLAN.md` first
 
 ---
@@ -160,14 +160,19 @@
 
 ---
 
+## Related Shared Routines
+
+- `OCP_ROUTINES.md` — central routine index
+- `DOCUMENTATION_VERIFICATION_ROUTINE.md` — notify only after docs are complete
+
 ## Benefits of This Routine
 
-✅ **Consistency** - Same methodology every test  
-✅ **Traceability** - Know exactly what was tested, how, when  
-✅ **Reproducibility** - Results can be verified by others  
-✅ **Efficiency** - No duplicated work, uses documented decisions  
-✅ **Correctness** - Follows established protocols, not ad-hoc guessing  
-✅ **Learning** - Mistakes are documented and learned from  
+✅ **Consistency** - Same methodology every test
+✅ **Traceability** - Know exactly what was tested, how, when
+✅ **Reproducibility** - Results can be verified by others
+✅ **Efficiency** - No duplicated work, uses documented decisions
+✅ **Correctness** - Follows established protocols, not ad-hoc guessing
+✅ **Learning** - Mistakes are documented and learned from
 
 ---
 
@@ -177,9 +182,9 @@
 
 **To activate:**
 - [ ] You approve the routine
-- [ ] I move this file from PROPOSAL to `/srv/memory-sync/NOVA_DEVELOPMENT_OCP_ROUTINE.md` (shared with Kira)
+- [ ] I move this file into the shared OCP routine set
 - [ ] I reference this routine in every OCP/dev session going forward
-- [ ] Both agents follow this pattern for consistency
+- [ ] Everyone follows this pattern for consistency
 
 **Questions for approval:**
 1. Does this match your workflow expectations?

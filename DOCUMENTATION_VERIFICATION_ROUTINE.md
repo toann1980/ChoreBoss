@@ -3,7 +3,7 @@
 **Purpose:** Ensure all decisions/discussions are captured in documentation before notifying stakeholders
 
 **When to trigger:** 
-- Before sending any notification to Kira
+- Before sending any notification to a stakeholder or another agent
 - Before committing major changes to conventions
 - Before finalizing any cross-team decision
 
@@ -29,7 +29,7 @@ Example format:
 ✓ MS-CONVENTIONS.md updates
 ✓ STANDARDS_CREATION_CONVENTION.md updates
 ✓ Peer review archival
-✓ Kira notification
+✓ Stakeholder notification
 ```
 
 ## 2. Verify: Is It Documented?
@@ -86,7 +86,7 @@ Create a checklist file showing what was covered + verified:
 - [x] MS root cleaned
 
 ### Notifications
-- [x] Kira notified via TO_KIRA.md
+- [x] Stakeholder notified via the appropriate channel
 - [x] Summary of changes provided
 
 ## Gaps Found & Fixed
@@ -98,7 +98,7 @@ Create a checklist file showing what was covered + verified:
 ```
 
 ## 5. Notify & Summarize
-When notifying Kira (or other stakeholders):
+When notifying a stakeholder or another agent:
 
 **In TO_KIRA.md, create a summary message:**
 ```markdown
@@ -192,7 +192,7 @@ Ready to start MemoryGraph Phase 1.
 
 ## When NOT to Skip This
 
-- [ ] Before notifying Kira
+- [ ] Before notifying anyone about a significant change
 - [ ] Before updating MS-CONVENTIONS
 - [ ] Before finalizing any cross-team decision
 - [ ] Before claiming "session complete"
