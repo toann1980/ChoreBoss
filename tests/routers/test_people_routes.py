@@ -161,6 +161,39 @@ async def test_create_first_person_without_auth_when_no_admins_exist(
 
 
 @pytest.mark.asyncio
+async def test_create_person_duplicate_login_name_fails(
+    test_client,
+    async_session: AsyncSession,
+) -> None:
+    """Test creating a person with a duplicate login_name returns a clean error."""
+    people = await setup_test_people(async_session, 1)
+    await async_session.commit()
+    admin = people[0]
+
+    login_response = test_client.post(
+        "/api/auth/login",
+        json={"login_name": admin.login_name, "pin": "1234"},
+    )
+    token = login_response.json()["access_token"]
+
+    response = test_client.post(
+        "/api/people/",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "first_name": "Duplicate",
+            "last_name": "User",
+            "login_name": admin.login_name,
+            "birthday": "2015-05-15",
+            "pin": "5678",
+            "is_admin": False,
+        },
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert "Login name already exists" in response.json()["detail"]
+
+
+@pytest.mark.asyncio
 async def test_create_person_non_admin(
     test_client,
     async_session: AsyncSession,

@@ -88,6 +88,13 @@ async def create_person(
     people_repo = PeopleRepository(session)
     service = PeopleService(people_repo)
 
+    existing_person = await service.get_person_by_login_name(person.login_name)
+    if existing_person:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Login name already exists",
+        )
+
     admins_exist = await service.admins_exist()
     if admins_exist:
         if credentials is None:

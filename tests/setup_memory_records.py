@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta
+from datetime import date
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -119,13 +119,89 @@ async def setup_test_chores(
 
 
 def setup_memory_records(*args, **kwargs):
-    """Compatibility wrapper for legacy tests.
+    """Seed legacy Flask-service tests with deterministic in-memory records.
 
-    The historical test suite called this helper with sync repository/service
-    objects. The current fast path is the async setup_test_people/setup_test_chores
-    helpers; this wrapper keeps old imports from breaking collection while the
-    legacy tests are migrated.
+    The old Flask test suite passes services/repositories that expose a `.session`
+    created from a synchronous SQLAlchemy engine. We seed the underlying database
+    directly so the legacy tests can at least run and reveal the next real
+    failures instead of dying at import time.
     """
-    raise NotImplementedError(
-        "Legacy setup_memory_records is stale; update the legacy Flask/service tests to use the async helpers or current fixtures."
-    )
+    import bcrypt
+    from sqlalchemy.orm import sessionmaker
+
+    from choreboss.models.chore import Chore
+    from choreboss.models.people import People
+
+    def _unwrap_root(obj):
+        if hasattr(obj, "people_repository"):
+            return obj.people_repository
+        if hasattr(obj, "chore_repository"):
+            return obj.chore_repository
+        return obj
+
+    def _get_engine(obj):
+        root = _unwrap_root(obj)
+        engine = getattr(root, "session", None)
+        if engine is None:
+            engine = getattr(root, "engine", None)
+        if engine is None:
+            raise TypeError("Could not locate engine on legacy test object")
+        return engine
+
+    if not args:
+        raise TypeError("setup_memory_records requires at least one object")
+
+    engine = _get_engine(args[0])
+    Session = sessionmaker(bind=engine)
+    session = Session()
+
+    people = [
+        People(
+            first_name="John",
+            last_name="Doe",
+            login_name="john",
+            birthday=date(2000, 1, 1),
+            pin=bcrypt.hashpw(b"123456", bcrypt.gensalt()).decode(),
+            is_admin=True,
+            sequence_num=1,
+        ),
+        People(
+            first_name="Jane",
+            last_name="Doe",
+            login_name="jane",
+            birthday=date(2002, 1, 1),
+            pin=bcrypt.hashpw(b"123456", bcrypt.gensalt()).decode(),
+            is_admin=False,
+            sequence_num=2,
+        ),
+        People(
+            first_name="Mary",
+            last_name="Doe",
+            login_name="mary",
+            birthday=date(2004, 1, 1),
+            pin=bcrypt.hashpw(b"123456", bcrypt.gensalt()).decode(),
+            is_admin=False,
+            sequence_num=3,
+        ),
+    ]
+    chores = [
+        Chore(
+            name="Wash the dishes",
+            description="Wash the dishes in the sink",
+            person_id=1,
+        ),
+        Chore(
+            name="Take out trash",
+            description="Take out the trash to the curb",
+            person_id=2,
+        ),
+        Chore(
+            name="Vacuum the floor",
+            description="Vacuum all carpeted areas",
+            person_id=None,
+        ),
+    ]
+
+    session.add_all(people + chores)
+    session.commit()
+    session.close()
