@@ -331,11 +331,59 @@ def delete_chore(chore_id):
     
     status, result = api_call('DELETE', f'/chores/{chore_id}')
     
-    if status == 200:
-        return jsonify({'success': True})
+    if status in (200, 204):
+        if request.is_json:
+            return jsonify({'success': True})
+        return redirect(url_for('chores_list'))
     else:
         message = result.get('error', 'Failed to delete') if isinstance(result, dict) else 'Failed to delete'
-        return jsonify({'error': message}), status
+        if request.is_json:
+            return jsonify({'error': message}), status
+        status2, data = api_call('GET', '/chores/')
+        chores = _collection_items(data, 'chores') if status2 == 200 else []
+        return render_template('chores_list.html', chores=chores, error=message), status
+
+
+@app.route('/verify_pin', methods=['POST'])
+def verify_pin():
+    """Validate PIN entry for modal-driven actions.
+
+    The browser bridge keeps the current login_name in session, so we can
+    reuse the auth endpoint to verify the entered PIN against the logged-in
+    person before allowing the form submit to proceed.
+    """
+    if 'token' not in session or 'login_name' not in session:
+        return jsonify({'status': 'failure'}), 401
+
+    data = request.get_json(silent=True) or {}
+    context = data.get('context')
+    pin = data.get('pin')
+
+    if not pin or not context:
+        return jsonify({'status': 'failure'})
+
+    status, auth_result = api_call('POST', '/auth/login', {
+        'login_name': session['login_name'],
+        'pin': pin,
+    })
+    if status != 200 or not isinstance(auth_result, dict):
+        return jsonify({'status': 'failure'})
+
+    is_admin = bool(auth_result.get('is_admin'))
+    if context == 'add_person':
+        status2, people_data = api_call('GET', '/people/')
+        people = _collection_items(people_data, 'people') if status2 == 200 else []
+        if is_admin or not people:
+            return jsonify({'status': 'success'})
+        return jsonify({'status': 'failure'})
+
+    if context == 'complete_chore':
+        return jsonify({'status': 'success'})
+
+    if context in {'change_sequence', 'delete_chore', 'delete_person', 'edit_chore', 'edit_person'}:
+        return jsonify({'status': 'success' if is_admin else 'failure'})
+
+    return jsonify({'status': 'failure'})
 
 
 @app.route('/people')
