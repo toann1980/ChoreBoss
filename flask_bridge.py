@@ -14,9 +14,11 @@ Then visit http://localhost:8055 in your browser.
 """
 
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
-import requests
+import logging
 import os
 from datetime import datetime
+
+import requests
 import json
 
 # Configuration
@@ -30,6 +32,8 @@ app = Flask(
     template_folder=os.path.join(os.path.dirname(__file__), 'web', 'templates')
 )
 app.secret_key = FLASK_SECRET_KEY
+logging.basicConfig(level=logging.DEBUG)
+app.logger.setLevel(logging.DEBUG)
 
 # =============================================================================
 # Helper functions to call FastAPI backend
@@ -59,6 +63,7 @@ def api_call(method, endpoint, data=None, params=None):
     url = f"{API_BASE_URL}{endpoint}"
     headers = get_auth_headers()
     headers['Content-Type'] = 'application/json'
+    app.logger.debug('API %s %s params=%s payload=%s', method, endpoint, params, data)
     
     try:
         if method == 'GET':
@@ -72,22 +77,51 @@ def api_call(method, endpoint, data=None, params=None):
         else:
             return 400, {'error': f'Unknown method: {method}'}
         
-        data = resp.json() if resp.text else {}
-        if isinstance(data, dict) and 'detail' in data and 'error' not in data:
-            data['error'] = data['detail']
-        return resp.status_code, data
+        try:
+            parsed = resp.json() if resp.text else {}
+        except ValueError:
+            parsed = {'error': 'Backend returned non-JSON response', 'raw': resp.text[:500]}
+
+        if isinstance(parsed, dict) and 'detail' in parsed and 'error' not in parsed:
+            parsed['error'] = parsed['detail']
+
+        if isinstance(parsed, dict):
+            app.logger.debug('API %s %s -> %s dict_keys=%s', method, endpoint, resp.status_code, list(parsed.keys()))
+        elif isinstance(parsed, list):
+            app.logger.debug('API %s %s -> %s list_len=%s', method, endpoint, resp.status_code, len(parsed))
+        else:
+            app.logger.debug('API %s %s -> %s type=%s', method, endpoint, resp.status_code, type(parsed).__name__)
+        return resp.status_code, parsed
     except requests.exceptions.ConnectionError:
+        app.logger.exception('API connection error for %s %s', method, endpoint)
         return 503, {
             'error': 'Cannot connect to FastAPI backend',
             'hint': 'Make sure FastAPI is running: python api_run.py'
         }
-    except Exception as e:
-        return 500, {'error': str(e)}
+    except Exception:
+        app.logger.exception('API call failed for %s %s', method, endpoint)
+        return 500, {'error': 'Unexpected bridge error'}
 
 
 # =============================================================================
 # Routes
 # =============================================================================
+
+def _collection_items(payload, collection_name: str) -> list:
+    """Extract a list from either a raw list response or a keyed mapping."""
+    if isinstance(payload, list):
+        return payload
+    if isinstance(payload, dict):
+        items = payload.get(collection_name)
+        if isinstance(items, list):
+            return items
+    app.logger.warning(
+        'Unexpected %s payload shape: %s',
+        collection_name,
+        type(payload).__name__,
+    )
+    return []
+
 
 @app.route('/')
 def index():
@@ -104,8 +138,8 @@ def index():
     if status != 200:
         return f"Error fetching people: {people_data}", 500
     
-    chores = chores_data.get('chores', [])
-    people = people_data.get('people', [])
+    chores = _collection_items(chores_data, 'chores')
+    people = _collection_items(people_data, 'people')
     
     return render_template('index.html', chores=chores, people=people)
 
@@ -127,12 +161,19 @@ def login():
         })
         
         if status == 200:
+            if not isinstance(result, dict):
+                app.logger.error('Unexpected login payload shape: %s', type(result).__name__)
+                return jsonify({'error': 'Unexpected login response from backend'}), 502
             session['token'] = result.get('access_token')
             session['person_id'] = result.get('person_id')
             session['login_name'] = login_name
+            app.logger.info('Login succeeded for %s', login_name)
             return jsonify({'success': True})
         else:
-            return jsonify({'error': result.get('error', 'Login failed')}), status
+            app.logger.warning('Login failed for %s with status %s payload=%s', login_name, status, result)
+            if isinstance(result, dict):
+                return jsonify({'error': result.get('error', 'Login failed')}), status
+            return jsonify({'error': 'Login failed'}), status
     
     # GET: Show login page
     return render_template('login.html')
@@ -155,7 +196,7 @@ def chores_list():
     if status != 200:
         return f"Error: {data}", 500
     
-    chores = data.get('chores', [])
+    chores = _collection_items(data, 'chores')
     return render_template('chores_list.html', chores=chores)
 
 
@@ -187,13 +228,15 @@ def add_chore():
         })
         
         if status == 201:
-            return jsonify({'success': True, 'chore_id': result.get('id')})
+            chore_id = result.get('id') if isinstance(result, dict) else None
+            return jsonify({'success': True, 'chore_id': chore_id})
         else:
-            return jsonify({'error': result.get('error', 'Failed to add chore')}), status
+            message = result.get('error', 'Failed to add chore') if isinstance(result, dict) else 'Failed to add chore'
+            return jsonify({'error': message}), status
     
     # GET: Show form
     status, people_data = api_call('GET', '/people/')
-    people = people_data.get('people', []) if status == 200 else []
+    people = _collection_items(people_data, 'people') if status == 200 else []
     return render_template('add_chore.html', people=people)
 
 
@@ -214,7 +257,8 @@ def edit_chore(chore_id):
         if status == 200:
             return jsonify({'success': True})
         else:
-            return jsonify({'error': result.get('error', 'Failed to update')}), status
+            message = result.get('error', 'Failed to update') if isinstance(result, dict) else 'Failed to update'
+            return jsonify({'error': message}), status
     
     # GET: Show form
     status, chore = api_call('GET', f'/chores/{chore_id}')
@@ -222,7 +266,7 @@ def edit_chore(chore_id):
         return f"Chore not found: {chore}", 404
     
     status, people_data = api_call('GET', '/people/')
-    people = people_data.get('people', []) if status == 200 else []
+    people = _collection_items(people_data, 'people') if status == 200 else []
     
     return render_template('edit_chore.html', chore=chore, people=people)
 
@@ -238,7 +282,8 @@ def complete_chore(chore_id):
     if status == 200:
         return jsonify({'success': True, 'chore': result})
     else:
-        return jsonify({'error': result.get('error', 'Failed to complete')}), status
+        message = result.get('error', 'Failed to complete') if isinstance(result, dict) else 'Failed to complete'
+        return jsonify({'error': message}), status
 
 
 @app.route('/chores/<int:chore_id>/delete', methods=['POST'])
@@ -252,7 +297,8 @@ def delete_chore(chore_id):
     if status == 200:
         return jsonify({'success': True})
     else:
-        return jsonify({'error': result.get('error', 'Failed to delete')}), status
+        message = result.get('error', 'Failed to delete') if isinstance(result, dict) else 'Failed to delete'
+        return jsonify({'error': message}), status
 
 
 @app.route('/people')
@@ -265,7 +311,7 @@ def people_list():
     if status != 200:
         return f"Error: {data}", 500
     
-    people = data.get('people', [])
+    people = _collection_items(data, 'people')
     return render_template('edit_people.html', people=people)
 
 
@@ -301,15 +347,17 @@ def add_person():
         
         if status == 201 or status == 200:
             if request.is_json:
-                return jsonify({'success': True, 'person_id': result.get('id')})
+                person_id = result.get('id') if isinstance(result, dict) else None
+                return jsonify({'success': True, 'person_id': person_id})
             return redirect(url_for('login'))
         else:
-            message = result.get('error', 'Failed to add person')
+            message = result.get('error', 'Failed to add person') if isinstance(result, dict) else 'Failed to add person'
             if status in (401, 403) and not request.is_json:
                 message = (
                     'Please log in as an admin to add a person, or use the '
                     'bootstrap registration path when no admins exist.'
                 )
+            app.logger.warning('Add person failed status=%s payload=%s', status, result)
             if request.is_json:
                 return jsonify({'error': message}), status
             return render_template('add_person.html', form_action=url_for('add_person'), error=message), status
