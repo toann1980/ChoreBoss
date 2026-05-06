@@ -11,6 +11,8 @@ import {
   toSession,
 } from './api';
 import './App.css';
+import { DashboardPage } from './pages/DashboardPage';
+import { LoginPage } from './pages/LoginPage';
 import type {
   AuthSession,
   ChoreRead,
@@ -276,6 +278,17 @@ function App() {
     setMessage('Signed out');
   }
 
+  const updateCreateForm = (next: Partial<PersonCreateInput>): void => {
+    setPersonCreateForm((current) => ({
+      ...current,
+      ...next,
+    }));
+  };
+
+  const updateEditForm = (next: Partial<PersonUpdateInput>): void => {
+    setPersonEditForm((current) => (current ? { ...current, ...next } : current));
+  };
+
   return (
     <main className="app-shell">
       <header className="hero-card">
@@ -293,327 +306,51 @@ function App() {
         ) : null}
       </header>
 
-      {isAuthenticated ? (
-        <section className="panel" aria-live="polite">
-          <div className="panel-header">
-            <div>
-              <p className="eyebrow">Dashboard</p>
-              <h2>Welcome, {session?.loginName}</h2>
-            </div>
-            <span className={session?.is_admin ? 'badge badge-admin' : 'badge'}>
-              {session?.is_admin ? 'Admin' : 'Member'}
-            </span>
-          </div>
-
-          <p className="status" role={isAlertMessage ? 'alert' : undefined}>
-            {message}
-          </p>
-          {peopleFormError ? (
-            <p className="status" role="alert">
-              {peopleFormError}
-            </p>
-          ) : null}
-
-          <div className="list-card">
-            <div className="list-card-header">
-              <h3>Chores</h3>
-              {dashboardLoading ? <span>Loading…</span> : <span>{chores.length} items</span>}
-            </div>
-            <ul className="chore-list">
-              {chores.map((chore) => (
-                <li key={chore.id}>
-                  <strong>{chore.name}</strong>
-                  <p>{chore.description}</p>
-                  <button
-                    type="button"
-                    className="secondary-button chore-action"
-                    disabled={completingChoreId === chore.id}
-                    onClick={() => {
-                      void handleCompleteChore(chore.id);
-                    }}
-                  >
-                    {completingChoreId === chore.id ? 'Completing…' : 'Mark complete'}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="list-card">
-            <div className="list-card-header">
-              <h3>People</h3>
-              {dashboardLoading ? <span>Loading…</span> : <span>{people.length} people</span>}
-            </div>
-
-            {session?.is_admin ? (
-              <form className="people-form" onSubmit={handleCreatePerson}>
-                <h4>Add person</h4>
-                <div className="people-form-grid">
-                  <label>
-                    First name
-                    <input
-                      name="first_name"
-                      value={personCreateForm.first_name}
-                      onChange={(event) =>
-                        setPersonCreateForm((current) => ({
-                          ...current,
-                          first_name: event.target.value,
-                        }))
-                      }
-                    />
-                  </label>
-                  <label>
-                    Last name
-                    <input
-                      name="last_name"
-                      value={personCreateForm.last_name}
-                      onChange={(event) =>
-                        setPersonCreateForm((current) => ({
-                          ...current,
-                          last_name: event.target.value,
-                        }))
-                      }
-                    />
-                  </label>
-                  <label>
-                    Login name
-                    <input
-                      name="login_name"
-                      value={personCreateForm.login_name}
-                      onChange={(event) =>
-                        setPersonCreateForm((current) => ({
-                          ...current,
-                          login_name: event.target.value,
-                        }))
-                      }
-                    />
-                  </label>
-                  <label>
-                    Birthday
-                    <input
-                      name="birthday"
-                      type="date"
-                      value={personCreateForm.birthday}
-                      onChange={(event) =>
-                        setPersonCreateForm((current) => ({
-                          ...current,
-                          birthday: event.target.value,
-                        }))
-                      }
-                    />
-                  </label>
-                  <label>
-                    PIN
-                    <input
-                      name="pin"
-                      type="password"
-                      inputMode="numeric"
-                      value={personCreateForm.pin}
-                      onChange={(event) =>
-                        setPersonCreateForm((current) => ({
-                          ...current,
-                          pin: event.target.value,
-                        }))
-                      }
-                    />
-                  </label>
-                  <label className="checkbox-row">
-                    <input
-                      name="is_admin"
-                      type="checkbox"
-                      checked={personCreateForm.is_admin}
-                      onChange={(event) =>
-                        setPersonCreateForm((current) => ({
-                          ...current,
-                          is_admin: event.target.checked,
-                        }))
-                      }
-                    />
-                    Admin
-                  </label>
-                </div>
-                <button type="submit" disabled={peopleFormBusy}>
-                  {peopleFormBusy ? 'Saving…' : 'Add person'}
-                </button>
-              </form>
-            ) : null}
-
-            <ul className="people-list">
-              {people.map((person) => {
-                const isEditing = editingPersonId === person.id;
-                return (
-                  <li key={person.id}>
-                    {isEditing && personEditForm ? (
-                      <div className="people-edit-form">
-                        <div className="people-form-grid">
-                          <label>
-                            First name
-                            <input
-                              value={personEditForm.first_name}
-                              onChange={(event) =>
-                                setPersonEditForm((current) =>
-                                  current ? { ...current, first_name: event.target.value } : current,
-                                )
-                              }
-                            />
-                          </label>
-                          <label>
-                            Last name
-                            <input
-                              value={personEditForm.last_name}
-                              onChange={(event) =>
-                                setPersonEditForm((current) =>
-                                  current ? { ...current, last_name: event.target.value } : current,
-                                )
-                              }
-                            />
-                          </label>
-                          <label>
-                            Login name
-                            <input
-                              value={personEditForm.login_name}
-                              onChange={(event) =>
-                                setPersonEditForm((current) =>
-                                  current ? { ...current, login_name: event.target.value } : current,
-                                )
-                              }
-                            />
-                          </label>
-                          <label>
-                            Birthday
-                            <input
-                              type="date"
-                              value={personEditForm.birthday}
-                              onChange={(event) =>
-                                setPersonEditForm((current) =>
-                                  current ? { ...current, birthday: event.target.value } : current,
-                                )
-                              }
-                            />
-                          </label>
-                          <label className="checkbox-row">
-                            <input
-                              type="checkbox"
-                              checked={personEditForm.is_admin}
-                              onChange={(event) =>
-                                setPersonEditForm((current) =>
-                                  current ? { ...current, is_admin: event.target.checked } : current,
-                                )
-                              }
-                            />
-                            Admin
-                          </label>
-                        </div>
-                        <div className="people-actions">
-                          <button
-                            type="button"
-                            className="secondary-button"
-                            disabled={peopleFormBusy}
-                            onClick={() => {
-                              void handleSavePerson(person.id);
-                            }}
-                          >
-                            {peopleFormBusy ? 'Saving…' : 'Save'}
-                          </button>
-                          <button
-                            type="button"
-                            className="secondary-button"
-                            disabled={peopleFormBusy}
-                            onClick={cancelEditPerson}
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        <strong>
-                          {person.first_name} {person.last_name}
-                        </strong>
-                        <p>@{person.login_name}</p>
-                        <span className={person.is_admin ? 'badge badge-admin' : 'badge'}>
-                          {person.is_admin ? 'Admin' : 'Member'}
-                        </span>
-                        {session?.is_admin ? (
-                          <div className="people-actions">
-                            <button
-                              type="button"
-                              className="secondary-button"
-                              onClick={() => startEditPerson(person)}
-                            >
-                              Edit
-                            </button>
-                            <button
-                              type="button"
-                              className="secondary-button"
-                              disabled={peopleFormBusy}
-                              onClick={() => {
-                                void handleDeletePerson(person.id);
-                              }}
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        ) : null}
-                      </>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </section>
+      {isAuthenticated && session ? (
+        <DashboardPage
+          loginName={session.loginName}
+          isAdmin={session.is_admin}
+          chores={chores}
+          people={people}
+          message={message}
+          peopleFormError={peopleFormError}
+          dashboardLoading={dashboardLoading}
+          peopleFormBusy={peopleFormBusy}
+          completingChoreId={completingChoreId}
+          editingPersonId={editingPersonId}
+          personCreateForm={personCreateForm}
+          personEditForm={personEditForm}
+          isAlertMessage={isAlertMessage}
+          onCompleteChore={(choreId) => {
+            void handleCompleteChore(choreId);
+          }}
+          onCreatePerson={(event) => {
+            void handleCreatePerson(event);
+          }}
+          onEditPerson={startEditPerson}
+          onCancelEditPerson={cancelEditPerson}
+          onSavePerson={(personId) => {
+            void handleSavePerson(personId);
+          }}
+          onDeletePerson={(personId) => {
+            void handleDeletePerson(personId);
+          }}
+          onCreateFormChange={updateCreateForm}
+          onEditFormChange={updateEditForm}
+        />
       ) : (
-        <section className="panel">
-          <div className="panel-header">
-            <div>
-              <p className="eyebrow">Sign in</p>
-              <h2>Use your login name and PIN</h2>
-            </div>
-          </div>
-
-          <form className="login-form" onSubmit={handleLogin}>
-            <label>
-              Login name
-              <input
-                name="loginName"
-                autoComplete="username"
-                value={loginForm.loginName}
-                onChange={(event) =>
-                  setLoginForm((current) => ({
-                    ...current,
-                    loginName: event.target.value,
-                  }))
-                }
-              />
-            </label>
-
-            <label>
-              PIN
-              <input
-                name="pin"
-                type="password"
-                inputMode="numeric"
-                autoComplete="current-password"
-                value={loginForm.pin}
-                onChange={(event) =>
-                  setLoginForm((current) => ({
-                    ...current,
-                    pin: event.target.value,
-                  }))
-                }
-              />
-            </label>
-
-            <button type="submit" disabled={loading}>
-              {loading ? 'Signing in…' : 'Sign in'}
-            </button>
-          </form>
-
-          <p className="status" role={isAlertMessage ? 'alert' : undefined}>
-            {message}
-          </p>
-        </section>
+        <LoginPage
+          loginName={loginForm.loginName}
+          pin={loginForm.pin}
+          loading={loading}
+          message={message}
+          isAlertMessage={isAlertMessage}
+          onLoginNameChange={(value) => setLoginForm((current) => ({ ...current, loginName: value }))}
+          onPinChange={(value) => setLoginForm((current) => ({ ...current, pin: value }))}
+          onSubmit={(event) => {
+            void handleLogin(event);
+          }}
+        />
       )}
     </main>
   );
