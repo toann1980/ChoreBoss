@@ -85,7 +85,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
       window.location.href = '/';
     } else {
       // Show error
-      errorText.textContent = data.error || 'Login failed';
+      errorText.textContent = data.error || data.detail || 'Login failed';
       errorAlert.classList.remove('d-none');
     }
   } catch (error) {

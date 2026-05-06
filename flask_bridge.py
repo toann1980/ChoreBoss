@@ -72,7 +72,10 @@ def api_call(method, endpoint, data=None, params=None):
         else:
             return 400, {'error': f'Unknown method: {method}'}
         
-        return resp.status_code, resp.json() if resp.text else {}
+        data = resp.json() if resp.text else {}
+        if isinstance(data, dict) and 'detail' in data and 'error' not in data:
+            data['error'] = data['detail']
+        return resp.status_code, data
     except requests.exceptions.ConnectionError:
         return 503, {
             'error': 'Cannot connect to FastAPI backend',
