@@ -35,7 +35,7 @@ echo "    Frontend will be available at: http://${LAN_IP:-<this-machine-ip>}:${F
 echo "    API backend should be running at: ${API_BASE_URL}"
 echo ""
 echo "Login credentials:"
-echo "    Person ID: 1"
+echo "    Login name: john"
 echo "    PIN: 1234"
 echo ""
 echo "Press Ctrl+C to stop"

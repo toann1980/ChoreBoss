@@ -29,7 +29,7 @@ async def test_login_success(
     # Login
     response = test_client.post(
         "/api/auth/login",
-        json={"person_id": person.id, "pin": "1234"},
+        json={"login_name": person.login_name, "pin": "1234"},
     )
 
     assert response.status_code == status.HTTP_200_OK
@@ -59,7 +59,7 @@ async def test_login_invalid_pin(
     # Login with wrong PIN
     response = test_client.post(
         "/api/auth/login",
-        json={"person_id": person.id, "pin": "9999"},
+        json={"login_name": person.login_name, "pin": "9999"},
     )
 
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -75,7 +75,7 @@ async def test_login_person_not_found(test_client) -> None:
     """
     response = test_client.post(
         "/api/auth/login",
-        json={"person_id": 9999, "pin": "1234"},
+        json={"login_name": "missing", "pin": "1234"},
     )
 
     assert response.status_code == status.HTTP_404_NOT_FOUND

@@ -11,7 +11,7 @@
           <h2 class="mb-0">🏠 ChoreBoss</h2>
         </div>
         <div class="card-body">
-          <p class="text-muted mb-4">Enter your ID and PIN to login</p>
+          <p class="text-muted mb-4">Enter your login name and PIN to login</p>
           
           <div id="error-alert" class="alert alert-danger d-none" role="alert">
             <span id="error-text"></span>
@@ -19,13 +19,13 @@
 
           <form id="login-form">
             <div class="form-group">
-              <label for="person_id">Person ID</label>
+              <label for="login_name">Login Name</label>
               <input 
-                type="number" 
+                type="text" 
                 class="form-control" 
-                id="person_id" 
-                name="person_id"
-                placeholder="e.g., 1, 2, 3"
+                id="login_name" 
+                name="login_name"
+                placeholder="e.g., mom, dad, alex"
                 required
               />
             </div>
@@ -49,7 +49,7 @@
 
           <hr>
           <p class="text-muted small">
-            <strong>Demo:</strong> Try Person ID 1, PIN 1234
+            <strong>Demo:</strong> Try login name <code>alice</code>, PIN 1234
           </p>
         </div>
       </div>
@@ -66,7 +66,7 @@
 document.getElementById('login-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   
-  const person_id = document.getElementById('person_id').value;
+  const login_name = document.getElementById('login_name').value;
   const pin = document.getElementById('pin').value;
   const errorAlert = document.getElementById('error-alert');
   const errorText = document.getElementById('error-text');
@@ -75,7 +75,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     const response = await fetch('/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ person_id, pin })
+      body: JSON.stringify({ login_name, pin })
     });
 
     const data = await response.json();

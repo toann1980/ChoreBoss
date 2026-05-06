@@ -23,7 +23,7 @@ async def login(
     """Authenticate person with PIN and return JWT token.
 
     Args:
-        credentials: Login credentials (person_id, pin).
+        credentials: Login credentials (login_name, pin).
         session: Database session.
 
     Returns:
@@ -35,7 +35,7 @@ async def login(
     people_repo = PeopleRepository(session)
     service = PeopleService(people_repo)
 
-    person = await service.get_person_by_id(credentials.person_id)
+    person = await service.get_person_by_login_name(credentials.login_name)
     if not person:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

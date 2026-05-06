@@ -28,7 +28,7 @@ async def test_list_people_authenticated(
     # Login
     login_response = test_client.post(
         "/api/auth/login",
-        json={"person_id": admin.id, "pin": "1234"},
+        json={"login_name": admin.login_name, "pin": "1234"},
     )
     token = login_response.json()["access_token"]
 
@@ -74,7 +74,7 @@ async def test_get_person(
     # Login
     login_response = test_client.post(
         "/api/auth/login",
-        json={"person_id": person.id, "pin": "1234"},
+        json={"login_name": person.login_name, "pin": "1234"},
     )
     token = login_response.json()["access_token"]
 
@@ -109,7 +109,7 @@ async def test_create_person_admin(
     # Login
     login_response = test_client.post(
         "/api/auth/login",
-        json={"person_id": admin.id, "pin": "1234"},
+        json={"login_name": admin.login_name, "pin": "1234"},
     )
     token = login_response.json()["access_token"]
 
@@ -121,6 +121,7 @@ async def test_create_person_admin(
         json={
             "first_name": "Jane",
             "last_name": "Doe",
+            "login_name": "jane_doe_2",
             "birthday": "2015-05-15",  # String is OK, Pydantic will convert
             "pin": "5678",
             "is_admin": False,
@@ -131,6 +132,7 @@ async def test_create_person_admin(
     data = response.json()
     assert data["first_name"] == "Jane"
     assert data["last_name"] == "Doe"
+    assert data["login_name"] == "jane_doe_2"
     assert data["is_admin"] is False
 
 
@@ -153,7 +155,7 @@ async def test_create_person_non_admin(
     # Login
     login_response = test_client.post(
         "/api/auth/login",
-        json={"person_id": non_admin.id, "pin": "5678"},
+        json={"login_name": non_admin.login_name, "pin": "5678"},
     )
     token = login_response.json()["access_token"]
 
@@ -164,6 +166,7 @@ async def test_create_person_non_admin(
         json={
             "first_name": "Jane",
             "last_name": "Doe",
+            "login_name": "jane_doe_3",
             "birthday": "2015-05-15",  # String is OK, Pydantic will convert
             "pin": "5678",
         },

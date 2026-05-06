@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import bcrypt
+import re
 from datetime import date, datetime
 
 from sqlalchemy import Boolean, Column, Date, DateTime, Integer, String
@@ -18,6 +19,7 @@ class People(Base):
     id = Column(Integer, primary_key=True)
     first_name = Column(String(50), nullable=False)
     last_name = Column(String(50), nullable=False)
+    login_name = Column(String(50), unique=True, nullable=False)
     birthday = Column(Date, nullable=False)
     pin = Column(String(255), nullable=False)
     is_admin = Column(Boolean, default=False)
@@ -62,6 +64,22 @@ class People(Base):
                 f"{key} must be between 2 and 50 characters"
             )
         return value
+
+    @validates("login_name")
+    def validate_login_name(self, key, value):
+        """Validate login_name field."""
+        if not isinstance(value, str):
+            raise AttributeError(f"{key} must be a string")
+        normalized = value.strip().lower()
+        if not 3 <= len(normalized) <= 50:
+            raise AttributeError(
+                f"{key} must be between 3 and 50 characters"
+            )
+        if not re.fullmatch(r"[a-z0-9][a-z0-9_-]{2,49}", normalized):
+            raise AttributeError(
+                f"{key} may only contain lowercase letters, numbers, underscores, and hyphens"
+            )
+        return normalized
 
     @validates("birthday")
     def validate_birthday(self, key, value):

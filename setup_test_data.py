@@ -36,6 +36,7 @@ async def setup_test_data():
         person1 = People(
             first_name='Alice',
             last_name='Smith',
+            login_name='alice',
             birthday='2000-01-15',
             pin=bcrypt.hashpw(b'1234', bcrypt.gensalt()).decode(),
             is_admin=True,
@@ -44,6 +45,7 @@ async def setup_test_data():
         person2 = People(
             first_name='Bob',
             last_name='Jones',
+            login_name='bob',
             birthday='2001-05-20',
             pin=bcrypt.hashpw(b'5678', bcrypt.gensalt()).decode(),
             is_admin=False,
@@ -73,9 +75,9 @@ async def setup_test_data():
         print("✅ Test data loaded successfully!")
         print()
         print("People:")
-        print("  ID 1: Alice Smith (is_admin=True)")
+        print("  Login name: alice (Alice Smith, is_admin=True)")
         print("        PIN: 1234")
-        print("  ID 2: Bob Jones (is_admin=False)")
+        print("  Login name: bob (Bob Jones, is_admin=False)")
         print("        PIN: 5678")
         print()
         print("Chores:")

@@ -26,6 +26,7 @@ class PeopleService:
         birthday: str,
         pin: str,
         is_admin: bool,
+        login_name: str | None = None,
     ) -> People:
         """Add a new person.
 
@@ -35,6 +36,7 @@ class PeopleService:
             birthday: Birthday.
             pin: PIN (will be hashed).
             is_admin: Admin flag.
+            login_name: Optional human-friendly login name.
 
         Returns:
             People: Created person object.
@@ -45,6 +47,7 @@ class PeopleService:
             birthday=birthday,
             pin=pin,
             is_admin=is_admin,
+            login_name=login_name,
         )
 
     async def admins_exist(self) -> bool:
@@ -116,6 +119,17 @@ class PeopleService:
             People: Person object or None.
         """
         return await self.people_repository.get_person_by_id(person_id)
+
+    async def get_person_by_login_name(self, login_name: str) -> Optional[People]:
+        """Get person by login name.
+
+        Args:
+            login_name: Login name to look up.
+
+        Returns:
+            People: Person object or None.
+        """
+        return await self.people_repository.get_person_by_login_name(login_name)
 
     async def get_person_by_pin(self, pin: str) -> Optional[People]:
         """Get person by PIN.

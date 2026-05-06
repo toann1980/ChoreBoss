@@ -91,6 +91,7 @@ async def create_person(
         birthday=person.birthday,
         pin=person.pin,
         is_admin=person.is_admin,
+        login_name=person.login_name,
     )
     await session.commit()
     return result

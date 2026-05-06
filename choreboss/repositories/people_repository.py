@@ -29,6 +29,7 @@ class PeopleRepository:
         birthday: str,
         pin: str,
         is_admin: bool,
+        login_name: str | None = None,
     ) -> People:
         """Add a new person to the database.
 
@@ -38,14 +39,17 @@ class PeopleRepository:
             birthday: Birthday of the person.
             pin: PIN of the person (will be hashed).
             is_admin: Whether the person is an admin.
+            login_name: Optional human-friendly login name.
 
         Returns:
             People: Created person object.
         """
         next_seq = await self.get_next_sequence_num()
+        resolved_login_name = login_name or f"{first_name.lower()}{next_seq}"
         person = People(
             first_name=first_name,
             last_name=last_name,
+            login_name=resolved_login_name,
             birthday=birthday,
             pin=pin,
             is_admin=is_admin,
@@ -133,6 +137,14 @@ class PeopleRepository:
         result = await self.session.execute(stmt)
         max_seq = result.scalar()
         return 1 if max_seq is None else max_seq + 1
+
+    async def get_person_by_login_name(self, login_name: str) -> People | None:
+        """Get a person by their login name."""
+        stmt = select(People).where(People.login_name == login_name.lower()).options(
+            selectinload(People.chores),
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
 
     async def get_person_by_id(self, person_id: int) -> People | None:
         """Get a person by their ID.

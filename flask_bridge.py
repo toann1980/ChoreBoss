@@ -115,20 +115,21 @@ def login():
     """Login page - PIN pad to authenticate."""
     if request.method == 'POST':
         data = request.get_json()
-        person_id = data.get('person_id')
+        login_name = data.get('login_name')
         pin = data.get('pin')
         
-        if not person_id or not pin:
-            return jsonify({'error': 'Missing person_id or pin'}), 400
+        if not login_name or not pin:
+            return jsonify({'error': 'Missing login_name or pin'}), 400
         
         status, result = api_call('POST', '/auth/login', {
-            'person_id': int(person_id),
+            'login_name': login_name,
             'pin': pin
         })
         
         if status == 200:
             session['token'] = result.get('access_token')
-            session['person_id'] = person_id
+            session['person_id'] = result.get('person_id')
+            session['login_name'] = login_name
             return jsonify({'success': True})
         else:
             return jsonify({'error': result.get('error', 'Login failed')}), status

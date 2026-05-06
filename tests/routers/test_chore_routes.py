@@ -29,7 +29,7 @@ async def test_list_chores_authenticated(
     # Login to get token
     login_response = test_client.post(
         "/api/auth/login",
-        json={"person_id": person.id, "pin": "1234"},
+        json={"login_name": person.login_name, "pin": "1234"},
     )
     token = login_response.json()["access_token"]
 
@@ -77,7 +77,7 @@ async def test_get_chore(
     # Login
     login_response = test_client.post(
         "/api/auth/login",
-        json={"person_id": person.id, "pin": "1234"},
+        json={"login_name": person.login_name, "pin": "1234"},
     )
     token = login_response.json()["access_token"]
 
@@ -112,7 +112,7 @@ async def test_get_chore_not_found(
     # Login
     login_response = test_client.post(
         "/api/auth/login",
-        json={"person_id": person.id, "pin": "1234"},
+        json={"login_name": person.login_name, "pin": "1234"},
     )
     token = login_response.json()["access_token"]
 
@@ -144,7 +144,7 @@ async def test_create_chore_admin(
     # Login
     login_response = test_client.post(
         "/api/auth/login",
-        json={"person_id": person.id, "pin": "1234"},
+        json={"login_name": person.login_name, "pin": "1234"},
     )
     token = login_response.json()["access_token"]
 
@@ -183,7 +183,7 @@ async def test_create_chore_non_admin(
     # Login
     login_response = test_client.post(
         "/api/auth/login",
-        json={"person_id": person.id, "pin": "5678"},
+        json={"login_name": person.login_name, "pin": "5678"},
     )
     token = login_response.json()["access_token"]
 
@@ -221,7 +221,7 @@ async def test_complete_chore(
     # Login
     login_response = test_client.post(
         "/api/auth/login",
-        json={"person_id": person.id, "pin": "1234"},
+        json={"login_name": person.login_name, "pin": "1234"},
     )
     token = login_response.json()["access_token"]
 

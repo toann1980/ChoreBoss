@@ -29,6 +29,7 @@ async def setup_test_people(
         {
             "first_name": "John",
             "last_name": "Doe",
+            "login_name": "john",
             "birthday": date(2000, 1, 1),
             "pin": "1234",
             "is_admin": True,
@@ -37,6 +38,7 @@ async def setup_test_people(
         {
             "first_name": "Jane",
             "last_name": "Doe",
+            "login_name": "jane",
             "birthday": date(2002, 1, 1),
             "pin": "5678",
             "is_admin": False,
@@ -45,6 +47,7 @@ async def setup_test_people(
         {
             "first_name": "Mary",
             "last_name": "Doe",
+            "login_name": "mary",
             "birthday": date(2004, 1, 1),
             "pin": "9012",
             "is_admin": False,

@@ -21,6 +21,7 @@ class TestPeopleSchema(unittest.TestCase):
         valid_data = {
             'first_name': 'John',
             'last_name': 'Doe',
+            'login_name': 'john',
             'birthday': birthday,
             'pin': '123456',
             'is_admin': True,
@@ -34,6 +35,7 @@ class TestPeopleSchema(unittest.TestCase):
         self.assertEqual(result.first_name, valid_data['first_name'])
         self.assertEqual(result.last_name, valid_data['last_name'])
         self.assertEqual(result.birthday, birthday)
+        self.assertEqual(result.login_name, valid_data['login_name'])
         self.assertEqual(result.pin, valid_data['pin'])
         self.assertEqual(result.is_admin, valid_data['is_admin'])
 
@@ -104,6 +106,30 @@ class TestPeopleSchema(unittest.TestCase):
             People(**{
                 'first_name': 'John',
                 'last_name': 'Z' * 51,
+                'birthday': datetime.strptime(
+                    '01-01-2000', '%m-%d-%Y'
+                ).date(),
+                'pin': '123456',
+                'is_admin': True,
+            })
+
+    def test_invalid_data_login_name(self):
+        with self.assertRaises(AttributeError):
+            People(**{
+                'first_name': 'John',
+                'last_name': 'Doe',
+                'login_name': 'ab',
+                'birthday': datetime.strptime(
+                    '01-01-2000', '%m-%d-%Y'
+                ).date(),
+                'pin': '123456',
+                'is_admin': True,
+            })
+        with self.assertRaises(AttributeError):
+            People(**{
+                'first_name': 'John',
+                'last_name': 'Doe',
+                'login_name': 'bad name',
                 'birthday': datetime.strptime(
                     '01-01-2000', '%m-%d-%Y'
                 ).date(),

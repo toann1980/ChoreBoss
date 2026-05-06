@@ -12,6 +12,7 @@ class PersonBase(BaseModel):
 
     first_name: str = Field(..., min_length=1, max_length=50)
     last_name: str = Field(..., min_length=1, max_length=50)
+    login_name: str = Field(..., min_length=3, max_length=50)
     birthday: date
     is_admin: bool = False
 
@@ -27,6 +28,7 @@ class PersonUpdate(BaseModel):
 
     first_name: str | None = Field(None, min_length=1, max_length=50)
     last_name: str | None = Field(None, min_length=1, max_length=50)
+    login_name: str | None = Field(None, min_length=3, max_length=50)
     birthday: date | None = None
     is_admin: bool | None = None
 
@@ -46,7 +48,7 @@ class PersonRead(PersonBase):
 
 
 class PersonLogin(BaseModel):
-    """Schema for PIN-based login."""
+    """Schema for login with login_name and PIN."""
 
-    person_id: int
+    login_name: str = Field(..., min_length=3, max_length=50)
     pin: str = Field(..., min_length=4, max_length=4)

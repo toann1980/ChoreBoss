@@ -97,6 +97,7 @@ def test_login():
             print_success(f"Login successful!")
             print(f"  Token: {token[:20]}...")
             print(f"  Person ID: {data.get('person_id')}")
+            print(f"  Login name: {data.get('login_name', '(not returned)')}")
             print(f"  Is Admin: {data.get('is_admin')}")
             return token
         else:
@@ -306,7 +307,7 @@ def main():
     print("\nNext steps:")
     print("  1. Run Flask frontend: python flask_bridge.py")
     print("  2. Visit: http://localhost:8055")
-    print("  3. Login with Person ID: 1, PIN: 1234")
+    print("  3. Login with login name: alice, PIN: 1234")
 
 
 if __name__ == '__main__':
