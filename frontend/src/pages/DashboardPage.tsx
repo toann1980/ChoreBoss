@@ -1,5 +1,6 @@
 import type { FormEvent } from 'react';
-import type { ChoreRead, PersonRead } from '../types';
+import { ChoreList } from '../components/ChoreList';
+import type { PersonRead } from '../types';
 
 interface PersonCreateFormState {
   first_name: string;
@@ -21,7 +22,7 @@ interface PersonEditFormState {
 interface DashboardPageProps {
   loginName: string;
   isAdmin: boolean;
-  chores: ChoreRead[];
+  chores: import('../types').ChoreRead[];
   people: PersonRead[];
   message: string;
   peopleFormError: string;
@@ -88,30 +89,12 @@ export function DashboardPage({
         </p>
       ) : null}
 
-      <div className="list-card">
-        <div className="list-card-header">
-          <h3>Chores</h3>
-          {dashboardLoading ? <span>Loading…</span> : <span>{chores.length} items</span>}
-        </div>
-        <ul className="chore-list">
-          {chores.map((chore) => (
-            <li key={chore.id}>
-              <strong>{chore.name}</strong>
-              <p>{chore.description}</p>
-              <button
-                type="button"
-                className="secondary-button chore-action"
-                disabled={completingChoreId === chore.id}
-                onClick={() => {
-                  onCompleteChore(chore.id);
-                }}
-              >
-                {completingChoreId === chore.id ? 'Completing…' : 'Mark complete'}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <ChoreList
+        chores={chores}
+        dashboardLoading={dashboardLoading}
+        completingChoreId={completingChoreId}
+        onCompleteChore={onCompleteChore}
+      />
 
       <div className="list-card">
         <div className="list-card-header">
