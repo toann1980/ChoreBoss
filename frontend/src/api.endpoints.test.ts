@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { API_ENDPOINTS } from './endpoints';
 import {
   ApiError,
+  completeChore,
   createPerson,
   deletePerson,
   getPerson,
@@ -51,6 +52,30 @@ describe('api endpoint validity', () => {
       expect.objectContaining({
         headers: expect.objectContaining({ Authorization: 'Bearer token' }),
       }),
+    );
+  });
+
+  it('targets the FastAPI chore complete endpoint', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      new Response(JSON.stringify({
+        id: 1,
+        name: 'Wash dishes',
+        description: 'Wash the dishes',
+        person_id: 5,
+        recurrence: 'none',
+        recurrence_day: null,
+        last_completed_date: '2026-05-06T00:00:00',
+        last_completed_id: 5,
+        created_at: '2026-05-06T00:00:00',
+        updated_at: '2026-05-06T00:00:00',
+      })),
+    );
+
+    await completeChore('token', 1);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining(API_ENDPOINTS.choreComplete(1)),
+      expect.objectContaining({ method: 'POST' }),
     );
   });
 

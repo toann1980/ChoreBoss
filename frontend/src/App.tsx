@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ApiError, login, loadChores, loadPeople, toSession } from './api';
+import { ApiError, completeChore, login, loadChores, loadPeople, toSession } from './api';
 import './App.css';
 import type { AuthSession, ChoreRead, PersonRead } from './types';
 
@@ -34,6 +34,7 @@ function App() {
   const [people, setPeople] = useState<PersonRead[]>([]);
   const [loading, setLoading] = useState(false);
   const [dashboardLoading, setDashboardLoading] = useState(false);
+  const [completingChoreId, setCompletingChoreId] = useState<number | null>(null);
   const [message, setMessage] = useState<string>('');
   const isAuthenticated = useMemo(() => session !== null, [session]);
   const isAlertMessage = useMemo(() => {
@@ -103,6 +104,23 @@ function App() {
     }
   }
 
+  async function handleCompleteChore(choreId: number): Promise<void> {
+    if (!session) {
+      return;
+    }
+
+    setCompletingChoreId(choreId);
+    try {
+      const updatedChore = await completeChore(session.access_token, choreId);
+      setChores((current) => current.map((chore) => (chore.id === updatedChore.id ? updatedChore : chore)));
+      setMessage(`Completed ${updatedChore.name}`);
+    } catch (error: unknown) {
+      setMessage(error instanceof Error ? error.message : 'Unable to complete chore');
+    } finally {
+      setCompletingChoreId(null);
+    }
+  }
+
   function handleLogout(): void {
     window.localStorage.removeItem(STORAGE_KEY);
     setSession(null);
@@ -155,6 +173,16 @@ function App() {
                 <li key={chore.id}>
                   <strong>{chore.name}</strong>
                   <p>{chore.description}</p>
+                  <button
+                    type="button"
+                    className="secondary-button chore-action"
+                    disabled={completingChoreId === chore.id}
+                    onClick={() => {
+                      void handleCompleteChore(chore.id);
+                    }}
+                  >
+                    {completingChoreId === chore.id ? 'Completing…' : 'Mark complete'}
+                  </button>
                 </li>
               ))}
             </ul>

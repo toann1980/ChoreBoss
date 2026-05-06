@@ -96,6 +96,13 @@ export async function loadChores(token: string): Promise<ChoreRead[]> {
   return (await response.json()) as ChoreRead[];
 }
 
+export async function completeChore(token: string, choreId: number): Promise<ChoreRead> {
+  return requestJson<ChoreRead>(API_ENDPOINTS.choreComplete(choreId), {
+    method: 'POST',
+    headers: authorizedHeaders(token),
+  });
+}
+
 export async function loadPeople(token: string): Promise<PersonRead[]> {
   const response = await fetch(`${getApiBaseUrl()}${API_ENDPOINTS.people}`, {
     headers: authorizedHeaders(token),

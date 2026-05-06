@@ -37,10 +37,6 @@
   gap: 12px;
 }
 
-.summary-line {
-  margin-top: 4px;
-}
-
 .eyebrow {
   margin: 0 0 8px;
   text-transform: uppercase;
@@ -84,7 +80,8 @@ p {
 }
 
 .login-form button,
-.secondary-button {
+.secondary-button,
+.chore-action {
   font: inherit;
   border: none;
   border-radius: 999px;
@@ -94,7 +91,8 @@ p {
   cursor: pointer;
 }
 
-.secondary-button {
+.secondary-button,
+.chore-action {
   background: transparent;
   color: #111827;
   border: 1px solid rgba(17, 24, 39, 0.2);
@@ -135,6 +133,10 @@ p {
 
 .people-list li {
   grid-template-columns: 1fr;
+}
+
+.chore-action {
+  justify-self: start;
 }
 
 @media (max-width: 640px) {
