@@ -16,7 +16,7 @@ Then visit http://localhost:8055 in your browser.
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 import logging
 import os
-from datetime import datetime
+from datetime import date, datetime
 
 import requests
 import json
@@ -45,6 +45,30 @@ def get_auth_headers():
     if token:
         return {'Authorization': f'Bearer {token}'}
     return {}
+
+
+def _normalize_dates(value):
+    """Convert common ISO date/datetime fields from strings to Python objects."""
+    if isinstance(value, list):
+        return [_normalize_dates(item) for item in value]
+    if isinstance(value, dict):
+        normalized = dict(value)
+        for key, raw in list(normalized.items()):
+            if isinstance(raw, str):
+                if key == 'birthday':
+                    try:
+                        normalized[key] = date.fromisoformat(raw)
+                        continue
+                    except ValueError:
+                        pass
+                if key in {'created_at', 'updated_at', 'last_completed_date'}:
+                    try:
+                        normalized[key] = datetime.fromisoformat(raw)
+                        continue
+                    except ValueError:
+                        pass
+        return normalized
+    return value
 
 
 def api_call(method, endpoint, data=None, params=None):
@@ -84,6 +108,8 @@ def api_call(method, endpoint, data=None, params=None):
 
         if isinstance(parsed, dict) and 'detail' in parsed and 'error' not in parsed:
             parsed['error'] = parsed['detail']
+
+        parsed = _normalize_dates(parsed)
 
         if isinstance(parsed, dict):
             app.logger.debug('API %s %s -> %s dict_keys=%s', method, endpoint, resp.status_code, list(parsed.keys()))
@@ -220,19 +246,23 @@ def add_chore():
         return redirect(url_for('login'))
     
     if request.method == 'POST':
-        data = request.get_json()
+        data = request.get_json(silent=True) or request.form
         status, result = api_call('POST', '/chores/', {
             'name': data.get('name'),
             'description': data.get('description'),
-            'person_id': data.get('person_id')
+            'person_id': data.get('person_id') or None
         })
         
-        if status == 201:
-            chore_id = result.get('id') if isinstance(result, dict) else None
-            return jsonify({'success': True, 'chore_id': chore_id})
+        if status in (200, 201):
+            if request.is_json:
+                chore_id = result.get('id') if isinstance(result, dict) else None
+                return jsonify({'success': True, 'chore_id': chore_id})
+            return redirect(url_for('chores_list'))
         else:
             message = result.get('error', 'Failed to add chore') if isinstance(result, dict) else 'Failed to add chore'
-            return jsonify({'error': message}), status
+            if request.is_json:
+                return jsonify({'error': message}), status
+            return render_template('add_chore.html', people=_collection_items(api_call('GET', '/people/')[1], 'people'), error=message), status
     
     # GET: Show form
     status, people_data = api_call('GET', '/people/')
@@ -247,18 +277,25 @@ def edit_chore(chore_id):
         return redirect(url_for('login'))
     
     if request.method == 'POST':
-        data = request.get_json()
+        data = request.get_json(silent=True) or request.form
         status, result = api_call('PUT', f'/chores/{chore_id}', {
             'name': data.get('name'),
             'description': data.get('description'),
-            'person_id': data.get('person_id')
+            'person_id': data.get('person_id') or None
         })
         
         if status == 200:
-            return jsonify({'success': True})
+            if request.is_json:
+                return jsonify({'success': True})
+            return redirect(url_for('chore_detail', chore_id=chore_id))
         else:
             message = result.get('error', 'Failed to update') if isinstance(result, dict) else 'Failed to update'
-            return jsonify({'error': message}), status
+            if request.is_json:
+                return jsonify({'error': message}), status
+            status2, chore = api_call('GET', f'/chores/{chore_id}')
+            status3, people_data = api_call('GET', '/people/')
+            people = _collection_items(people_data, 'people') if status3 == 200 else []
+            return render_template('edit_chore.html', chore=chore, people=people, error=message), status
     
     # GET: Show form
     status, chore = api_call('GET', f'/chores/{chore_id}')
@@ -315,15 +352,33 @@ def people_list():
     return render_template('edit_people.html', people=people)
 
 
-@app.route('/people/<int:person_id>')
+@app.route('/people/<int:person_id>', methods=['GET', 'POST'])
 def person_detail(person_id):
-    """View person details."""
+    """View or update a person."""
     if 'token' not in session:
         return redirect(url_for('login'))
     
     status, person = api_call('GET', f'/people/{person_id}')
     if status != 200:
         return f"Person not found: {person}", 404
+    
+    if request.method == 'POST':
+        data = request.get_json(silent=True) or request.form
+        payload = {
+            'first_name': data.get('first_name'),
+            'last_name': data.get('last_name'),
+            'birthday': data.get('birthday'),
+            'is_admin': data.get('is_admin') in ('on', 'true', '1', True),
+        }
+        status, result = api_call('PUT', f'/people/{person_id}', payload)
+        if status == 200:
+            if request.is_json:
+                return jsonify({'success': True})
+            return redirect(url_for('person_detail', person_id=person_id))
+        message = result.get('error', 'Failed to update person') if isinstance(result, dict) else 'Failed to update person'
+        if request.is_json:
+            return jsonify({'error': message}), status
+        return render_template('edit_person.html', person=person, error=message), status
     
     return render_template('edit_person.html', person=person)
 
@@ -364,6 +419,68 @@ def add_person():
     
     # GET: Show form
     return render_template('add_person.html', form_action=url_for('add_person'))
+
+
+@app.route('/people/<int:person_id>/delete', methods=['POST'])
+def delete_person(person_id):
+    """Delete a person."""
+    if 'token' not in session:
+        return redirect(url_for('login'))
+
+    status, result = api_call('DELETE', f'/people/{person_id}')
+    if status == 204:
+        if request.is_json:
+            return jsonify({'success': True})
+        return redirect(url_for('people_list'))
+
+    message = result.get('error', 'Failed to delete person') if isinstance(result, dict) else 'Failed to delete person'
+    if request.is_json:
+        return jsonify({'error': message}), status
+    return render_template('edit_person.html', person=api_call('GET', f'/people/{person_id}')[1], error=message), status
+
+
+@app.route('/people/<int:person_id>/edit_pin', methods=['GET', 'POST'])
+def edit_pin(person_id):
+    """PIN change placeholder until the FastAPI backend exposes a PIN update endpoint."""
+    if 'token' not in session:
+        return redirect(url_for('login'))
+    status, person = api_call('GET', f'/people/{person_id}')
+    if status != 200:
+        return f"Person not found: {person}", 404
+    if request.method == 'POST':
+        message = 'PIN change is not yet implemented in the FastAPI backend.'
+        if request.is_json:
+            return jsonify({'error': message}), 501
+        return render_template('edit_pin.html', person=person, error=message), 501
+    return render_template('edit_pin.html', person=person)
+
+
+@app.route('/change_sequence', methods=['GET', 'POST'])
+def change_sequence():
+    """Render the change-sequence page and return a clear placeholder on POST."""
+    if 'token' not in session:
+        return redirect(url_for('login'))
+
+    status, data = api_call('GET', '/people/')
+    people = _collection_items(data, 'people') if status == 200 else []
+    if request.method == 'POST':
+        message = 'Sequence updates are not yet implemented in the FastAPI backend.'
+        if request.is_json:
+            return jsonify({'error': message}), 501
+        return render_template('change_sequence.html', people=people, error=message), 501
+
+    return render_template('change_sequence.html', people=people)
+
+
+@app.route('/update_sequence', methods=['POST'])
+def update_sequence():
+    """Placeholder update-sequence action until backend support exists."""
+    if 'token' not in session:
+        return redirect(url_for('login'))
+    message = 'Sequence updates are not yet implemented in the FastAPI backend.'
+    if request.is_json:
+        return jsonify({'error': message}), 501
+    return jsonify({'error': message}), 501
 
 
 @app.route('/api/health')

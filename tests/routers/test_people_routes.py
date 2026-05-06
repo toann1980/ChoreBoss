@@ -227,6 +227,39 @@ async def test_create_person_duplicate_login_name_fails(
 
 
 @pytest.mark.asyncio
+async def test_create_person_non_admin_with_multiple_admins(
+    test_client,
+    async_session: AsyncSession,
+) -> None:
+    """Test creating person as non-admin when multiple admins exist still returns 403."""
+    people = await setup_test_people(async_session, 3)
+    people[1].is_admin = True
+    await async_session.commit()
+    non_admin = people[2]
+
+    login_response = test_client.post(
+        "/api/auth/login",
+        json={"login_name": non_admin.login_name, "pin": "9012"},
+    )
+    token = login_response.json()["access_token"]
+
+    response = test_client.post(
+        "/api/people/",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "first_name": "Blocked",
+            "last_name": "Case",
+            "login_name": "blocked_multi_admin",
+            "birthday": "2015-05-15",
+            "pin": "9012",
+            "is_admin": False,
+        },
+    )
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+@pytest.mark.asyncio
 async def test_create_person_non_admin(
     test_client,
     async_session: AsyncSession,

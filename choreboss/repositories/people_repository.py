@@ -67,9 +67,9 @@ class PeopleRepository:
         Returns:
             bool: True if admins exist, False otherwise.
         """
-        stmt = select(People).where(People.is_admin.is_(True))
+        stmt = select(People.id).where(People.is_admin.is_(True)).limit(1)
         result = await self.session.execute(stmt)
-        return result.scalar_one_or_none() is not None
+        return result.first() is not None
 
     async def delete_person(self, person_id: int) -> None:
         """Delete a person from the database.
