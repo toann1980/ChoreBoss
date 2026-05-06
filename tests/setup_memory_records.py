@@ -116,3 +116,16 @@ async def setup_test_chores(
 
     await session.flush()
     return chores
+
+
+def setup_memory_records(*args, **kwargs):
+    """Compatibility wrapper for legacy tests.
+
+    The historical test suite called this helper with sync repository/service
+    objects. The current fast path is the async setup_test_people/setup_test_chores
+    helpers; this wrapper keeps old imports from breaking collection while the
+    legacy tests are migrated.
+    """
+    raise NotImplementedError(
+        "Legacy setup_memory_records is stale; update the legacy Flask/service tests to use the async helpers or current fixtures."
+    )

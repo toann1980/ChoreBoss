@@ -66,7 +66,7 @@ class PeopleRepository:
         Returns:
             bool: True if admins exist, False otherwise.
         """
-        stmt = select(People).where(People.is_admin is True)
+        stmt = select(People).where(People.is_admin.is_(True))
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none() is not None
 
@@ -188,7 +188,7 @@ class PeopleRepository:
         Returns:
             bool: True if person is admin, False otherwise.
         """
-        stmt = select(People).where(People.is_admin is True)
+        stmt = select(People).where(People.is_admin.is_(True))
         result = await self.session.execute(stmt)
         admins = result.scalars().all()
 
