@@ -1,0 +1,144 @@
+.app-shell {
+  min-height: 100vh;
+  padding: 32px;
+  display: grid;
+  gap: 24px;
+  max-width: 960px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.hero-card,
+.panel,
+.list-card {
+  background: rgba(17, 24, 39, 0.04);
+  border: 1px solid rgba(17, 24, 39, 0.12);
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.hero-card {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.panel {
+  display: grid;
+  gap: 20px;
+}
+
+.panel-header,
+.list-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.78rem;
+  color: #6b7280;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+.subhead,
+.status,
+.chore-list p {
+  color: #4b5563;
+}
+
+.login-form {
+  display: grid;
+  gap: 16px;
+  max-width: 360px;
+}
+
+.login-form label {
+  display: grid;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.login-form input {
+  font: inherit;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(17, 24, 39, 0.2);
+  background: white;
+}
+
+.login-form button,
+.secondary-button {
+  font: inherit;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 18px;
+  background: #111827;
+  color: white;
+  cursor: pointer;
+}
+
+.secondary-button {
+  background: transparent;
+  color: #111827;
+  border: 1px solid rgba(17, 24, 39, 0.2);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: rgba(17, 24, 39, 0.08);
+  color: #111827;
+}
+
+.badge-admin {
+  background: rgba(34, 197, 94, 0.15);
+  color: #166534;
+}
+
+.chore-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.chore-list li {
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(17, 24, 39, 0.08);
+}
+
+@media (max-width: 640px) {
+  .app-shell {
+    padding: 16px;
+  }
+
+  .hero-card,
+  .panel,
+  .list-card {
+    padding: 16px;
+  }
+
+  .hero-card,
+  .panel-header,
+  .list-card-header {
+    flex-direction: column;
+    align-items: start;
+  }
+}

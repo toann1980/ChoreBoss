@@ -125,6 +125,7 @@ celerybeat.pid
 .env
 .venv
 .openclaw/
+.learnings/
 env/
 venv/
 ENV/
