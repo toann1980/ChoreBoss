@@ -8,7 +8,7 @@
         <h1 class="mt-5">Edit PIN Number</h1>
         <form id="editPinForm"
               method="post"
-              action="{{ url_for('people_bp.edit_pin', person_id=person.id) }}">
+              action="{{ url_for('person_detail', person_id=person.id) }}">
             <div class="form-group">
                 <label for="current_pin">Current PIN</label>
                 <input type="password"

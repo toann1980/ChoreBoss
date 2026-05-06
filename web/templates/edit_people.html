@@ -7,14 +7,14 @@
     <div class="row mt-3">
       <div class="col-6">
         <button class="btn btn-secondary"
-                onclick="location.href='{{ url_for("index_bp.home") }}'">Back</button>
+                onclick="location.href='{{ url_for("index") }}'">Back</button>
       </div>
     </div>
     <h1 class="mt-5">Edit People</h1>
     <ul class="list-group">
       {% for person in people %}
         <li class="list-group-item">
-          <a href="{{ url_for('people_bp.edit_person', person_id=person.id) }}">
+          <a href="{{ url_for('person_detail', person_id=person.id) }}">
             {{ person.first_name }} {{ person.last_name }}
           </a>
         </li>
@@ -23,7 +23,7 @@
     <div class="row mt-3">
       <div class="col-6">
         <button class="btn btn-primary"
-                onclick="window.location.href='{{ url_for("people_bp.change_sequence") }}'"
+                onclick="window.location.href='{{ url_for("people_list") }}'"
                 {% if not people or people|length < 2 %}disabled{% endif %}>Change Sequence</button>
       </div>
     </div>

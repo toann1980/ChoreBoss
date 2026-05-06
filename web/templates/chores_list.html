@@ -8,7 +8,7 @@
     <ul class="list-group">
       {% for chore in chores %}
         <li class="list-group-item">
-          <a href="{{ url_for('chore_bp.get_chore', chore_id=chore.id) }}">{{ chore.name }}</a>
+          <a href="{{ url_for('chore_detail', chore_id=chore.id) }}">{{ chore.name }}</a>
         </li>
       {% endfor %}
     </ul>

@@ -20,7 +20,7 @@
           <ul class="list-group">
             {% for chore in chores %}
               <li class="list-group-item">
-                <a href="{{ url_for('chore_bp.get_chore', chore_id=chore.id) }}">{{ chore.name }}</a>
+                <a href="{{ url_for('chore_detail', chore_id=chore.id) }}">{{ chore.name }}</a>
               </li>
             {% endfor %}
           </ul>
@@ -28,15 +28,15 @@
           <p>No chores? This can't be right...</p>
         {% endif %}
         <button class="btn btn-primary"
-                onclick="location.href='{{ url_for("chore_bp.add_chore") }}'">Add Chore</button>
+                onclick="location.href='{{ url_for("add_chore") }}'">Add Chore</button>
       </section>
       <section id="people">
         <h2>People</h2>
         {% if not people %}<p>Are you the Boss?</p>{% endif %}
         <button class="btn btn-primary"
-                onclick="location.href='{{ url_for("people_bp.add_person") }}'">Add Person</button>
+                onclick="location.href='{{ url_for("add_person") }}'">Add Person</button>
         <button class="btn btn-primary"
-                onclick="location.href='{{ url_for("people_bp.get_people") }}'"
+                onclick="location.href='{{ url_for("people_list") }}'"
                 {% if not people %}disabled{% endif %}>Edit People</button>
       </section>
     </div>

@@ -8,7 +8,7 @@
     <h1 class="mt-5">Edit Chore</h1>
     <form id="editChoreForm"
           method="post"
-          action="{{ url_for('chore_bp.edit_chore', chore_id=chore.id) }}">
+          action="{{ url_for('edit_chore', chore_id=chore.id) }}">
       <div class="form-group">
         <label for="name">Chore Name</label>
         <input type="text"
@@ -44,7 +44,7 @@
     </form>
     <form id="deleteChoreForm"
           method="post"
-          action="{{ url_for('chore_bp.delete_chore', chore_id=chore.id) }}">
+          action="{{ url_for('delete_chore', chore_id=chore.id) }}">
       <button type="button"
               class="btn btn-danger mt-2 w-100"
               onclick="showPinModal('delete_chore')">Delete Chore</button>

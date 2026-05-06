@@ -8,7 +8,7 @@
     <h1 class="mt-5">Edit Person</h1>
     <form id="editPersonForm"
           method="post"
-          action="{{ url_for('people_bp.edit_person', person_id=person.id) }}">
+          action="{{ url_for('person_detail', person_id=person.id) }}">
       <div class="form-group">
         <label for="first_name">First Name</label>
         <input type="text"
@@ -56,10 +56,10 @@
     </form>
     <button type="button"
             class="btn btn-primary mt-3 w-100"
-            onclick="location.href='{{ url_for("people_bp.edit_pin", person_id=person.id) }}'">Edit PIN Number</button>
+            onclick="location.href='{{ url_for("person_detail", person_id=person.id) }}'">Edit PIN Number</button>
     <form id="deletePersonForm"
           method="post"
-          action="{{ url_for('people_bp.delete_person') }}">
+          action="{{ url_for('people_list') }}">
       <input type="hidden" name="person_id" value="{{ person.id }}" />
     </form>
   </div>
