@@ -23,10 +23,13 @@ export DATABASE_URL="sqlite+aiosqlite:///choreboss.db"
 
 echo "✅ Database: $DATABASE_URL"
 echo ""
+LAN_IP=$(hostname -I 2>/dev/null | awk '{print $1}')
+
 echo "🌐 Starting FastAPI server..."
-echo "    API will be available at: http://localhost:8000"
-echo "    Docs at: http://localhost:8000/docs"
-echo "    ReDoc at: http://localhost:8000/redoc"
+echo "    Binding: 0.0.0.0:8000"
+echo "    API will be available at: http://${LAN_IP:-<this-machine-ip>}:8000"
+echo "    Docs at: http://${LAN_IP:-<this-machine-ip>}:8000/docs"
+echo "    ReDoc at: http://${LAN_IP:-<this-machine-ip>}:8000/redoc"
 echo ""
 echo "Press Ctrl+C to stop"
 echo ""
