@@ -1,6 +1,5 @@
-import { useState } from 'react';
-import { completeChore } from '../api';
 import type { AuthSession, PersonRead } from '../types';
+import { useChoreBossChoreCompletion } from './useChoreBossChoreCompletion';
 import { useChoreBossDashboardData } from './useChoreBossDashboardData';
 import { useChoreBossPeopleManagement } from './useChoreBossPeopleManagement';
 
@@ -30,9 +29,13 @@ export interface UseChoreBossDashboardResult {
 }
 
 export function useChoreBossDashboard({ session, onMessageChange }: UseChoreBossDashboardOptions): UseChoreBossDashboardResult {
-  const [completingChoreId, setCompletingChoreId] = useState<number | null>(null);
   const data = useChoreBossDashboardData({
     session,
+    onMessageChange,
+  });
+  const choreCompletion = useChoreBossChoreCompletion({
+    session,
+    setChores: data.setChores,
     onMessageChange,
   });
   const peopleManagement = useChoreBossPeopleManagement({
@@ -41,23 +44,6 @@ export function useChoreBossDashboard({ session, onMessageChange }: UseChoreBoss
     setPeople: data.setPeople,
     onMessageChange,
   });
-
-  async function handleCompleteChore(choreId: number): Promise<void> {
-    if (!session) {
-      return;
-    }
-
-    setCompletingChoreId(choreId);
-    try {
-      const updatedChore = await completeChore(session.access_token, choreId);
-      data.setChores((current) => current.map((chore) => (chore.id === updatedChore.id ? updatedChore : chore)));
-      onMessageChange(`Completed ${updatedChore.name}`);
-    } catch (error: unknown) {
-      onMessageChange(error instanceof Error ? error.message : 'Unable to complete chore');
-    } finally {
-      setCompletingChoreId(null);
-    }
-  }
 
   return {
     personCreateForm: peopleManagement.personCreateForm,
@@ -68,10 +54,8 @@ export function useChoreBossDashboard({ session, onMessageChange }: UseChoreBoss
     chores: data.chores,
     people: data.people,
     dashboardLoading: data.dashboardLoading,
-    completingChoreId,
-    completeChoreById: (choreId) => {
-      void handleCompleteChore(choreId);
-    },
+    completingChoreId: choreCompletion.completingChoreId,
+    completeChoreById: choreCompletion.completeChoreById,
     createPersonFromForm: peopleManagement.createPersonFromForm,
     startEditPerson: peopleManagement.startEditPerson,
     cancelEditPerson: peopleManagement.cancelEditPerson,
