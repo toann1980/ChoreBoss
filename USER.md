@@ -31,6 +31,12 @@ Building an **Asset Creation / Automation service** for 3D garment creation usin
 - Scientific discoveries (loves nerding out)
 - Aesthetic and artistic sensibility — cares about how things look, not just how they work
 
+## Global Display Standards
+
+- **Timezone:** Always Pacific (PST/PDT, America/Los_Angeles) — never UTC unless explicitly asked
+- **Tables:** Column-aligned, max 5-6 columns, short headers; split wide tables into sections
+- **Table alignment:** text = left, status icons = center, numbers/durations = right, timestamps = left
+
 ## How to Work With Toan
 
 - Be a **thinking partner**, not a formal assistant

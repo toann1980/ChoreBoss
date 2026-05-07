@@ -2,40 +2,100 @@
 
 ---
 
-## ENVESTERO CURRENT STATE (2026-05-05 08:27 PDT)
+## 🌐 GLOBAL DISPLAY STANDARDS
 
-**Dashboard:** Live at http://10.0.0.22/dashboard (6 components, 504 fixes applied)
+### Timezone
+- **All times: Pacific (PST/PDT, America/Los_Angeles)** — never UTC unless explicitly asked
+- Applies to: tables, logs, summaries, cron schedules, CURRENT.md files, everywhere
 
-**T001 + T002 Complete (2026-05-05 00:15):**
-- Price fallback: 8-source cascade (cache → DB → APIs → degrade)
-- OHLCV fallback: 4-source cascade (yfinance → Polygon → IEX → DB)
-- Never times out, no data gaps
-- Free APIs: Alpha Vantage, Finnhub, Tiingo, Polygon.io, IEX Cloud
-- Next: Add keys to .env, test endpoints
+### Tables
+- **Column-aligned** — pad values to match column header width
+- **Max 5-6 columns** — chat window is ~800px; split wider tables into sections
+- **Alignment:** names/text = left, status icons = center, numbers/durations = right, timestamps = left
+- Short column headers, abbreviated values where needed
+
+---
+
+## 🏗️ OCP STRUCTURE
+
+### Settings (2026-05-07)
+- `/srv/openclaw_projects/Settings/` — top-level agent config project
+- `Settings/routines/` — governance workflows (OCP.md, DEVELOPMENT.md, VERIFY.md, OWL_MODE_ROUTINE.md, etc.)
+- `Settings/cron/` — scheduled automation (REGISTRY.md, RUNS.md, CURRENT.md)
+- `Settings/CURRENT.md` — compiled view of both subfolders
+
+### Routine Name Changes (2026-05-07)
+- `OCP_ROUTINE.md` → `OCP.md`
+- `DEVELOPMENT_OCP_ROUTINE.md` → `DEVELOPMENT.md`
+- `VERIFY_ROUTINE.md` → `VERIFY.md`
+
+### Cron Jobs (Active)
+| Job                  | Schedule       | Status  | Last Run (PDT)      |
+|:---------------------|:--------------:|:-------:|:--------------------|
+| mg-extract-promote   | Daily 11:00 PM |   ✅    | 2026-05-06 11:00 PM |
+| mg-scenario-optimize | Mon 12:00 AM   |    —    | never               |
+| mg-ai-news-ingest    | Mon  1:00 AM   |    —    | never               |
+
+- ⚠️ `mg-extract-promote`: semantic index step failing (`index_semantic.py`) — deferred to Phase 2
+- ⚠️ All cron jobs silent — no failure delivery routing yet
+
+### OCP Three-Tier Structure
+- Tier 1: `/openclaw_projects/[Project]/` — strategic (VISION, STRATEGY, ARCHITECTURE, memory/)
+- Tier 2: `/openclaw_projects/repos/[Project]/` — daily work (START_HERE, CURRENT, memory/)
+- Tier 3: `/srv/github/[Project]/` — production code only, no memory files
+
+---
+
+## 📦 PROJECT STATUS
+
+### Envestero
+- Dashboard live: http://10.0.0.22/dashboard
+- T001+T002 complete: 8-source price cascade, 4-source OHLCV fallback
+- ⚠️ Risks: yfinance timeouts (HIGH), nightly OHLCV job (HIGH)
 - Commit: 4bd3b478
 
-**Fault Tolerance Risks (identified 2026-05-04):**
-- 🔴 yfinance timeouts (HIGH)
-- 🔴 Nightly OHLCV job (HIGH)
-- 🟡 Hermes sentiment, proxy scraper (MEDIUM)
+### MemoryGraph
+- Phase 1 complete — 4 cron jobs restored + validated (2026-05-04)
+- ⚠️ Semantic index failing on every extract run
+- Phase 2 gate: was 2026-05-06
+
+### BenchModel v3.0
+- ✅ Complete — 102/102 tests, 3,110 LOC
+- Windows hot-swap: `--start-profiles` with whitelisted keys (`ngl`, `parallel`, `ctx`)
+
+### ImageForge
+- DCC-agnostic rendering — never cares which DCC produced the render
+- Local model hosting (HuggingFace cache, no API cost)
+- Tenant isolation (Nike/Converse data never cross)
+
+### ChoreBoss
+- FastAPI backend stable
+- Vite + React + TypeScript frontend scaffold, first TDD slice passing (`ce53567`)
 
 ---
 
-## OTHER PROJECTS (Brief Status)
+## 🧠 HOW I THINK ABOUT CODE
 
-- **MemoryGraph Cron:** ✅ Restored (4 jobs, Phase 2 → 2026-05-06)
-- **BenchModel v3.0:** ✅ Complete (102/102 tests, 3,110 LOC)
-- **ImageForge:** DCC-agnostic rendering, local models, tenant isolation (Nike/Converse)
-- **BenchModel hot-swap profiles (2026-05-05):** added safe `--start-profiles` support for Windows hot-swap machines; whitelisted startup keys are `ngl`, `parallel`, `ctx`; nuc stays on systemd
-
----
-
----
-
-## Project: openclaw_projects (ImageForge Phase)
-- ✓ DCC-agnostic rendering architecture
-- ✓ Local model hosting (no API cost)
-- ✓ Tenant isolation (Nike/Converse data never cross)
-- ✓ OCP Standards: Read CURRENT.md first
+- Analyze before acting: outside-in + inside-out before any implementation
+- SOLID as a lens from the start, not a checklist at the end
+- TDD as a design tool — tests describe behavior, not implementation
+- No fake passes — dummy data is deferred debt
+- Caution at integration seams — slow down where contracts meet
+- Root cause before quick fix — understand before patching
+- Respect layers — business logic doesn't belong in controllers
+- Slowness through hard problems is engineering maturity, not weakness
 
 ---
+
+## 🌐 INFRASTRUCTURE
+
+### NUC Network
+| IP          | Interface | Purpose          |
+|:------------|:----------|:-----------------|
+| 10.0.0.28   | enp5s0    | SSH + Admin      |
+| 10.0.0.22   | eno1      | App Traffic      |
+| 10.0.0.81   | wlp6s0    | Backup/Secondary |
+
+### Telegram
+- User ID: `8718656405`
+- Command: `openclaw message send --target telegram:8718656405 --message "..."`
