@@ -12,11 +12,11 @@ import {
 } from './api';
 import './App.css';
 import { AppLayout } from './components/AppLayout';
+import { DashboardPage } from './pages/DashboardPage';
 import {
   type PersonCreateFormState,
   type PersonEditFormState,
 } from './components/PeoplePanel';
-import { DashboardPage } from './pages/DashboardPage';
 import { LoginPage } from './pages/LoginPage';
 import type {
   AuthSession,
