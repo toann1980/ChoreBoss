@@ -23,6 +23,17 @@
                   rows="3"
                   required></textarea>
       </div>
+      <div class="form-group">
+        <label for="person_id">Assigned To</label>
+        <select class="form-control" id="person_id" name="person_id">
+          <option value="">-- Select a person --</option>
+          {% for person in people %}
+            <option value='{{ person.id }}'>
+              {{ person.first_name }} {{ person.last_name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
       <button type="submit" class="btn btn-primary">Add Chore</button>
     </form>
   </div>

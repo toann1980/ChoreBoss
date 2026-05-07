@@ -250,7 +250,7 @@ def add_chore():
         status, result = api_call('POST', '/chores/', {
             'name': data.get('name'),
             'description': data.get('description'),
-            'person_id': data.get('person_id') or None
+            'person_id': data.get('person_id') or data.get('assigned_to') or None
         })
         
         if status in (200, 201):
@@ -281,7 +281,7 @@ def edit_chore(chore_id):
         status, result = api_call('PUT', f'/chores/{chore_id}', {
             'name': data.get('name'),
             'description': data.get('description'),
-            'person_id': data.get('person_id') or None
+            'person_id': data.get('person_id') or data.get('assigned_to') or None
         })
         
         if status == 200:
