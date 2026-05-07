@@ -1,28 +1,19 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import {
-  ApiError,
   completeChore,
   createPerson,
   deletePerson,
-  login,
   loadChores,
   loadPeople,
-  toSession,
   updatePerson,
 } from '../api';
-import type { AuthSession, ChoreRead, PersonRead } from '../types';
+import type { ChoreRead, PersonRead } from '../types';
+import { useChoreBossAuth } from './useChoreBossAuth';
 import {
   type PersonCreateFormState,
   type PersonEditFormState,
 } from '../components/PeoplePanel';
-
-const STORAGE_KEY = 'choreboss.session';
-
-interface LoginFormState {
-  loginName: string;
-  pin: string;
-}
 
 const EMPTY_PERSON_CREATE_FORM: PersonCreateFormState = {
   first_name: '',
@@ -43,23 +34,9 @@ function personToEditForm(person: PersonRead): PersonEditFormState {
   };
 }
 
-function readSession(): AuthSession | null {
-  const rawSession = window.localStorage.getItem(STORAGE_KEY);
-  if (!rawSession) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(rawSession) as AuthSession;
-  } catch {
-    window.localStorage.removeItem(STORAGE_KEY);
-    return null;
-  }
-}
-
 export interface UseChoreBossAppResult {
-  session: AuthSession | null;
-  loginForm: LoginFormState;
+  session: ReturnType<typeof useChoreBossAuth>['session'];
+  loginForm: ReturnType<typeof useChoreBossAuth>['loginForm'];
   personCreateForm: PersonCreateFormState;
   personEditForm: PersonEditFormState | null;
   editingPersonId: number | null;
@@ -73,10 +50,10 @@ export interface UseChoreBossAppResult {
   message: string;
   isAuthenticated: boolean;
   isAlertMessage: boolean;
-  handleLogin: (event: FormEvent<HTMLFormElement>) => Promise<void>;
-  handleLogout: () => void;
-  setLoginName: (value: string) => void;
-  setPin: (value: string) => void;
+  handleLogin: ReturnType<typeof useChoreBossAuth>['handleLogin'];
+  handleLogout: ReturnType<typeof useChoreBossAuth>['handleLogout'];
+  setLoginName: ReturnType<typeof useChoreBossAuth>['setLoginName'];
+  setPin: ReturnType<typeof useChoreBossAuth>['setPin'];
   completeChoreById: (choreId: number) => void;
   createPersonFromForm: (event: FormEvent<HTMLFormElement>) => void;
   startEditPerson: (person: PersonRead) => void;
@@ -88,11 +65,7 @@ export interface UseChoreBossAppResult {
 }
 
 export function useChoreBossApp(): UseChoreBossAppResult {
-  const [session, setSession] = useState<AuthSession | null>(() => readSession());
-  const [loginForm, setLoginForm] = useState<LoginFormState>({
-    loginName: '',
-    pin: '',
-  });
+  const [message, setMessage] = useState<string>('');
   const [personCreateForm, setPersonCreateForm] = useState<PersonCreateFormState>(EMPTY_PERSON_CREATE_FORM);
   const [personEditForm, setPersonEditForm] = useState<PersonEditFormState | null>(null);
   const [editingPersonId, setEditingPersonId] = useState<number | null>(null);
@@ -100,12 +73,25 @@ export function useChoreBossApp(): UseChoreBossAppResult {
   const [peopleFormBusy, setPeopleFormBusy] = useState(false);
   const [chores, setChores] = useState<ChoreRead[]>([]);
   const [people, setPeople] = useState<PersonRead[]>([]);
-  const [loading, setLoading] = useState(false);
   const [dashboardLoading, setDashboardLoading] = useState(false);
   const [completingChoreId, setCompletingChoreId] = useState<number | null>(null);
-  const [message, setMessage] = useState<string>('');
 
-  const isAuthenticated = useMemo(() => session !== null, [session]);
+  const auth = useChoreBossAuth({
+    onMessageChange: setMessage,
+    onLogoutCleanup: () => {
+      setChores([]);
+      setPeople([]);
+      setPersonCreateForm(EMPTY_PERSON_CREATE_FORM);
+      setPersonEditForm(null);
+      setEditingPersonId(null);
+      setPeopleFormError('');
+      setPeopleFormBusy(false);
+      setDashboardLoading(false);
+      setCompletingChoreId(null);
+    },
+  });
+
+  const isAuthenticated = useMemo(() => auth.session !== null, [auth.session]);
   const isAlertMessage = useMemo(() => {
     if (!message) {
       return false;
@@ -115,6 +101,7 @@ export function useChoreBossApp(): UseChoreBossAppResult {
   }, [message]);
 
   useEffect(() => {
+    const session = auth.session;
     if (!session) {
       return;
     }
@@ -153,34 +140,16 @@ export function useChoreBossApp(): UseChoreBossAppResult {
     return () => {
       isCurrent = false;
     };
-  }, [session]);
-
-  async function handleLogin(event: FormEvent<HTMLFormElement>): Promise<void> {
-    event.preventDefault();
-    setLoading(true);
-    setMessage('');
-
-    try {
-      const loginResponse = await login(loginForm.loginName, loginForm.pin);
-      const nextSession = toSession(loginForm.loginName, loginResponse);
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextSession));
-      setSession(nextSession);
-    } catch (error: unknown) {
-      const text = error instanceof ApiError ? error.message : 'Unable to sign in';
-      setMessage(text);
-    } finally {
-      setLoading(false);
-    }
-  }
+  }, [auth.session]);
 
   async function handleCompleteChore(choreId: number): Promise<void> {
-    if (!session) {
+    if (!auth.session) {
       return;
     }
 
     setCompletingChoreId(choreId);
     try {
-      const updatedChore = await completeChore(session.access_token, choreId);
+      const updatedChore = await completeChore(auth.session.access_token, choreId);
       setChores((current) => current.map((chore) => (chore.id === updatedChore.id ? updatedChore : chore)));
       setMessage(`Completed ${updatedChore.name}`);
     } catch (error: unknown) {
@@ -192,7 +161,7 @@ export function useChoreBossApp(): UseChoreBossAppResult {
 
   async function handleCreatePerson(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
-    if (!session) {
+    if (!auth.session) {
       return;
     }
 
@@ -200,7 +169,7 @@ export function useChoreBossApp(): UseChoreBossAppResult {
     setPeopleFormError('');
 
     try {
-      const createdPerson = await createPerson(session.access_token, personCreateForm);
+      const createdPerson = await createPerson(auth.session.access_token, personCreateForm);
       setPeople((current) => [...current, createdPerson]);
       setPersonCreateForm(EMPTY_PERSON_CREATE_FORM);
       setMessage(`Created ${createdPerson.first_name} ${createdPerson.last_name}`);
@@ -224,7 +193,7 @@ export function useChoreBossApp(): UseChoreBossAppResult {
   }
 
   async function handleSavePerson(personId: number): Promise<void> {
-    if (!session || !personEditForm) {
+    if (!auth.session || !personEditForm) {
       return;
     }
 
@@ -232,7 +201,7 @@ export function useChoreBossApp(): UseChoreBossAppResult {
     setPeopleFormError('');
 
     try {
-      const updatedPerson = await updatePerson(session.access_token, personId, personEditForm);
+      const updatedPerson = await updatePerson(auth.session.access_token, personId, personEditForm);
       setPeople((current) => current.map((person) => (person.id === updatedPerson.id ? updatedPerson : person)));
       setMessage(`Updated ${updatedPerson.first_name} ${updatedPerson.last_name}`);
       cancelEditPerson();
@@ -244,7 +213,7 @@ export function useChoreBossApp(): UseChoreBossAppResult {
   }
 
   async function handleDeletePerson(personId: number): Promise<void> {
-    if (!session) {
+    if (!auth.session) {
       return;
     }
 
@@ -259,7 +228,7 @@ export function useChoreBossApp(): UseChoreBossAppResult {
     setPeopleFormError('');
 
     try {
-      await deletePerson(session.access_token, personId);
+      await deletePerson(auth.session.access_token, personId);
       setPeople((current) => current.filter((candidate) => candidate.id !== personId));
       setMessage(`Deleted ${label}`);
       if (editingPersonId === personId) {
@@ -270,19 +239,6 @@ export function useChoreBossApp(): UseChoreBossAppResult {
     } finally {
       setPeopleFormBusy(false);
     }
-  }
-
-  function handleLogout(): void {
-    window.localStorage.removeItem(STORAGE_KEY);
-    setSession(null);
-    setChores([]);
-    setPeople([]);
-    setPersonCreateForm(EMPTY_PERSON_CREATE_FORM);
-    setPersonEditForm(null);
-    setEditingPersonId(null);
-    setPeopleFormError('');
-    setLoginForm({ loginName: '', pin: '' });
-    setMessage('Signed out');
   }
 
   const updateCreateForm = (next: Partial<PersonCreateFormState>): void => {
@@ -297,8 +253,8 @@ export function useChoreBossApp(): UseChoreBossAppResult {
   };
 
   return {
-    session,
-    loginForm,
+    session: auth.session,
+    loginForm: auth.loginForm,
     personCreateForm,
     personEditForm,
     editingPersonId,
@@ -306,20 +262,16 @@ export function useChoreBossApp(): UseChoreBossAppResult {
     peopleFormBusy,
     chores,
     people,
-    loading,
+    loading: auth.loading,
     dashboardLoading,
     completingChoreId,
     message,
     isAuthenticated,
     isAlertMessage,
-    handleLogin,
-    handleLogout,
-    setLoginName: (value) => {
-      setLoginForm((current) => ({ ...current, loginName: value }));
-    },
-    setPin: (value) => {
-      setLoginForm((current) => ({ ...current, pin: value }));
-    },
+    handleLogin: auth.handleLogin,
+    handleLogout: auth.handleLogout,
+    setLoginName: auth.setLoginName,
+    setPin: auth.setPin,
     completeChoreById: (choreId) => {
       void handleCompleteChore(choreId);
     },
