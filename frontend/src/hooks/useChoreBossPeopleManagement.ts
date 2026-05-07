@@ -29,7 +29,7 @@ function personToEditForm(person: PersonRead): PersonEditFormState {
 interface UseChoreBossPeopleManagementOptions {
   session: AuthSession | null;
   people: PersonRead[];
-  setPeople: React.Dispatch<React.SetStateAction<PersonRead[]>>;
+  setPeople: import('react').Dispatch<import('react').SetStateAction<PersonRead[]>>;
   onMessageChange: (message: string) => void;
 }
 

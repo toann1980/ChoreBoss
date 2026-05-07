@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import type { FormEvent } from 'react';
-import { completeChore, loadChores, loadPeople } from '../api';
-import type { AuthSession, ChoreRead, PersonRead } from '../types';
+import { useState } from 'react';
+import { completeChore } from '../api';
+import type { AuthSession, PersonRead } from '../types';
+import { useChoreBossDashboardData } from './useChoreBossDashboardData';
 import { useChoreBossPeopleManagement } from './useChoreBossPeopleManagement';
 
 interface UseChoreBossDashboardOptions {
@@ -15,12 +15,12 @@ export interface UseChoreBossDashboardResult {
   editingPersonId: number | null;
   peopleFormError: string;
   peopleFormBusy: boolean;
-  chores: ChoreRead[];
+  chores: import('../types').ChoreRead[];
   people: PersonRead[];
   dashboardLoading: boolean;
   completingChoreId: number | null;
   completeChoreById: (choreId: number) => void;
-  createPersonFromForm: (event: FormEvent<HTMLFormElement>) => void;
+  createPersonFromForm: import('react').FormEventHandler<HTMLFormElement>;
   startEditPerson: (person: PersonRead) => void;
   cancelEditPerson: () => void;
   savePerson: (personId: number) => void;
@@ -30,58 +30,17 @@ export interface UseChoreBossDashboardResult {
 }
 
 export function useChoreBossDashboard({ session, onMessageChange }: UseChoreBossDashboardOptions): UseChoreBossDashboardResult {
-  const [chores, setChores] = useState<ChoreRead[]>([]);
-  const [people, setPeople] = useState<PersonRead[]>([]);
-  const [dashboardLoading, setDashboardLoading] = useState(false);
   const [completingChoreId, setCompletingChoreId] = useState<number | null>(null);
-
-  const peopleManagement = useChoreBossPeopleManagement({
+  const data = useChoreBossDashboardData({
     session,
-    people,
-    setPeople,
     onMessageChange,
   });
-
-  useEffect(() => {
-    if (!session) {
-      return;
-    }
-
-    let isCurrent = true;
-
-    const run = async (): Promise<void> => {
-      setDashboardLoading(true);
-      onMessageChange('Loading chores…');
-
-      try {
-        const [nextChores, nextPeople] = await Promise.all([
-          loadChores(session.access_token),
-          loadPeople(session.access_token),
-        ]);
-        if (!isCurrent) {
-          return;
-        }
-        setChores(nextChores);
-        setPeople(nextPeople);
-        onMessageChange(`Welcome, ${session.loginName}`);
-      } catch (error: unknown) {
-        if (!isCurrent) {
-          return;
-        }
-        onMessageChange(error instanceof Error ? error.message : 'Failed to load chores');
-      } finally {
-        if (isCurrent) {
-          setDashboardLoading(false);
-        }
-      }
-    };
-
-    void run();
-
-    return () => {
-      isCurrent = false;
-    };
-  }, [session, onMessageChange]);
+  const peopleManagement = useChoreBossPeopleManagement({
+    session,
+    people: data.people,
+    setPeople: data.setPeople,
+    onMessageChange,
+  });
 
   async function handleCompleteChore(choreId: number): Promise<void> {
     if (!session) {
@@ -91,7 +50,7 @@ export function useChoreBossDashboard({ session, onMessageChange }: UseChoreBoss
     setCompletingChoreId(choreId);
     try {
       const updatedChore = await completeChore(session.access_token, choreId);
-      setChores((current) => current.map((chore) => (chore.id === updatedChore.id ? updatedChore : chore)));
+      data.setChores((current) => current.map((chore) => (chore.id === updatedChore.id ? updatedChore : chore)));
       onMessageChange(`Completed ${updatedChore.name}`);
     } catch (error: unknown) {
       onMessageChange(error instanceof Error ? error.message : 'Unable to complete chore');
@@ -106,9 +65,9 @@ export function useChoreBossDashboard({ session, onMessageChange }: UseChoreBoss
     editingPersonId: peopleManagement.editingPersonId,
     peopleFormError: peopleManagement.peopleFormError,
     peopleFormBusy: peopleManagement.peopleFormBusy,
-    chores,
-    people,
-    dashboardLoading,
+    chores: data.chores,
+    people: data.people,
+    dashboardLoading: data.dashboardLoading,
     completingChoreId,
     completeChoreById: (choreId) => {
       void handleCompleteChore(choreId);
