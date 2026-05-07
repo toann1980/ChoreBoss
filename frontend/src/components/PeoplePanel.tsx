@@ -1,4 +1,5 @@
 import type { FormEvent } from 'react';
+import { PersonCreateForm } from './PersonCreateForm';
 import { PersonRow } from './PersonRow';
 import type { PersonRead } from '../types';
 
@@ -68,66 +69,7 @@ export function PeoplePanel({
       </div>
 
       {isAdmin ? (
-        <form className="people-form" onSubmit={onCreatePerson}>
-          <h4>Add person</h4>
-          <div className="people-form-grid">
-            <label>
-              First name
-              <input
-                name="first_name"
-                value={personCreateForm.first_name}
-                onChange={(event) => onCreateFormChange({ first_name: event.target.value })}
-              />
-            </label>
-            <label>
-              Last name
-              <input
-                name="last_name"
-                value={personCreateForm.last_name}
-                onChange={(event) => onCreateFormChange({ last_name: event.target.value })}
-              />
-            </label>
-            <label>
-              Login name
-              <input
-                name="login_name"
-                value={personCreateForm.login_name}
-                onChange={(event) => onCreateFormChange({ login_name: event.target.value })}
-              />
-            </label>
-            <label>
-              Birthday
-              <input
-                name="birthday"
-                type="date"
-                value={personCreateForm.birthday}
-                onChange={(event) => onCreateFormChange({ birthday: event.target.value })}
-              />
-            </label>
-            <label>
-              PIN
-              <input
-                name="pin"
-                type="password"
-                inputMode="numeric"
-                value={personCreateForm.pin}
-                onChange={(event) => onCreateFormChange({ pin: event.target.value })}
-              />
-            </label>
-            <label className="checkbox-row">
-              <input
-                name="is_admin"
-                type="checkbox"
-                checked={personCreateForm.is_admin}
-                onChange={(event) => onCreateFormChange({ is_admin: event.target.checked })}
-              />
-              Admin
-            </label>
-          </div>
-          <button type="submit" disabled={peopleFormBusy}>
-            {peopleFormBusy ? 'Saving…' : 'Add person'}
-          </button>
-        </form>
+        <PersonCreateForm busy={peopleFormBusy} form={personCreateForm} onSubmit={onCreatePerson} onChange={onCreateFormChange} />
       ) : null}
 
       {peopleFormError ? (
