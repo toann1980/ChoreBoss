@@ -8,6 +8,10 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ session, onLogout, children }: AppLayoutProps) {
+  const handleHome = (): void => {
+    window.location.assign('/');
+  };
+
   return (
     <main className="app-shell">
       <header className="hero-card">
@@ -17,9 +21,14 @@ export function AppLayout({ session, onLogout, children }: AppLayoutProps) {
           <p className="subhead">FastAPI backend, typed UI, and a clean path away from the Flask bridge.</p>
         </div>
         {session ? (
-          <button type="button" className="secondary-button" onClick={onLogout}>
-            Sign out
-          </button>
+          <div className="header-actions">
+            <button type="button" className="secondary-button" onClick={handleHome}>
+              Home
+            </button>
+            <button type="button" className="secondary-button" onClick={onLogout}>
+              Sign out
+            </button>
+          </div>
         ) : null}
       </header>
 
