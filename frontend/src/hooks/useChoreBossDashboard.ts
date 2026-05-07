@@ -1,30 +1,8 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
-import { completeChore, createPerson, deletePerson, loadChores, loadPeople, updatePerson } from '../api';
+import { completeChore, loadChores, loadPeople } from '../api';
 import type { AuthSession, ChoreRead, PersonRead } from '../types';
-import {
-  type PersonCreateFormState,
-  type PersonEditFormState,
-} from '../components/PeoplePanel';
-
-const EMPTY_PERSON_CREATE_FORM: PersonCreateFormState = {
-  first_name: '',
-  last_name: '',
-  login_name: '',
-  birthday: '',
-  pin: '',
-  is_admin: false,
-};
-
-function personToEditForm(person: PersonRead): PersonEditFormState {
-  return {
-    first_name: person.first_name,
-    last_name: person.last_name,
-    login_name: person.login_name,
-    birthday: person.birthday,
-    is_admin: person.is_admin,
-  };
-}
+import { useChoreBossPeopleManagement } from './useChoreBossPeopleManagement';
 
 interface UseChoreBossDashboardOptions {
   session: AuthSession | null;
@@ -32,8 +10,8 @@ interface UseChoreBossDashboardOptions {
 }
 
 export interface UseChoreBossDashboardResult {
-  personCreateForm: PersonCreateFormState;
-  personEditForm: PersonEditFormState | null;
+  personCreateForm: import('../components/PeoplePanel').PersonCreateFormState;
+  personEditForm: import('../components/PeoplePanel').PersonEditFormState | null;
   editingPersonId: number | null;
   peopleFormError: string;
   peopleFormBusy: boolean;
@@ -47,20 +25,22 @@ export interface UseChoreBossDashboardResult {
   cancelEditPerson: () => void;
   savePerson: (personId: number) => void;
   deletePersonById: (personId: number) => void;
-  updateCreateForm: (next: Partial<PersonCreateFormState>) => void;
-  updateEditForm: (next: Partial<PersonEditFormState>) => void;
+  updateCreateForm: (next: Partial<import('../components/PeoplePanel').PersonCreateFormState>) => void;
+  updateEditForm: (next: Partial<import('../components/PeoplePanel').PersonEditFormState>) => void;
 }
 
 export function useChoreBossDashboard({ session, onMessageChange }: UseChoreBossDashboardOptions): UseChoreBossDashboardResult {
-  const [personCreateForm, setPersonCreateForm] = useState<PersonCreateFormState>(EMPTY_PERSON_CREATE_FORM);
-  const [personEditForm, setPersonEditForm] = useState<PersonEditFormState | null>(null);
-  const [editingPersonId, setEditingPersonId] = useState<number | null>(null);
-  const [peopleFormError, setPeopleFormError] = useState<string>('');
-  const [peopleFormBusy, setPeopleFormBusy] = useState(false);
   const [chores, setChores] = useState<ChoreRead[]>([]);
   const [people, setPeople] = useState<PersonRead[]>([]);
   const [dashboardLoading, setDashboardLoading] = useState(false);
   const [completingChoreId, setCompletingChoreId] = useState<number | null>(null);
+
+  const peopleManagement = useChoreBossPeopleManagement({
+    session,
+    people,
+    setPeople,
+    onMessageChange,
+  });
 
   useEffect(() => {
     if (!session) {
@@ -120,105 +100,12 @@ export function useChoreBossDashboard({ session, onMessageChange }: UseChoreBoss
     }
   }
 
-  async function handleCreatePerson(event: FormEvent<HTMLFormElement>): Promise<void> {
-    event.preventDefault();
-    if (!session) {
-      return;
-    }
-
-    setPeopleFormBusy(true);
-    setPeopleFormError('');
-
-    try {
-      const createdPerson = await createPerson(session.access_token, personCreateForm);
-      setPeople((current) => [...current, createdPerson]);
-      setPersonCreateForm(EMPTY_PERSON_CREATE_FORM);
-      onMessageChange(`Created ${createdPerson.first_name} ${createdPerson.last_name}`);
-    } catch (error: unknown) {
-      setPeopleFormError(error instanceof Error ? error.message : 'Unable to create person');
-    } finally {
-      setPeopleFormBusy(false);
-    }
-  }
-
-  function startEditPerson(person: PersonRead): void {
-    setEditingPersonId(person.id);
-    setPersonEditForm(personToEditForm(person));
-    setPeopleFormError('');
-  }
-
-  function cancelEditPerson(): void {
-    setEditingPersonId(null);
-    setPersonEditForm(null);
-    setPeopleFormError('');
-  }
-
-  async function handleSavePerson(personId: number): Promise<void> {
-    if (!session || !personEditForm) {
-      return;
-    }
-
-    setPeopleFormBusy(true);
-    setPeopleFormError('');
-
-    try {
-      const updatedPerson = await updatePerson(session.access_token, personId, personEditForm);
-      setPeople((current) => current.map((person) => (person.id === updatedPerson.id ? updatedPerson : person)));
-      onMessageChange(`Updated ${updatedPerson.first_name} ${updatedPerson.last_name}`);
-      cancelEditPerson();
-    } catch (error: unknown) {
-      setPeopleFormError(error instanceof Error ? error.message : 'Unable to update person');
-    } finally {
-      setPeopleFormBusy(false);
-    }
-  }
-
-  async function handleDeletePerson(personId: number): Promise<void> {
-    if (!session) {
-      return;
-    }
-
-    const person = people.find((candidate) => candidate.id === personId);
-    const label = person ? `${person.first_name} ${person.last_name}` : `person ${personId}`;
-    const confirmed = window.confirm(`Delete ${label}?`);
-    if (!confirmed) {
-      return;
-    }
-
-    setPeopleFormBusy(true);
-    setPeopleFormError('');
-
-    try {
-      await deletePerson(session.access_token, personId);
-      setPeople((current) => current.filter((candidate) => candidate.id !== personId));
-      onMessageChange(`Deleted ${label}`);
-      if (editingPersonId === personId) {
-        cancelEditPerson();
-      }
-    } catch (error: unknown) {
-      setPeopleFormError(error instanceof Error ? error.message : 'Unable to delete person');
-    } finally {
-      setPeopleFormBusy(false);
-    }
-  }
-
-  const updateCreateForm = (next: Partial<PersonCreateFormState>): void => {
-    setPersonCreateForm((current) => ({
-      ...current,
-      ...next,
-    }));
-  };
-
-  const updateEditForm = (next: Partial<PersonEditFormState>): void => {
-    setPersonEditForm((current) => (current ? { ...current, ...next } : current));
-  };
-
   return {
-    personCreateForm,
-    personEditForm,
-    editingPersonId,
-    peopleFormError,
-    peopleFormBusy,
+    personCreateForm: peopleManagement.personCreateForm,
+    personEditForm: peopleManagement.personEditForm,
+    editingPersonId: peopleManagement.editingPersonId,
+    peopleFormError: peopleManagement.peopleFormError,
+    peopleFormBusy: peopleManagement.peopleFormBusy,
     chores,
     people,
     dashboardLoading,
@@ -226,18 +113,12 @@ export function useChoreBossDashboard({ session, onMessageChange }: UseChoreBoss
     completeChoreById: (choreId) => {
       void handleCompleteChore(choreId);
     },
-    createPersonFromForm: (event) => {
-      void handleCreatePerson(event);
-    },
-    startEditPerson,
-    cancelEditPerson,
-    savePerson: (personId) => {
-      void handleSavePerson(personId);
-    },
-    deletePersonById: (personId) => {
-      void handleDeletePerson(personId);
-    },
-    updateCreateForm,
-    updateEditForm,
+    createPersonFromForm: peopleManagement.createPersonFromForm,
+    startEditPerson: peopleManagement.startEditPerson,
+    cancelEditPerson: peopleManagement.cancelEditPerson,
+    savePerson: peopleManagement.savePerson,
+    deletePersonById: peopleManagement.deletePersonById,
+    updateCreateForm: peopleManagement.updateCreateForm,
+    updateEditForm: peopleManagement.updateEditForm,
   };
 }
