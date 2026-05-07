@@ -11,9 +11,9 @@
     <p>
       <strong>Assigned to:</strong>
       {% if chore.person_id_foreign_key %}
-        {{
-        chore.person_id_foreign_key.first_name }} {{
-        chore.person_id_foreign_key.last_name }}
+        {{ chore.person_id_foreign_key.first_name }} {{ chore.person_id_foreign_key.last_name }}
+      {% elif chore.person_id %}
+        Person #{{ chore.person_id }}
       {% else %}
         Unassigned
       {% endif %}
@@ -24,6 +24,9 @@
         {{ chore.last_completed_id_foreign_key.first_name }}
         {{ chore.last_completed_id_foreign_key.last_name }} on
         {{ chore.last_completed_date.strftime("%Y-%m-%d") }}
+      {% elif chore.last_completed_id %}
+        Person #{{ chore.last_completed_id }} on
+        {{ chore.last_completed_date.strftime("%Y-%m-%d") if chore.last_completed_date else "unknown date" }}
       {% else %}
         Never completed
       {% endif %}
@@ -34,7 +37,7 @@
     <button class="btn btn-success"
             data-toggle="modal"
             data-target="#completeModal"
-            {% if not chore.person_id_foreign_key %}disabled{% endif %}>Complete</button>
+            {% if not chore.person_id and not chore.person_id_foreign_key %}disabled{% endif %}>Complete</button>
   </div>
   <!-- Complete Modal -->
   <div class="modal fade"

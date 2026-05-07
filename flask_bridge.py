@@ -235,6 +235,19 @@ def chore_detail(chore_id):
     status, chore = api_call('GET', f'/chores/{chore_id}')
     if status != 200:
         return f"Chore not found: {chore}", 404
+
+    if isinstance(chore, dict):
+        chore = dict(chore)
+        person_id = chore.get('person_id')
+        if person_id:
+            person_status, person = api_call('GET', f'/people/{person_id}')
+            if person_status == 200 and isinstance(person, dict):
+                chore['person_id_foreign_key'] = person
+        last_completed_id = chore.get('last_completed_id')
+        if last_completed_id:
+            person_status, person = api_call('GET', f'/people/{last_completed_id}')
+            if person_status == 200 and isinstance(person, dict):
+                chore['last_completed_id_foreign_key'] = person
     
     return render_template('chore_detail.html', chore=chore)
 
