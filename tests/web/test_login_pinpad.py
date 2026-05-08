@@ -42,3 +42,13 @@ def test_login_modal_enter_key_should_submit_login_form(test_client) -> None:
     assert "requestSubmit" in html or "login-form" in html
     assert "handleKeyPress" in html
     assert "Enter" in html
+
+
+def test_pin_pad_buttons_are_explicit_buttons_and_keyboard_input_is_consumed(test_client) -> None:
+    """PIN pad controls should be explicit buttons and keyboard actions should be handled in-modal."""
+    response = test_client.get("/login")
+
+    assert response.status_code == 200
+    html = response.text
+    assert 'type="button"' in html
+    assert 'preventDefault()' in html or 'event.preventDefault()' in html

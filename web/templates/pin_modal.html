@@ -27,7 +27,8 @@
             <div class="row no-gutters">
               {% for j in range(3) %}
                 <div class="col-4 p-1">
-                  <button class="btn btn-secondary w-100"
+                  <button type="button"
+                          class="btn btn-secondary w-100"
                           onclick="addToPin('{{ buttons[i + j] }}')">{{ buttons[i + j] }}</button>
                 </div>
               {% endfor %}
@@ -94,12 +95,16 @@
   function handleKeyPress(event) {
     const key = event.key;
     if (key >= "0" && key <= "9") {
+      event.preventDefault();
       addToPin(key);
     } else if (key === "Backspace") {
+      event.preventDefault();
       deleteLastPin();
     } else if (key === "Enter") {
+      event.preventDefault();
       confirmPin();
     } else if (key === "Escape") {
+      event.preventDefault();
       clearPin();
     }
   }
