@@ -51,6 +51,12 @@ Open / Outstanding
 - UX improvements: replace alert() with toast + inline DOM updates for a smoother UX on sequence/complete flows.
 - Audit & observability: add event logging for sequence changes, chore completions, and failed auth attempts (do not log sensitive PINs).
 - Tests: add unit/integration tests for /people/sequence endpoint and bridge proxy paths; add UI tests for the numpad modal.
+- Additional requested backlog items:
+  - Login PIN field should pop up a numeric keypad for number-only entry.
+  - Back button should refresh/reload state so users don’t see stale sequence/order data after navigating back.
+  - Finish/validate add/edit chore admin flows.
+  - User view should show assigned chores and when they are due.
+  - Add an admin approval path for chore completion requests so a user can request approval and the admin can approve/cycle the chore.
 - Baton pass: FastAPI-only app shell migration plan is now captured in OCP/ChoreBoss/FASTAPI_BATON_PASS_CHECKLIST.md.
 - Phase 0 completed: exact Flask bridge route inventory captured in OCP/ChoreBoss/FASTAPI_ROUTE_INVENTORY.md.
 - Phase 1-5 of the baton pass are functionally complete for the current shell routes; docs cleanup and memory sync remain.
