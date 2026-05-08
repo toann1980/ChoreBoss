@@ -5,11 +5,12 @@ from __future__ import annotations
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
+from fastapi.responses import JSONResponse, RedirectResponse
 
 from choreboss.config import get_config
 from api.routers import auth, chores, people, web
@@ -81,6 +82,13 @@ def create_app() -> FastAPI:
             dict: Status message.
         """
         return {"status": "ok"}
+
+    @app.exception_handler(HTTPException)
+    async def http_exception_handler(request: Request, exc: HTTPException):
+        """Render browser-friendly auth errors while preserving API JSON."""
+        if exc.status_code == 401 and not request.url.path.startswith("/api/"):
+            return RedirectResponse(url="/login", status_code=303)
+        return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
     return app
 
