@@ -45,6 +45,7 @@
 <script>
   let isConfirmingPin = false;
   let initialPin = "";
+  let activePinContext = null;
 
   function _getModalPinEl() {
     return document.getElementById("modalPin");
@@ -105,6 +106,7 @@
 
   function showPinModal(context) {
     clearPin();
+    activePinContext = context || null;
     const ctxEl = document.getElementById("pinContext");
     if (ctxEl) ctxEl.value = context;
     $("#numpadModal").modal("show");
@@ -113,12 +115,13 @@
 
   function hidePinModal() {
     $("#numpadModal").modal("hide");
+    activePinContext = null;
     document.removeEventListener("keydown", handleKeyPress);
   }
 
   function confirmPin() {
     const ctxEl = document.getElementById("pinContext");
-    const context = ctxEl ? ctxEl.value : null;
+    const context = (ctxEl ? ctxEl.value : null) || activePinContext;
     const modalPin = _getModalPinEl();
     const pinValue = modalPin ? modalPin.value : "";
 

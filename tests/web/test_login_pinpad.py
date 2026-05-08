@@ -11,6 +11,7 @@ def test_login_page_shows_pin_pad_trigger(test_client) -> None:
     assert "showPinModal('login')" in html
     assert 'inputmode="numeric"' in html
     assert 'id="login_pin"' in html
+    assert 'id="pinContext"' in html
 
 
 def test_login_page_does_not_show_redundant_open_pin_button(test_client) -> None:

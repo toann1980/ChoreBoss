@@ -54,7 +54,7 @@ Open / Outstanding
 - Additional requested backlog items:
   - Login PIN field should pop up a numeric keypad for number-only entry. ✅ Implemented and smoke-tested on the FastAPI login page.
   - Redundant "Open PIN Pad" button removed; the PIN field itself now opens the pad.
-  - Login flow now writes the modal PIN into a dedicated hidden `login_pin` field as well, so the correct value survives submit reliably.
+  - Login flow now writes the modal PIN into a dedicated hidden `login_pin` field and carries an explicit `pinContext=login` anchor, so the modal stays on the login path instead of falling back to PIN verification.
   - Back button should refresh/reload state so users don’t see stale sequence/order data after navigating back.
   - Finish/validate add/edit chore admin flows.
   - User view should show assigned chores and when they are due.
