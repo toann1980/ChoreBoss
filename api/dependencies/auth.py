@@ -5,14 +5,14 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 
 from choreboss.config import get_config
 
 config = get_config()
-security = HTTPBearer()
+security = HTTPBearer(auto_error=False)
 
 
 def create_access_token(
@@ -49,7 +49,8 @@ def create_access_token(
 
 
 async def get_current_person(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
+    request: Request,
+    credentials: HTTPAuthorizationCredentials | None = Depends(security),
 ) -> dict[str, Any]:
     """Validate JWT token and return person data.
 
@@ -62,9 +63,19 @@ async def get_current_person(
     Raises:
         HTTPException: If token is invalid or expired.
     """
+    token = request.session.get("token") if hasattr(request, "session") else None
+    if not token and credentials is not None:
+        token = credentials.credentials
+
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+        )
+
     try:
         payload = jwt.decode(
-            credentials.credentials,
+            token,
             config.secret_key,
             algorithms=["HS256"],
         )

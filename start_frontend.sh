@@ -1,10 +1,10 @@
 #!/bin/bash
-# Quick start script for ChoreBoss Flask frontend bridge
+# Quick start script for ChoreBoss FastAPI UI shell
 
 cd /srv/github/ChoreBoss
 
-echo "🚀 ChoreBoss Flask Frontend Startup"
-echo "===================================="
+echo "🚀 ChoreBoss FastAPI UI Startup"
+echo "================================"
 echo ""
 
 # Check if venv exists
@@ -21,17 +21,17 @@ source .venv/bin/activate
 # Set defaults for the ChoreBoss integration harness
 export DATABASE_URL="${DATABASE_URL:-sqlite+aiosqlite:///choreboss.db}"
 export API_BASE_URL="${API_BASE_URL:-http://localhost:8055/api}"
-export FLASK_PORT="${FLASK_PORT:-8056}"
+export UI_PORT="${UI_PORT:-8055}"
 
 LAN_IP=$(hostname -I 2>/dev/null | awk '{print $1}')
 
 echo "✅ Database: $DATABASE_URL"
 echo "✅ API backend: $API_BASE_URL"
-echo "✅ Frontend port: $FLASK_PORT"
+echo "✅ UI port: $UI_PORT"
 echo ""
-echo "🌐 Starting Flask frontend..."
-echo "    Binding: 0.0.0.0:${FLASK_PORT}"
-echo "    Frontend will be available at: http://${LAN_IP:-<this-machine-ip>}:${FLASK_PORT}"
+echo "🌐 Starting FastAPI UI shell..."
+echo "    Binding: 0.0.0.0:${UI_PORT}"
+echo "    UI will be available at: http://${LAN_IP:-<this-machine-ip>}:${UI_PORT}"
 echo "    API backend should be running at: ${API_BASE_URL}"
 echo ""
 echo "Login credentials:"
@@ -41,4 +41,4 @@ echo ""
 echo "Press Ctrl+C to stop"
 echo ""
 
-python flask_bridge.py
+python run.py

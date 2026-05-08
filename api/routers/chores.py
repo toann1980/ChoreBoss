@@ -15,7 +15,7 @@ from choreboss.services import ChoreService
 router = APIRouter()
 
 
-@router.get("/", response_model=list[ChoreRead])
+@router.get("/", response_model=list[ChoreRead], name="api_list_chores")
 async def list_chores(
     session: AsyncSession = Depends(get_session),
     current_person: dict[str, Any] = Depends(get_current_person),
@@ -35,7 +35,7 @@ async def list_chores(
     return await service.get_all_chores()
 
 
-@router.get("/{chore_id}", response_model=ChoreRead)
+@router.get("/{chore_id}", response_model=ChoreRead, name="api_get_chore")
 async def get_chore(
     chore_id: int,
     session: AsyncSession = Depends(get_session),
@@ -68,7 +68,7 @@ async def get_chore(
     return chore
 
 
-@router.post("/", response_model=ChoreRead)
+@router.post("/", response_model=ChoreRead, name="api_create_chore")
 async def create_chore(
     chore: ChoreCreate,
     session: AsyncSession = Depends(get_session),
@@ -96,7 +96,7 @@ async def create_chore(
     return result
 
 
-@router.put("/{chore_id}", response_model=ChoreRead)
+@router.put("/{chore_id}", response_model=ChoreRead, name="api_update_chore")
 async def update_chore(
     chore_id: int,
     chore_update: ChoreUpdate,
@@ -141,7 +141,7 @@ async def update_chore(
     return result
 
 
-@router.delete("/{chore_id}", status_code=status.HTTP_204_NO_CONTENT, response_model=None)
+@router.delete("/{chore_id}", status_code=status.HTTP_204_NO_CONTENT, response_model=None, name="api_delete_chore")
 async def delete_chore(
     chore_id: int,
     session: AsyncSession = Depends(get_session),
@@ -172,7 +172,7 @@ async def delete_chore(
     await session.commit()
 
 
-@router.post("/{chore_id}/complete", response_model=ChoreRead)
+@router.post("/{chore_id}/complete", response_model=ChoreRead, name="api_complete_chore")
 async def complete_chore(
     chore_id: int,
     session: AsyncSession = Depends(get_session),

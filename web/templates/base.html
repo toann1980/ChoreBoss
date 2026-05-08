@@ -14,15 +14,15 @@
     <link rel="stylesheet"
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <link rel="icon"
-          href="{{ url_for('static', filename='images/favicon.ico') }}"
+          href="{{ url_for('static', path='images/favicon.ico') }}"
           type="image/x-icon" />
     <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/styles.css') }}" />
+          href="{{ url_for('static', path='css/styles.css') }}" />
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
   </head>
   <body>
-    {% if session.get('token') %}
+    {% if request.session.get('token') %}
       <div class="container mt-3">
         <div class="d-flex justify-content-between align-items-center">
           <div class="left-controls">

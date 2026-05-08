@@ -16,7 +16,7 @@ from choreboss.services import PeopleService
 router = APIRouter()
 
 
-@router.post("/login", response_model=TokenResponse)
+@router.post("/login", response_model=TokenResponse, name="api_login")
 async def login(
     credentials: PersonLogin,
     session: AsyncSession = Depends(get_session),

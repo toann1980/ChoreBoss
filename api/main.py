@@ -3,11 +3,16 @@
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.staticfiles import StaticFiles
+from starlette.middleware.sessions import SessionMiddleware
 
-from api.routers import auth, chores, people
+from choreboss.config import get_config
+from api.routers import auth, chores, people, web
 
 
 @asynccontextmanager
@@ -26,11 +31,31 @@ def create_app() -> FastAPI:
     Returns:
         FastAPI: Configured application instance.
     """
+    config = get_config()
+    repo_root = Path(__file__).resolve().parents[1]
+
     app = FastAPI(
         title="ChoreBoss API",
         description="Household chore tracker API",
         version="2.0.0",
         lifespan=lifespan,
+    )
+
+    app.add_middleware(
+        SessionMiddleware,
+        secret_key=config.secret_key,
+        same_site="lax",
+        https_only=False,
+    )
+    app.add_middleware(
+        TrustedHostMiddleware,
+        allowed_hosts=["localhost", "127.0.0.1", "10.0.0.28", "10.0.0.22", "10.0.0.81", "*"],
+    )
+
+    app.mount(
+        "/static",
+        StaticFiles(directory=str(repo_root / "web" / "static")),
+        name="static",
     )
 
     # CORS configuration
@@ -43,6 +68,7 @@ def create_app() -> FastAPI:
     )
 
     # Include routers
+    app.include_router(web.router, tags=["web"])
     app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
     app.include_router(chores.router, prefix="/api/chores", tags=["chores"])
     app.include_router(people.router, prefix="/api/people", tags=["people"])

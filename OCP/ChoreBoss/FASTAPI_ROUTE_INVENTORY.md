@@ -1,20 +1,20 @@
 # ChoreBoss FastAPI Baton Pass — Route Inventory
 
-Status: Phase 0 complete enough to plan the port
+Status: Historical migration inventory, retained as a receipt for the baton pass
 Last updated: 2026-05-07 21:10 PDT
 Owner: Nova / Toan
 
 Goal
-- Inventory every browser-facing route currently living in `flask_bridge.py`.
-- Mark whether the route is a page render, form submit, or API proxy.
-- Mark whether FastAPI already owns the backing API behavior.
+- Inventory every browser-facing route that previously lived in `flask_bridge.py`.
+- Mark whether the route was a page render, form submit, or API proxy.
+- Mark whether FastAPI already owned the backing API behavior.
 - Use this as the porting order for the baton pass.
 
 ## Current architecture
 
-- FastAPI already owns the JSON API under `/api/*`.
-- Flask bridge still serves the HTML shell and some session glue.
-- The migration goal is to move the browser shell into FastAPI and retire Flask.
+- FastAPI now owns the browser shell and the JSON API under `/api/*`.
+- Flask bridge has been retired from the runtime path.
+- This document is preserved as the route-inventory receipt for the migration.
 
 ## Flask bridge route inventory
 

@@ -24,7 +24,7 @@ class SequenceItem(BaseModel):
     sequence: int
 
 
-@router.get("/", response_model=list[PersonRead])
+@router.get("/", response_model=list[PersonRead], name="api_list_people")
 async def list_people(
     session: AsyncSession = Depends(get_session),
     current_person: dict[str, Any] = Depends(get_current_person),
@@ -43,7 +43,7 @@ async def list_people(
     return await service.get_all_people()
 
 
-@router.get("/{person_id}", response_model=PersonRead)
+@router.get("/{person_id}", response_model=PersonRead, name="api_get_person")
 async def get_person(
     person_id: int,
     session: AsyncSession = Depends(get_session),
@@ -75,7 +75,7 @@ async def get_person(
     return person
 
 
-@router.post("/", response_model=PersonRead)
+@router.post("/", response_model=PersonRead, name="api_create_person")
 async def create_person(
     person: PersonCreate,
     session: AsyncSession = Depends(get_session),
@@ -133,7 +133,7 @@ async def create_person(
     return result
 
 
-@router.put("/{person_id}", response_model=PersonRead)
+@router.put("/{person_id}", response_model=PersonRead, name="api_update_person")
 async def update_person(
     person_id: int,
     person_update: PersonUpdate,
@@ -181,7 +181,7 @@ async def update_person(
     return result
 
 
-@router.delete("/{person_id}", status_code=status.HTTP_204_NO_CONTENT, response_model=None)
+@router.delete("/{person_id}", status_code=status.HTTP_204_NO_CONTENT, response_model=None, name="api_delete_person")
 async def delete_person(
     person_id: int,
     session: AsyncSession = Depends(get_session),
@@ -211,7 +211,7 @@ async def delete_person(
     await session.commit()
 
 
-@router.post("/sequence")
+@router.post("/sequence", name="api_update_sequence")
 async def update_sequence(
     items: list[SequenceItem],
     session: AsyncSession = Depends(get_session),

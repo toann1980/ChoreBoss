@@ -9,8 +9,8 @@ Short: The running ChoreBoss stack is healthy. Key fixes for PIN handling, UI nu
 
 Status (live)
 -------------
-- FastAPI backend: running (http://127.0.0.1:8055/api/health → 200)
-- Flask bridge/UI: running (http://127.0.0.1:8056/api/health → 200)
+- FastAPI backend + UI shell: running (http://127.0.0.1:8055/api/health → 200)
+- Flask bridge: retired from the runtime path and removed from the working tree.
 - Git: changes merged to origin/main and pushed.
 
 What I changed (high-level)
@@ -26,7 +26,8 @@ What I changed (high-level)
   - Fixed Complete Chore flow to redirect/render friendly pages rather than showing raw JSON.
 - Backend / Bridge
   - Added POST /people/sequence on FastAPI (admin-only) for bulk sequence updates.
-  - Updated Flask bridge to proxy update_sequence and to return consistent JSON shapes.
+  - Added FastAPI web shell routes and session middleware so the app can render pages without the Flask bridge.
+  - Retired the Flask bridge runtime path after parity was verified.
   - Added logging for auth attempts (non-sensitive) to aid debugging.
 - Repo & CI
   - Added scripts/check-back-buttons.sh and a GitHub Actions workflow to prevent reintroduction of page-level Back buttons.
@@ -52,6 +53,7 @@ Open / Outstanding
 - Tests: add unit/integration tests for /people/sequence endpoint and bridge proxy paths; add UI tests for the numpad modal.
 - Baton pass: FastAPI-only app shell migration plan is now captured in OCP/ChoreBoss/FASTAPI_BATON_PASS_CHECKLIST.md.
 - Phase 0 completed: exact Flask bridge route inventory captured in OCP/ChoreBoss/FASTAPI_ROUTE_INVENTORY.md.
+- Phase 1-5 of the baton pass are functionally complete for the current shell routes; docs cleanup and memory sync remain.
 
 Risks & Mitigations
 -------------------
