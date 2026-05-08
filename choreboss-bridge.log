@@ -1,0 +1,80 @@
+
+╔════════════════════════════════════════════════════════════════╗
+║     Flask Frontend Bridge to FastAPI Backend                  ║
+╚════════════════════════════════════════════════════════════════╝
+
+🔗 API Backend:  http://127.0.0.1:8055/api
+🌐 Frontend:     http://localhost:8056
+
+📝 To test:
+   1. Start FastAPI backend (in another terminal):
+      python api_run.py
+
+   2. Then visit:
+      http://localhost:8056
+
+   3. Health check:
+      http://localhost:8056/api/health
+
+
+ * Serving Flask app 'flask_bridge'
+ * Debug mode: off
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8056
+ * Running on http://10.0.0.28:8056
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+DEBUG:flask_bridge:API GET /health params=None payload=None
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 127.0.0.1:8055
+DEBUG:urllib3.connectionpool:http://127.0.0.1:8055 "GET /api/health HTTP/1.1" 200 15
+DEBUG:flask_bridge:API GET /health -> 200 dict_keys=['status']
+INFO:werkzeug:127.0.0.1 - - [07/May/2026 17:30:17] "GET /api/health HTTP/1.1" 200 -
+INFO:werkzeug:10.0.0.31 - - [07/May/2026 17:30:33] "[32mGET /logout HTTP/1.1[0m" 302 -
+INFO:werkzeug:10.0.0.31 - - [07/May/2026 17:30:33] "GET /login HTTP/1.1" 200 -
+INFO:werkzeug:10.0.0.31 - - [07/May/2026 17:30:33] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:10.0.0.31 - - [07/May/2026 17:30:33] "[36mGET /static/images/favicon.ico HTTP/1.1[0m" 304 -
+DEBUG:flask_bridge:API POST /auth/login params=None payload={'login_name': 'Dad', 'pin': '5868'}
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 127.0.0.1:8055
+DEBUG:urllib3.connectionpool:http://127.0.0.1:8055 "POST /api/auth/login HTTP/1.1" 200 211
+DEBUG:flask_bridge:API POST /auth/login -> 200 dict_keys=['access_token', 'token_type', 'person_id', 'is_admin']
+INFO:flask_bridge:Login succeeded for dad
+INFO:werkzeug:10.0.0.31 - - [07/May/2026 17:30:41] "POST /login HTTP/1.1" 200 -
+DEBUG:flask_bridge:API GET /chores/ params=None payload=None
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 127.0.0.1:8055
+DEBUG:urllib3.connectionpool:http://127.0.0.1:8055 "GET /api/chores/ HTTP/1.1" 200 1809
+DEBUG:flask_bridge:API GET /chores/ -> 200 list_len=6
+DEBUG:flask_bridge:API GET /people/ params=None payload=None
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 127.0.0.1:8055
+DEBUG:urllib3.connectionpool:http://127.0.0.1:8055 "GET /api/people/ HTTP/1.1" 200 1655
+DEBUG:flask_bridge:API GET /people/ -> 200 list_len=7
+INFO:werkzeug:10.0.0.31 - - [07/May/2026 17:30:41] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:10.0.0.31 - - [07/May/2026 17:30:41] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:10.0.0.31 - - [07/May/2026 17:30:41] "[36mGET /static/images/chore-boss_v1.svg HTTP/1.1[0m" 304 -
+DEBUG:flask_bridge:API GET /people/ params=None payload=None
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 127.0.0.1:8055
+DEBUG:urllib3.connectionpool:http://127.0.0.1:8055 "GET /api/people/ HTTP/1.1" 200 1655
+DEBUG:flask_bridge:API GET /people/ -> 200 list_len=7
+INFO:werkzeug:10.0.0.31 - - [07/May/2026 17:30:44] "GET /chores/add HTTP/1.1" 200 -
+INFO:werkzeug:10.0.0.31 - - [07/May/2026 17:30:44] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+DEBUG:flask_bridge:API GET /chores/6 params=None payload=None
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 127.0.0.1:8055
+DEBUG:urllib3.connectionpool:http://127.0.0.1:8055 "GET /api/chores/6 HTTP/1.1" 200 288
+DEBUG:flask_bridge:API GET /chores/6 -> 200 dict_keys=['name', 'description', 'person_id', 'recurrence', 'recurrence_day', 'id', 'last_completed_date', 'last_completed_id', 'created_at', 'updated_at']
+DEBUG:flask_bridge:API GET /people/8 params=None payload=None
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 127.0.0.1:8055
+DEBUG:urllib3.connectionpool:http://127.0.0.1:8055 "GET /api/people/8 HTTP/1.1" 200 238
+DEBUG:flask_bridge:API GET /people/8 -> 200 dict_keys=['first_name', 'last_name', 'login_name', 'birthday', 'is_admin', 'assign_chores', 'id', 'sequence_num', 'created_at', 'updated_at']
+DEBUG:flask_bridge:API GET /people/5 params=None payload=None
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 127.0.0.1:8055
+DEBUG:urllib3.connectionpool:http://127.0.0.1:8055 "GET /api/people/5 HTTP/1.1" 200 231
+DEBUG:flask_bridge:API GET /people/5 -> 200 dict_keys=['first_name', 'last_name', 'login_name', 'birthday', 'is_admin', 'assign_chores', 'id', 'sequence_num', 'created_at', 'updated_at']
+INFO:werkzeug:10.0.0.31 - - [07/May/2026 17:30:46] "GET /chores/6 HTTP/1.1" 200 -
+INFO:werkzeug:10.0.0.31 - - [07/May/2026 17:30:46] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:10.0.0.31 - - [07/May/2026 17:30:48] "GET /people/add HTTP/1.1" 200 -
+INFO:werkzeug:10.0.0.31 - - [07/May/2026 17:30:48] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+DEBUG:flask_bridge:API GET /people/ params=None payload=None
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 127.0.0.1:8055
+DEBUG:urllib3.connectionpool:http://127.0.0.1:8055 "GET /api/people/ HTTP/1.1" 200 1655
+DEBUG:flask_bridge:API GET /people/ -> 200 list_len=7
+INFO:werkzeug:10.0.0.31 - - [07/May/2026 17:30:50] "GET /people HTTP/1.1" 200 -
+INFO:werkzeug:10.0.0.31 - - [07/May/2026 17:30:50] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
