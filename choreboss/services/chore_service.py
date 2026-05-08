@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import datetime
+
 from choreboss.repositories.chore_repository import ChoreRepository
 from choreboss.repositories.people_repository import PeopleRepository
 
@@ -59,17 +61,35 @@ class ChoreService:
         Returns:
             Chore: Updated chore object.
         """
-        # Mark complete
         chore = await self.chore_repository.complete_chore(chore_id, person_id)
 
         if chore and chore.person_id:
-            # Auto-assign next assignable person in rotation
             next_person = await self.people_repository.get_next_person_by_person_id(
                 chore.person_id
             )
             chore.person_id = next_person.id if next_person else None
             await self.chore_repository.update_chore(chore)
 
+        return chore
+
+    async def request_chore_completion(self, chore_id: int, requester_id: int):
+        """Record a chore completion request."""
+        return await self.chore_repository.request_chore_completion(chore_id, requester_id)
+
+    async def approve_chore_completion(self, chore_id: int, approver_id: int):
+        """Approve a pending chore completion request and finalize the chore."""
+        chore = await self.chore_repository.get_chore_by_id(chore_id)
+        if not chore or chore.completion_requested_by_id is None:
+            return None
+
+        requester_id = chore.completion_requested_by_id
+        chore = await self.chore_repository.complete_chore(chore_id, requester_id)
+        if chore:
+            chore.completion_approved_by_id = approver_id
+            chore.completion_approved_at = datetime.utcnow()
+            chore.completion_requested_by_id = None
+            chore.completion_requested_at = None
+            await self.chore_repository.update_chore(chore)
         return chore
 
     async def delete_chore(self, chore_id: int) -> None:

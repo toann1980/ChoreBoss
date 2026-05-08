@@ -20,6 +20,10 @@ class Chore(Base):
     person_id = Column(Integer, ForeignKey("people.id"), nullable=True)
     last_completed_date = Column(DateTime, nullable=True, default=None)
     last_completed_id = Column(Integer, ForeignKey("people.id"), nullable=True)
+    completion_requested_by_id = Column(Integer, ForeignKey("people.id"), nullable=True)
+    completion_requested_at = Column(DateTime, nullable=True, default=None)
+    completion_approved_by_id = Column(Integer, ForeignKey("people.id"), nullable=True)
+    completion_approved_at = Column(DateTime, nullable=True, default=None)
     created_at = Column(
         DateTime,
         nullable=False,
@@ -42,6 +46,16 @@ class Chore(Base):
         "People",
         foreign_keys=[last_completed_id],
         primaryjoin="Chore.last_completed_id==People.id",
+    )
+    completion_requested_by = relationship(
+        "People",
+        foreign_keys=[completion_requested_by_id],
+        primaryjoin="Chore.completion_requested_by_id==People.id",
+    )
+    completion_approved_by = relationship(
+        "People",
+        foreign_keys=[completion_approved_by_id],
+        primaryjoin="Chore.completion_approved_by_id==People.id",
     )
 
     @validates("id")
@@ -92,4 +106,32 @@ class Chore(Base):
         """Validate last_completed_id field."""
         if value is not None and not isinstance(value, int):
             raise AttributeError(f"{key} must be an integer")
+        return value
+
+    @validates("completion_requested_by_id")
+    def validate_completion_requested_by_id(self, key, value):
+        """Validate completion_requested_by_id field."""
+        if value is not None and not isinstance(value, int):
+            raise AttributeError(f"{key} must be an integer")
+        return value
+
+    @validates("completion_requested_at")
+    def validate_completion_requested_at(self, key, value):
+        """Validate completion_requested_at field."""
+        if value is not None and not isinstance(value, datetime):
+            raise AttributeError(f"{key} must be a datetime object")
+        return value
+
+    @validates("completion_approved_by_id")
+    def validate_completion_approved_by_id(self, key, value):
+        """Validate completion_approved_by_id field."""
+        if value is not None and not isinstance(value, int):
+            raise AttributeError(f"{key} must be an integer")
+        return value
+
+    @validates("completion_approved_at")
+    def validate_completion_approved_at(self, key, value):
+        """Validate completion_approved_at field."""
+        if value is not None and not isinstance(value, datetime):
+            raise AttributeError(f"{key} must be a datetime object")
         return value

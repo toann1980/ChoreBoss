@@ -67,7 +67,7 @@ Open / Outstanding
   - Back button should refresh/reload state so users don’t see stale sequence/order data after navigating back.
   - Finish/validate add/edit chore admin flows.
   - User view should show assigned chores and when they are due.
-  - Add an admin approval path for chore completion requests so a user can request approval and the admin can approve/cycle the chore.
+  - ✅ Admin approval path for chore completion requests implemented: assigned users request completion, admins approve/cycle the chore, and the browser/API routes plus tests are in place.
 - Baton pass: FastAPI-only app shell migration plan is now captured in OCP/ChoreBoss/FASTAPI_BATON_PASS_CHECKLIST.md.
 - Phase 0 completed: exact Flask bridge route inventory captured in OCP/ChoreBoss/FASTAPI_ROUTE_INVENTORY.md.
 - Phase 1-5 of the baton pass are functionally complete for the current shell routes; docs cleanup and memory sync remain.

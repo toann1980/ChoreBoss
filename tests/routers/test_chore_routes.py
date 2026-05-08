@@ -238,6 +238,55 @@ async def test_complete_chore(
 
 
 @pytest.mark.asyncio
+async def test_request_completion_and_approve_completion_flow(
+    test_client,
+    async_session: AsyncSession,
+) -> None:
+    """Test request/approve completion flow for chores."""
+    people = await setup_test_people(async_session, 2)
+    chores = await setup_test_chores(async_session, 1)
+    await async_session.commit()
+    admin = people[0]
+    requester = people[1]
+    chore = chores[0]
+    chore.person_id = requester.id
+    await async_session.commit()
+
+    login_response = test_client.post(
+        "/api/auth/login",
+        json={"login_name": requester.login_name, "pin": "5678"},
+    )
+    requester_token = login_response.json()["access_token"]
+
+    response = test_client.post(
+        f"/api/chores/{chore.id}/request-completion",
+        headers={"Authorization": f"Bearer {requester_token}"},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["completion_requested_by_id"] == requester.id
+    assert data["completion_requested_at"] is not None
+
+    login_response = test_client.post(
+        "/api/auth/login",
+        json={"login_name": admin.login_name, "pin": "1234"},
+    )
+    admin_token = login_response.json()["access_token"]
+
+    response = test_client.post(
+        f"/api/chores/{chore.id}/approve-completion",
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["last_completed_id"] == requester.id
+    assert data["completion_requested_by_id"] is None
+    assert data["completion_approved_by_id"] == admin.id
+
+
+@pytest.mark.asyncio
 async def test_complete_chore_skips_people_unchecked_for_assignment(
     test_client,
     async_session: AsyncSession,

@@ -211,7 +211,17 @@ async def chore_detail(
         if person is not None:
             chore.last_completed_id_foreign_key = person
 
-    return _render(request, "chore_detail.html", chore=chore)
+    if chore.completion_requested_by_id is not None:
+        person = await PeopleService(people_repo).get_person_by_id(chore.completion_requested_by_id)
+        if person is not None:
+            chore.completion_requested_by_foreign_key = person
+
+    if chore.completion_approved_by_id is not None:
+        person = await PeopleService(people_repo).get_person_by_id(chore.completion_approved_by_id)
+        if person is not None:
+            chore.completion_approved_by_foreign_key = person
+
+    return _render(request, "chore_detail.html", chore=chore, current_person=current_person)
 
 
 @router.get("/chores/add", name="add_chore", response_class=HTMLResponse)
@@ -306,6 +316,56 @@ async def edit_chore_post(
 
     if "application/json" in request.headers.get("content-type", ""):
         return JSONResponse({"success": True})
+
+    return RedirectResponse(url=request.url_for("chore_detail", chore_id=chore_id), status_code=status.HTTP_303_SEE_OTHER)
+
+
+@router.post("/chores/{chore_id:int}/request_completion", name="request_completion")
+async def request_completion(
+    chore_id: int,
+    request: Request,
+    session: AsyncSession = Depends(get_session),
+    current_person: dict[str, Any] = Depends(get_current_person),
+):
+    """Request approval to mark a chore as complete."""
+    chore_repo = ChoreRepository(session)
+    people_repo = PeopleRepository(session)
+    service = ChoreService(chore_repo, people_repo)
+    chore = await service.get_chore_by_id(chore_id)
+    if not chore:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Chore not found")
+
+    if not current_person.get("is_admin") and chore.person_id != current_person["person_id"]:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You can only request completion for your assigned chores")
+
+    result = await service.request_chore_completion(chore_id, current_person["person_id"])
+    await session.commit()
+
+    if "application/json" in request.headers.get("content-type", ""):
+        return JSONResponse({"success": True, "chore": result}, status_code=status.HTTP_200_OK)
+
+    return RedirectResponse(url=request.url_for("chore_detail", chore_id=chore_id), status_code=status.HTTP_303_SEE_OTHER)
+
+
+@router.post("/chores/{chore_id:int}/approve_completion", name="approve_completion")
+async def approve_completion(
+    chore_id: int,
+    request: Request,
+    session: AsyncSession = Depends(get_session),
+    current_person: dict[str, Any] = Depends(get_admin_person),
+):
+    """Approve a pending chore completion request and cycle the chore."""
+    chore_repo = ChoreRepository(session)
+    people_repo = PeopleRepository(session)
+    service = ChoreService(chore_repo, people_repo)
+    chore = await service.approve_chore_completion(chore_id, current_person["person_id"])
+    if not chore:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No pending completion request")
+
+    await session.commit()
+
+    if "application/json" in request.headers.get("content-type", ""):
+        return JSONResponse({"success": True, "chore": chore}, status_code=status.HTTP_200_OK)
 
     return RedirectResponse(url=request.url_for("chore_detail", chore_id=chore_id), status_code=status.HTTP_303_SEE_OTHER)
 

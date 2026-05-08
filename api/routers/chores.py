@@ -172,6 +172,54 @@ async def delete_chore(
     await session.commit()
 
 
+@router.post("/{chore_id}/request-completion", response_model=ChoreRead, name="api_request_completion")
+async def request_completion(
+    chore_id: int,
+    session: AsyncSession = Depends(get_session),
+    current_person: dict[str, Any] = Depends(get_current_person),
+) -> Any:
+    """Request approval for a chore completion."""
+    chore_repo = ChoreRepository(session)
+    people_repo = PeopleRepository(session)
+    service = ChoreService(chore_repo, people_repo)
+    chore = await service.get_chore_by_id(chore_id)
+
+    if not chore:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Chore not found",
+        )
+
+    if not current_person.get("is_admin") and chore.person_id != current_person["person_id"]:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You can only request completion for your assigned chores")
+
+    result = await service.request_chore_completion(chore_id, current_person["person_id"])
+    await session.commit()
+    return result
+
+
+@router.post("/{chore_id}/approve-completion", response_model=ChoreRead, name="api_approve_completion")
+async def approve_completion(
+    chore_id: int,
+    session: AsyncSession = Depends(get_session),
+    admin: dict[str, Any] = Depends(get_admin_person),
+) -> Any:
+    """Approve a pending chore completion request and cycle the chore."""
+    chore_repo = ChoreRepository(session)
+    people_repo = PeopleRepository(session)
+    service = ChoreService(chore_repo, people_repo)
+    chore = await service.approve_chore_completion(chore_id, admin["person_id"])
+
+    if not chore:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No pending completion request",
+        )
+
+    await session.commit()
+    return chore
+
+
 @router.post("/{chore_id}/complete", response_model=ChoreRead, name="api_complete_chore")
 async def complete_chore(
     chore_id: int,

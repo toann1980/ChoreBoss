@@ -49,6 +49,10 @@ class ChoreRead(ChoreBase):
     id: int
     last_completed_date: datetime | None = None
     last_completed_id: int | None = None
+    completion_requested_by_id: int | None = None
+    completion_requested_at: datetime | None = None
+    completion_approved_by_id: int | None = None
+    completion_approved_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
 

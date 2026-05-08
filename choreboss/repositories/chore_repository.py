@@ -65,6 +65,10 @@ class ChoreRepository:
         if chore:
             chore.last_completed_id = person_id
             chore.last_completed_date = datetime.utcnow()
+            chore.completion_requested_by_id = None
+            chore.completion_requested_at = None
+            chore.completion_approved_by_id = None
+            chore.completion_approved_at = None
             await self.session.flush()
         return chore
 
@@ -88,6 +92,8 @@ class ChoreRepository:
         stmt = select(Chore).options(
             selectinload(Chore.person),
             selectinload(Chore.last_completed_person),
+            selectinload(Chore.completion_requested_by),
+            selectinload(Chore.completion_approved_by),
         )
         result = await self.session.execute(stmt)
         return result.scalars().unique().all()
@@ -104,6 +110,8 @@ class ChoreRepository:
         stmt = select(Chore).where(Chore.person_id == person_id).options(
             selectinload(Chore.person),
             selectinload(Chore.last_completed_person),
+            selectinload(Chore.completion_requested_by),
+            selectinload(Chore.completion_approved_by),
         )
         result = await self.session.execute(stmt)
         return result.scalars().unique().all()
@@ -119,6 +127,9 @@ class ChoreRepository:
         """
         stmt = select(Chore).where(Chore.id == chore_id).options(
             selectinload(Chore.person),
+            selectinload(Chore.last_completed_person),
+            selectinload(Chore.completion_requested_by),
+            selectinload(Chore.completion_approved_by),
         )
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
@@ -133,4 +144,15 @@ class ChoreRepository:
             Chore: Updated chore object.
         """
         await self.session.flush()
+        return chore
+
+    async def request_chore_completion(self, chore_id: int, requester_id: int) -> Chore | None:
+        """Record that a person requested chore completion approval."""
+        chore = await self.get_chore_by_id(chore_id)
+        if chore:
+            chore.completion_requested_by_id = requester_id
+            chore.completion_requested_at = datetime.utcnow()
+            chore.completion_approved_by_id = None
+            chore.completion_approved_at = None
+            await self.session.flush()
         return chore

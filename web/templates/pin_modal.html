@@ -137,7 +137,7 @@
 
   function confirmPin() {
     const ctxEl = document.getElementById("pinContext");
-    const context = (ctxEl ? ctxEl.value : null) || activePinContext;
+    const context = activePinContext || (ctxEl ? ctxEl.value : null);
     const modalPin = _getModalPinEl();
     const pinValue = modalPin ? modalPin.value : "";
 
@@ -223,6 +223,18 @@
                     console.error('There was a problem with the fetch operation:', error);
                     alert('Failed to update sequence.');
                   });
+                break;
+              case "request_complete":
+                {
+                  const f = document.getElementById("requestCompletionForm");
+                  if (f) f.submit();
+                }
+                break;
+              case "approve_complete":
+                {
+                  const f = document.getElementById("approveCompletionForm");
+                  if (f) f.submit();
+                }
                 break;
               case "complete_chore":
                 {
