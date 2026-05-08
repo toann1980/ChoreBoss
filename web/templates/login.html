@@ -48,10 +48,6 @@
               <small class="form-text text-muted">Tap the field to open the PIN pad.</small>
             </div>
 
-            <button type="button" class="btn btn-outline-secondary btn-block mb-3" onclick="showPinModal('login')">
-              Open PIN Pad
-            </button>
-
             <button type="submit" class="btn btn-primary btn-block">
               Login
             </button>
@@ -85,7 +81,9 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   
   const login_name = document.getElementById('login_name').value;
-  const pin = document.getElementById('pin').value;
+  const pinField = document.getElementById('pin');
+  const modalPin = document.getElementById('modalPin');
+  const pin = (pinField && pinField.value) || (modalPin && modalPin.value) || '';
   const errorAlert = document.getElementById('error-alert');
   const errorText = document.getElementById('error-text');
 
