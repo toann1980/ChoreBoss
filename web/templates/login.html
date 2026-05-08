@@ -37,10 +37,20 @@
                 class="form-control" 
                 id="pin" 
                 name="pin"
-                placeholder="Your PIN"
+                placeholder="Tap for PIN pad"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                autocomplete="off"
+                readonly
                 required
+                onclick="showPinModal('login')"
               />
+              <small class="form-text text-muted">Tap the field to open the PIN pad.</small>
             </div>
+
+            <button type="button" class="btn btn-outline-secondary btn-block mb-3" onclick="showPinModal('login')">
+              Open PIN Pad
+            </button>
 
             <button type="submit" class="btn btn-primary btn-block">
               Login
@@ -67,6 +77,8 @@
     </div>
   </div>
 </div>
+
+{% include "pin_modal.html" %}
 
 <script>
 document.getElementById('login-form').addEventListener('submit', async (e) => {

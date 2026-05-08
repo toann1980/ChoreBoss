@@ -144,6 +144,13 @@
       return;
     }
 
+    if (context === 'login') {
+      const loginPin = document.getElementById('pin');
+      if (loginPin) loginPin.value = pinValue;
+      hidePinModal();
+      return;
+    }
+
     // other contexts: call verify_pin endpoint on the bridge
     const choreIdElement = document.getElementById("chore_id");
     const choreId = choreIdElement ? choreIdElement.value : null;

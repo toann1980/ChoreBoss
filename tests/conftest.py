@@ -104,9 +104,13 @@ def pytest_collection_modifyitems(config, items):
     legacy_skip = pytest.mark.skip(
         reason="Legacy Flask/service tests are opt-in via RUN_LEGACY_TESTS=1"
     )
+    legacy_prefixes = (
+        "tests/services/",
+        "tests/web/flask_app/",
+        "tests/test_bridge_",
+        "tests/test_run.py",
+    )
     for item in items:
         nodeid = item.nodeid
-        if nodeid.startswith("tests/services/") or nodeid.startswith(
-            "tests/web/flask_app/"
-        ):
+        if any(nodeid.startswith(prefix) for prefix in legacy_prefixes):
             item.add_marker(legacy_skip)
