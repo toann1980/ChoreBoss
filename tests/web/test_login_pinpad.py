@@ -61,6 +61,7 @@ def test_pin_modal_escape_should_close_and_reset_state(test_client) -> None:
     assert response.status_code == 200
     html = response.text
     assert "hidePinModal()" in html
+    assert 'onclick="hidePinModal()"' in html
     assert "Escape" in html
     assert "isConfirmingPin = false" in html
     assert "initialPin = \"\"" in html

@@ -27,7 +27,7 @@
         <div class="d-flex justify-content-between align-items-center">
           <div class="left-controls">
             {% if request.path != '/' %}
-              <button class="btn btn-secondary" onclick="window.history.back()">Back</button>
+              <button class="btn btn-secondary" onclick="goBackFresh()">Back</button>
             {% endif %}
           </div>
           <div class="right-controls">
@@ -45,5 +45,23 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <script>
+      function goBackFresh() {
+        const fallbackUrl = {{ url_for('index') | string | tojson }};
+        const referrer = document.referrer;
+        if (referrer) {
+          try {
+            const refUrl = new URL(referrer, window.location.origin);
+            if (refUrl.origin === window.location.origin) {
+              window.location.href = refUrl.href;
+              return;
+            }
+          } catch (error) {
+            console.warn('Unable to parse referrer for back navigation', error);
+          }
+        }
+        window.location.href = fallbackUrl;
+      }
+    </script>
   </body>
 </html>

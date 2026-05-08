@@ -58,6 +58,8 @@ Open / Outstanding
   - Pressing Enter while the pinpad is open on login now submits the login form instead of merely closing the modal.
   - PIN pad keys are explicit `type="button"` controls and modal keyboard input is consumed with `preventDefault()` so Enter/Escape/Backspace stay inside the pad.
   - Escape/backdrop close now fully reset the modal state (`activePinContext`, `isConfirmingPin`, `initialPin`) instead of leaving stale confirmation state behind.
+  - Cancel now uses the same explicit close path as Escape/backdrop so all pinpad exits behave the same.
+  - Back button now navigates to a fresh GET of the referrer (when available) instead of using browser history, which avoids stale sequence/order state after navigating back.
   - Back button should refresh/reload state so users don’t see stale sequence/order data after navigating back.
   - Finish/validate add/edit chore admin flows.
   - User view should show assigned chores and when they are due.
