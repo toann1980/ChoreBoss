@@ -60,6 +60,8 @@ Open / Outstanding
   - Escape/backdrop close now fully reset the modal state (`activePinContext`, `isConfirmingPin`, `initialPin`) instead of leaving stale confirmation state behind.
   - Cancel now uses the same explicit close path as Escape/backdrop so all pinpad exits behave the same.
   - Back button now navigates to a fresh GET of the referrer (when available) instead of using browser history, which avoids stale sequence/order state after navigating back.
+  - Browser form posts for chore admin pages no longer depend on `python-multipart`; the web shell now parses simple form-encoded bodies directly, so add/edit chore submits work again.
+  - Add/edit chore browser flows were smoke-tested on the live FastAPI shell with the real admin account (`dad`) and now redirect correctly after create/update.
   - Back button should refresh/reload state so users don’t see stale sequence/order data after navigating back.
   - Finish/validate add/edit chore admin flows.
   - User view should show assigned chores and when they are due.

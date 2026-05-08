@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
+from urllib.parse import parse_qs
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
@@ -38,7 +39,7 @@ def _render(request: Request, template_name: str, status_code: int = 200, **cont
 
 
 async def _request_data(request: Request) -> dict[str, Any]:
-    """Read JSON or form payload from a request."""
+    """Read JSON or simple form payload from a request."""
     content_type = request.headers.get("content-type", "")
     if "application/json" in content_type:
         try:
@@ -47,8 +48,13 @@ async def _request_data(request: Request) -> dict[str, Any]:
         except Exception:
             return {}
 
-    form = await request.form()
-    return dict(form)
+    body = await request.body()
+    if not body:
+        return {}
+
+    # Avoid depending on python-multipart for basic browser forms.
+    parsed = parse_qs(body.decode("utf-8"), keep_blank_values=True)
+    return {key: values[-1] if values else "" for key, values in parsed.items()}
 
 
 def _truthy(value: Any) -> bool:
