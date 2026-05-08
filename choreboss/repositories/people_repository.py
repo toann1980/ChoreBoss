@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import date
 from typing import Optional
 
 from sqlalchemy import func, select, update
@@ -27,7 +28,7 @@ class PeopleRepository:
         self,
         first_name: str,
         last_name: str,
-        birthday: str,
+        birthday: str | date,
         pin: str,
         is_admin: bool,
         assign_chores: bool = True,
@@ -49,11 +50,12 @@ class PeopleRepository:
         """
         next_seq = await self.get_next_sequence_num()
         resolved_login_name = login_name or f"{first_name.lower()}{next_seq}"
+        parsed_birthday = birthday if isinstance(birthday, date) else date.fromisoformat(str(birthday))
         person = People(
             first_name=first_name,
             last_name=last_name,
             login_name=resolved_login_name,
-            birthday=birthday,
+            birthday=parsed_birthday,
             pin=pin,
             is_admin=is_admin,
             assign_chores=assign_chores,

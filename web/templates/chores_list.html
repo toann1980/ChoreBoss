@@ -4,13 +4,31 @@
 {% endblock title %}
 {% block content %}
   <div class="container">
-    <h1 class="mt-5">Chores List</h1>
-    <ul class="list-group">
-      {% for chore in chores %}
-        <li class="list-group-item">
-          <a href="{{ url_for('chore_detail', chore_id=chore.id) }}">{{ chore.name }}</a>
-        </li>
-      {% endfor %}
-    </ul>
+    <h1 class="mt-5">{{ page_title or "Chores List" }}</h1>
+    {% if chores %}
+      <ul class="list-group">
+        {% for chore in chores %}
+          <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+            <div>
+              <a href="{{ url_for('chore_detail', chore_id=chore.id) }}">{{ chore.name }}</a>
+              <div class="small text-muted">{{ chore.description }}</div>
+              {% if is_admin and chore.person %}
+                <div class="small text-muted">Assigned to {{ chore.person.first_name }} {{ chore.person.last_name }}</div>
+              {% endif %}
+            </div>
+            <div class="text-right ml-3">
+              <span class="badge badge-info">{{ chore.due_label or "Due now" }}</span>
+              {% if chore.last_completed_date %}
+                <div class="small text-muted mt-1">
+                  Last completed {{ chore.last_completed_date.strftime("%Y-%m-%d") }}
+                </div>
+              {% endif %}
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-muted">{{ empty_message or "No chores found." }}</p>
+    {% endif %}
   </div>
 {% endblock content %}

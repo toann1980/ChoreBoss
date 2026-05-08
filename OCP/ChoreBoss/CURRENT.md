@@ -62,6 +62,8 @@ Open / Outstanding
   - Back button now navigates to a fresh GET of the referrer (when available) instead of using browser history, which avoids stale sequence/order state after navigating back.
   - Browser form posts for chore admin pages no longer depend on `python-multipart`; the web shell now parses simple form-encoded bodies directly, so add/edit chore submits work again.
   - Add/edit chore browser flows were smoke-tested on the live FastAPI shell with the real admin account (`dad`) and now redirect correctly after create/update.
+  - Add-person browser forms now parse ISO birthdays into real `date` objects before creating the model, which fixes live browser user creation.
+  - Chores list now behaves like a user view: non-admin users only see chores assigned to them, admins still see all chores, and the list shows a simple due-status badge (`Due now` or `Unassigned`).
   - Back button should refresh/reload state so users don’t see stale sequence/order data after navigating back.
   - Finish/validate add/edit chore admin flows.
   - User view should show assigned chores and when they are due.

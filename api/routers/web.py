@@ -79,6 +79,18 @@ async def _load_chores(session: AsyncSession) -> list[Any]:
     return await service.get_all_chores()
 
 
+async def _load_assigned_chores(session: AsyncSession, person_id: int) -> list[Any]:
+    chore_repo = ChoreRepository(session)
+    return await chore_repo.get_chores_for_person(person_id)
+
+
+def _due_label(chore: Any) -> str:
+    """Build a friendly due-status label for a chore."""
+    if getattr(chore, "person_id", None) is None:
+        return "Unassigned"
+    return "Due now"
+
+
 @router.get("/", name="index", response_class=HTMLResponse)
 async def index(
     request: Request,
@@ -151,9 +163,27 @@ async def chores_list(
     session: AsyncSession = Depends(get_session),
     current_person: dict[str, Any] = Depends(get_current_person),
 ):
-    """List all chores."""
-    chores = await _load_chores(session)
-    return _render(request, "chores_list.html", chores=chores)
+    """List chores for the current viewer."""
+    is_admin = bool(current_person.get("is_admin"))
+    if is_admin:
+        chores = await _load_chores(session)
+    else:
+        chores = await _load_assigned_chores(session, int(current_person["person_id"]))
+
+    chore_rows = []
+    for chore in chores:
+        chore.due_label = _due_label(chore)
+        chore_rows.append(chore)
+
+    return _render(
+        request,
+        "chores_list.html",
+        chores=chore_rows,
+        current_person=current_person,
+        is_admin=is_admin,
+        page_title="Chores List" if is_admin else "My Chores",
+        empty_message="No chores? This can't be right..." if is_admin else "No chores assigned to you yet.",
+    )
 
 
 @router.get("/chores/{chore_id:int}", name="chore_detail", response_class=HTMLResponse)

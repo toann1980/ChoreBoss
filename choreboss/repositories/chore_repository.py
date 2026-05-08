@@ -87,6 +87,23 @@ class ChoreRepository:
         """
         stmt = select(Chore).options(
             selectinload(Chore.person),
+            selectinload(Chore.last_completed_person),
+        )
+        result = await self.session.execute(stmt)
+        return result.scalars().unique().all()
+
+    async def get_chores_for_person(self, person_id: int) -> list[Chore]:
+        """Retrieve chores assigned to a specific person.
+
+        Args:
+            person_id: Person ID to filter by.
+
+        Returns:
+            list: Chores assigned to the person.
+        """
+        stmt = select(Chore).where(Chore.person_id == person_id).options(
+            selectinload(Chore.person),
+            selectinload(Chore.last_completed_person),
         )
         result = await self.session.execute(stmt)
         return result.scalars().unique().all()
