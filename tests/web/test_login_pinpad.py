@@ -31,3 +31,14 @@ def test_login_page_includes_numeric_pin_input_behavior(test_client) -> None:
     html = response.text
     assert 'inputmode="numeric"' in html or 'pattern="[0-9]*"' in html
     assert 'readonly' in html
+
+
+def test_login_modal_enter_key_should_submit_login_form(test_client) -> None:
+    """Login PIN pad should submit the login form when Enter is pressed."""
+    response = test_client.get("/login")
+
+    assert response.status_code == 200
+    html = response.text
+    assert "requestSubmit" in html or "login-form" in html
+    assert "handleKeyPress" in html
+    assert "Enter" in html

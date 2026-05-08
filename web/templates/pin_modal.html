@@ -152,9 +152,15 @@
     if (context === 'login') {
       const loginPin = document.getElementById('pin');
       const loginHiddenPin = document.getElementById('login_pin');
+      const loginForm = document.getElementById('login-form');
       if (loginPin) loginPin.value = pinValue;
       if (loginHiddenPin) loginHiddenPin.value = pinValue;
       hidePinModal();
+      if (loginForm && typeof loginForm.requestSubmit === 'function') {
+        loginForm.requestSubmit();
+      } else if (loginForm) {
+        loginForm.submit();
+      }
       return;
     }
 
