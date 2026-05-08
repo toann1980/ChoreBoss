@@ -24,15 +24,16 @@ Recommended target architecture
 - Flask bridge is retired after parity is verified.
 
 Phase 0 — Verify the current contract
-- [ ] List every route currently served by `flask_bridge.py`.
-- [ ] Group routes into:
-  - [ ] page render routes
-  - [ ] form submit / AJAX proxy routes
-  - [ ] auth/session routes
-  - [ ] pure API passthrough routes
-- [ ] Identify which routes are still required by the UI.
-- [ ] Record any Flask-specific behavior that the UI accidentally depends on.
-- [ ] Confirm the backend API endpoints already exist or note the missing ones.
+- [x] List every route currently served by `flask_bridge.py`.
+- [x] Group routes into:
+  - [x] page render routes
+  - [x] form submit / AJAX proxy routes
+  - [x] auth/session routes
+  - [x] pure API passthrough routes
+- [x] Identify which routes are still required by the UI.
+- [x] Record any Flask-specific behavior that the UI accidentally depends on.
+- [x] Confirm the backend API endpoints already exist or note the missing ones.
+- [x] Capture the exact inventory in `OCP/ChoreBoss/FASTAPI_ROUTE_INVENTORY.md`.
 
 Phase 1 — Move the app shell into FastAPI
 - [ ] Add Jinja2Templates to the FastAPI app.
@@ -41,6 +42,7 @@ Phase 1 — Move the app shell into FastAPI
 - [ ] Port the login/logout flow into FastAPI.
 - [ ] Port the current page rendering helpers from the bridge.
 - [ ] Keep the existing templates initially; do not rewrite the UI yet unless necessary.
+- [ ] Start with: `/login`, `/`, `/chores`, `/chores/<id>`, `/people`, `/people/<id>`.
 
 Phase 2 — Replace Flask session behavior
 - [ ] Pick the FastAPI session strategy.

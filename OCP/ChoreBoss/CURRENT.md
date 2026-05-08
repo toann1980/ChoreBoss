@@ -51,6 +51,7 @@ Open / Outstanding
 - Audit & observability: add event logging for sequence changes, chore completions, and failed auth attempts (do not log sensitive PINs).
 - Tests: add unit/integration tests for /people/sequence endpoint and bridge proxy paths; add UI tests for the numpad modal.
 - Baton pass: FastAPI-only app shell migration plan is now captured in OCP/ChoreBoss/FASTAPI_BATON_PASS_CHECKLIST.md.
+- Phase 0 completed: exact Flask bridge route inventory captured in OCP/ChoreBoss/FASTAPI_ROUTE_INVENTORY.md.
 
 Risks & Mitigations
 -------------------
