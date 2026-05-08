@@ -30,7 +30,7 @@ What I changed (high-level)
   - Added logging for auth attempts (non-sensitive) to aid debugging.
 - Repo & CI
   - Added scripts/check-back-buttons.sh and a GitHub Actions workflow to prevent reintroduction of page-level Back buttons.
-  - Removed legacy back_home_buttons.html partial to avoid accidental reuse.
+  - Legacy back_home_buttons.html partial is still present and is now explicitly tracked for removal in the baton pass checklist.
 
 Backups
 -------
@@ -50,6 +50,7 @@ Open / Outstanding
 - UX improvements: replace alert() with toast + inline DOM updates for a smoother UX on sequence/complete flows.
 - Audit & observability: add event logging for sequence changes, chore completions, and failed auth attempts (do not log sensitive PINs).
 - Tests: add unit/integration tests for /people/sequence endpoint and bridge proxy paths; add UI tests for the numpad modal.
+- Baton pass: FastAPI-only app shell migration plan is now captured in OCP/ChoreBoss/FASTAPI_BATON_PASS_CHECKLIST.md.
 
 Risks & Mitigations
 -------------------
