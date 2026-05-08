@@ -31,7 +31,7 @@ What I changed (high-level)
   - Added logging for auth attempts (non-sensitive) to aid debugging.
 - Repo & CI
   - Added scripts/check-back-buttons.sh and a GitHub Actions workflow to prevent reintroduction of page-level Back buttons.
-  - Legacy back_home_buttons.html partial is still present and is now explicitly tracked for removal in the baton pass checklist.
+  - Removed the legacy `back_home_buttons.html` partial so page-level Back controls stay centralized in the base shell.
 
 Backups
 -------
