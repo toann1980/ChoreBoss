@@ -62,6 +62,8 @@
     // also clear page-level hidden input if present
     const pagePin = _getPagePinEl();
     if (pagePin) pagePin.value = "";
+    const loginPin = document.getElementById("login_pin");
+    if (loginPin) loginPin.value = "";
   }
 
   function deleteLastPin() {
@@ -146,7 +148,9 @@
 
     if (context === 'login') {
       const loginPin = document.getElementById('pin');
+      const loginHiddenPin = document.getElementById('login_pin');
       if (loginPin) loginPin.value = pinValue;
+      if (loginHiddenPin) loginHiddenPin.value = pinValue;
       hidePinModal();
       return;
     }

@@ -32,11 +32,15 @@
 
             <div class="form-group">
               <label for="pin">PIN</label>
+              <input
+                type="hidden"
+                id="login_pin"
+                name="pin"
+              />
               <input 
                 type="password" 
                 class="form-control" 
                 id="pin" 
-                name="pin"
                 placeholder="Tap for PIN pad"
                 inputmode="numeric"
                 pattern="[0-9]*"
@@ -81,9 +85,10 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   
   const login_name = document.getElementById('login_name').value;
+  const pinInput = document.getElementById('login_pin');
   const pinField = document.getElementById('pin');
   const modalPin = document.getElementById('modalPin');
-  const pin = (pinField && pinField.value) || (modalPin && modalPin.value) || '';
+  const pin = (pinInput && pinInput.value) || (pinField && pinField.value) || (modalPin && modalPin.value) || '';
   const errorAlert = document.getElementById('error-alert');
   const errorText = document.getElementById('error-text');
 
