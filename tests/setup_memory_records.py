@@ -33,6 +33,7 @@ async def setup_test_people(
             "birthday": date(2000, 1, 1),
             "pin": "1234",
             "is_admin": True,
+            "assign_chores": True,
             "sequence_num": 1,
         },
         {
@@ -42,6 +43,7 @@ async def setup_test_people(
             "birthday": date(2002, 1, 1),
             "pin": "5678",
             "is_admin": False,
+            "assign_chores": True,
             "sequence_num": 2,
         },
         {
@@ -51,6 +53,7 @@ async def setup_test_people(
             "birthday": date(2004, 1, 1),
             "pin": "9012",
             "is_admin": False,
+            "assign_chores": True,
             "sequence_num": 3,
         },
     ]
@@ -163,6 +166,7 @@ def setup_memory_records(*args, **kwargs):
             birthday=date(2000, 1, 1),
             pin=bcrypt.hashpw(b"123456", bcrypt.gensalt()).decode(),
             is_admin=True,
+            assign_chores=True,
             sequence_num=1,
         ),
         People(
@@ -172,6 +176,7 @@ def setup_memory_records(*args, **kwargs):
             birthday=date(2002, 1, 1),
             pin=bcrypt.hashpw(b"123456", bcrypt.gensalt()).decode(),
             is_admin=False,
+            assign_chores=True,
             sequence_num=2,
         ),
         People(
@@ -181,6 +186,7 @@ def setup_memory_records(*args, **kwargs):
             birthday=date(2004, 1, 1),
             pin=bcrypt.hashpw(b"123456", bcrypt.gensalt()).decode(),
             is_admin=False,
+            assign_chores=True,
             sequence_num=3,
         ),
     ]

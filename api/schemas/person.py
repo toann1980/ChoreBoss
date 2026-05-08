@@ -15,6 +15,7 @@ class PersonBase(BaseModel):
     login_name: str = Field(..., min_length=3, max_length=50)
     birthday: date
     is_admin: bool = False
+    assign_chores: bool = True
 
 
 class PersonCreate(PersonBase):
@@ -31,6 +32,7 @@ class PersonUpdate(BaseModel):
     login_name: str | None = Field(None, min_length=3, max_length=50)
     birthday: date | None = None
     is_admin: bool | None = None
+    assign_chores: bool | None = None
 
 
 class PersonRead(PersonBase):

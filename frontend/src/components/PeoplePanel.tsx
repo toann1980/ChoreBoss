@@ -10,6 +10,7 @@ export interface PersonCreateFormState {
   birthday: string;
   pin: string;
   is_admin: boolean;
+  assign_chores: boolean;
 }
 
 export interface PersonEditFormState {
@@ -18,6 +19,7 @@ export interface PersonEditFormState {
   login_name: string;
   birthday: string;
   is_admin: boolean;
+  assign_chores: boolean;
 }
 
 interface PeoplePanelProps {

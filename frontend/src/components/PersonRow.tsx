@@ -68,6 +68,14 @@ export function PersonRow({
               />
               Admin
             </label>
+            <label className="checkbox-row">
+              <input
+                type="checkbox"
+                checked={personEditForm.assign_chores}
+                onChange={(event) => onEditFormChange({ assign_chores: event.target.checked })}
+              />
+              Assign chores
+            </label>
           </div>
           <div className="people-actions">
             <button
@@ -98,6 +106,9 @@ export function PersonRow({
           <p>@{person.login_name}</p>
           <span className={person.is_admin ? 'badge badge-admin' : 'badge'}>
             {person.is_admin ? 'Admin' : 'Member'}
+          </span>
+          <span className="badge">
+            {person.assign_chores ? 'Assign chores' : 'Skip chores'}
           </span>
           {isAdmin ? (
             <div className="people-actions">

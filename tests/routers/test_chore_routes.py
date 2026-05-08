@@ -235,3 +235,38 @@ async def test_complete_chore(
     data = response.json()
     assert data["last_completed_id"] == person.id
     assert data["last_completed_date"] is not None
+
+
+@pytest.mark.asyncio
+async def test_complete_chore_skips_people_unchecked_for_assignment(
+    test_client,
+    async_session: AsyncSession,
+) -> None:
+    """Test completion skips people marked as not assignable."""
+    people = await setup_test_people(async_session, 3)
+    chores = await setup_test_chores(async_session, 1)
+    await async_session.commit()
+    admin = people[0]
+    skipped_person = people[1]
+    next_person = people[2]
+    skipped_person.assign_chores = False
+    await async_session.commit()
+
+    login_response = test_client.post(
+        "/api/auth/login",
+        json={"login_name": admin.login_name, "pin": "1234"},
+    )
+    token = login_response.json()["access_token"]
+
+    chore = chores[0]
+    chore.person_id = admin.id
+    await async_session.commit()
+
+    response = test_client.post(
+        f"/api/chores/{chore.id}/complete",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["person_id"] == next_person.id

@@ -30,6 +30,7 @@ class PeopleRepository:
         birthday: str,
         pin: str,
         is_admin: bool,
+        assign_chores: bool = True,
         login_name: str | None = None,
     ) -> People:
         """Add a new person to the database.
@@ -40,6 +41,7 @@ class PeopleRepository:
             birthday: Birthday of the person.
             pin: PIN of the person (will be hashed).
             is_admin: Whether the person is an admin.
+            assign_chores: Whether the person should receive chores in rotation.
             login_name: Optional human-friendly login name.
 
         Returns:
@@ -54,6 +56,7 @@ class PeopleRepository:
             birthday=birthday,
             pin=pin,
             is_admin=is_admin,
+            assign_chores=assign_chores,
             sequence_num=next_seq,
         )
         person.set_pin(pin)
@@ -106,35 +109,35 @@ class PeopleRepository:
         self,
         current_person_id: int,
     ) -> People | None:
-        """Get the next person in sequence rotation.
+        """Get the next assignable person in sequence rotation.
 
         Args:
             current_person_id: ID of current person.
 
         Returns:
-            People: Next person in sequence or None.
+            People: Next assignable person or None.
         """
         current = await self.get_person_by_id(current_person_id)
         if not current:
             return None
 
-        # Get next person by sequence
-        stmt = (
-            select(People)
-            .where(People.sequence_num > current.sequence_num)
-            .order_by(People.sequence_num)
-            .limit(1)
-        )
+        stmt = select(People).order_by(People.sequence_num)
         result = await self.session.execute(stmt)
-        next_person = result.scalar_one_or_none()
+        people = result.scalars().all()
+        if not people:
+            return None
 
-        # If no one after, wrap to first
-        if not next_person:
-            stmt = select(People).order_by(People.sequence_num).limit(1)
-            result = await self.session.execute(stmt)
-            next_person = result.scalar_one_or_none()
+        ordered_people = [
+            person for person in people if person.sequence_num > current.sequence_num
+        ] + [
+            person for person in people if person.sequence_num <= current.sequence_num
+        ]
 
-        return next_person
+        for person in ordered_people:
+            if person.assign_chores:
+                return person
+
+        return None
 
     async def get_next_sequence_num(self) -> int:
         """Get the next sequence number for a new person.

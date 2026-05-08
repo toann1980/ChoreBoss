@@ -4,19 +4,21 @@
 {% endblock title %}
 {% block content %}
   <div class="container-lg">
-    <div class="row mt-3">
-      <div class="col-6">
-        <button class="btn btn-secondary"
-                onclick="location.href='{{ url_for("people_list") }}'">Back</button>
-      </div>
-    </div>
     <h1 class="mt-5">Change Sequence</h1>
     <ul id="sortable" class="list-group">
       {% for person in people %}
         <li class="list-group-item d-flex align-items-center"
-            data-id="{{ person.id }}">
+            data-id="{{ person.id }}"
+            data-assign-chores="{{ 'true' if person.assign_chores else 'false' }}">
           <i class="fas fa-bars mr-3"></i>
-          {{ person.first_name }} {{ person.last_name }}
+          <span class="flex-grow-1">{{ person.first_name }} {{ person.last_name }}</span>
+          <div class="form-check mb-0 ml-3">
+            <input type="checkbox"
+                   class="form-check-input"
+                   {% if person.assign_chores %}checked{% endif %}
+                   onchange="toggleAssignChores({{ person.id }}, this.checked, this)" />
+            <label class="form-check-label text-muted">Assign chores</label>
+          </div>
         </li>
       {% endfor %}
     </ul>
@@ -34,25 +36,47 @@
   </div>
   {% include "pin_modal.html" %}
   <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const sortable = new Sortable(document.getElementById('sortable'), {
-      animation: 150,
-      handle: '.fa-bars',
+    document.addEventListener('DOMContentLoaded', function () {
+      const sortable = new Sortable(document.getElementById('sortable'), {
+        animation: 150,
+        handle: '.fa-bars',
+      });
+
+      document.getElementById('saveSequence').addEventListener('click', function () {
+        const items = document.querySelectorAll('#sortable .list-group-item');
+        const sequenceData = Array.from(items).map((item, index) => ({
+          id: item.getAttribute('data-id'),
+          sequence: index + 1,
+        }));
+
+        document.getElementById('sequenceData').value = JSON.stringify(sequenceData);
+        showPinModal('change_sequence');
+      });
     });
 
-    document.getElementById('saveSequence').addEventListener('click', function () {
-      const items = document.querySelectorAll('#sortable .list-group-item');
-      const sequenceData = Array.from(items).map((item, index) => ({
-        id: item.getAttribute('data-id'),
-        sequence: index + 1,
-      }));
-
-      // Store sequence data in a hidden input
-      document.getElementById('sequenceData').value = JSON.stringify(sequenceData);
-
-      // Show the PIN modal
-      showPinModal('change_sequence');
-    });
-  });
+    function toggleAssignChores(personId, checked, checkbox) {
+      checkbox.disabled = true;
+      fetch(`/people/${personId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ assign_chores: checked }),
+      })
+        .then((response) => response.json())
+        .then((result) => {
+          if (!result.success) {
+            checkbox.checked = !checked;
+            alert(result.error || 'Failed to update assign chores state.');
+          }
+        })
+        .catch(() => {
+          checkbox.checked = !checked;
+          alert('Failed to update assign chores state.');
+        })
+        .finally(() => {
+          checkbox.disabled = false;
+        });
+    }
   </script>
 {% endblock content %}

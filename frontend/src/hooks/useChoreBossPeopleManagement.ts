@@ -14,6 +14,7 @@ const EMPTY_PERSON_CREATE_FORM: PersonCreateFormState = {
   birthday: '',
   pin: '',
   is_admin: false,
+  assign_chores: true,
 };
 
 function personToEditForm(person: PersonRead): PersonEditFormState {
@@ -23,6 +24,7 @@ function personToEditForm(person: PersonRead): PersonEditFormState {
     login_name: person.login_name,
     birthday: person.birthday,
     is_admin: person.is_admin,
+    assign_chores: person.assign_chores,
   };
 }
 

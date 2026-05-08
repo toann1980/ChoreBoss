@@ -25,6 +25,7 @@ class TestPeopleSchema(unittest.TestCase):
             'birthday': birthday,
             'pin': '123456',
             'is_admin': True,
+            'assign_chores': True,
             'sequence_num': 1
         }
         person = People(**valid_data)
@@ -38,6 +39,7 @@ class TestPeopleSchema(unittest.TestCase):
         self.assertEqual(result.login_name, valid_data['login_name'])
         self.assertEqual(result.pin, valid_data['pin'])
         self.assertEqual(result.is_admin, valid_data['is_admin'])
+        self.assertTrue(result.assign_chores)
 
     def tearDown(self):
         self.session.close()
@@ -192,4 +194,17 @@ class TestPeopleSchema(unittest.TestCase):
                 ).date(),
                 'pin': '123456',
                 'is_admin': 'apple',
+            })
+
+    def test_invalid_data_assign_chores(self):
+        with self.assertRaises(AttributeError):
+            People(**{
+                'first_name': 'John',
+                'last_name': 'Doe',
+                'birthday': datetime.strptime(
+                    '01-01-2000', '%m-%d-%Y'
+                ).date(),
+                'pin': '123456',
+                'is_admin': True,
+                'assign_chores': 'apple',
             })

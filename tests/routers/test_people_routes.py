@@ -89,6 +89,7 @@ async def test_get_person(
     data = response.json()
     assert data["first_name"] == person.first_name
     assert data["last_name"] == person.last_name
+    assert data["assign_chores"] is True
 
 
 @pytest.mark.asyncio
@@ -158,6 +159,7 @@ async def test_create_person_admin(
             "birthday": "2015-05-15",  # String is OK, Pydantic will convert
             "pin": "5678",
             "is_admin": False,
+            "assign_chores": False,
         },
     )
 
@@ -167,6 +169,7 @@ async def test_create_person_admin(
     assert data["last_name"] == "Doe"
     assert data["login_name"] == "jane_doe_2"
     assert data["is_admin"] is False
+    assert data["assign_chores"] is False
 
 
 @pytest.mark.asyncio
@@ -184,6 +187,7 @@ async def test_create_first_person_without_auth_when_no_admins_exist(
             "birthday": "2015-05-15",
             "pin": "5678",
             "is_admin": True,
+            "assign_chores": True,
         },
     )
 
@@ -191,6 +195,7 @@ async def test_create_first_person_without_auth_when_no_admins_exist(
     data = response.json()
     assert data["login_name"] == "firstuser"
     assert data["is_admin"] is True
+    assert data["assign_chores"] is True
 
 
 @pytest.mark.asyncio

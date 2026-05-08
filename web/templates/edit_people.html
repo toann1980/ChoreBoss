@@ -4,12 +4,6 @@
 {% endblock title %}
 {% block content %}
   <div class="container-lg">
-    <div class="row mt-3">
-      <div class="col-6">
-        <button class="btn btn-secondary"
-                onclick="location.href='{{ url_for("index") }}'">Back</button>
-      </div>
-    </div>
     <h1 class="mt-5">Edit People</h1>
     <ul class="list-group">
       {% for person in people %}
@@ -23,7 +17,7 @@
     <div class="row mt-3">
       <div class="col-6">
         <button class="btn btn-primary"
-                onclick="window.location.href='{{ url_for("people_list") }}'"
+                onclick="window.location.href='{{ url_for("change_sequence") }}'"
                 {% if not people or people|length < 2 %}disabled{% endif %}>Change Sequence</button>
       </div>
     </div>

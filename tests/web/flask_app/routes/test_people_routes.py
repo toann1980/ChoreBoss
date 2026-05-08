@@ -340,11 +340,15 @@ class TestPeopleRoutes(unittest.TestCase):
             - The response status code should be 200.
             - The response data should contain 'John Doe'.
             - The response data should contain 'Change Sequence'.
+            - The response data should show assign_chores state for each row.
         """
         response = self.client.get('/change_sequence')
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'John Doe', response.data)
         self.assertIn(b'Change Sequence', response.data)
+        self.assertIn(b'name="assign_chores"', response.data)
+        self.assertIn(b'checked', response.data)
+        self.assertEqual(response.data.count(b'name="assign_chores"'), 3)
 
     def test_update_sequence_post(self):
         """

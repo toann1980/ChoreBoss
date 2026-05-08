@@ -63,13 +63,12 @@ class ChoreService:
         chore = await self.chore_repository.complete_chore(chore_id, person_id)
 
         if chore and chore.person_id:
-            # Auto-assign next person in rotation
+            # Auto-assign next assignable person in rotation
             next_person = await self.people_repository.get_next_person_by_person_id(
                 chore.person_id
             )
-            if next_person:
-                chore.person_id = next_person.id
-                await self.chore_repository.update_chore(chore)
+            chore.person_id = next_person.id if next_person else None
+            await self.chore_repository.update_chore(chore)
 
         return chore
 

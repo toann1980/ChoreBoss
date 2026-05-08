@@ -1,12 +1,21 @@
 from datetime import datetime
+import asyncio
+import inspect
+import json
 from flask import (
     Blueprint, current_app, jsonify, redirect, request, render_template,
     Response, url_for
 )
-import json
 
 
 people_bp = Blueprint('people_bp', __name__)
+
+
+def _resolve_value(value):
+    """Resolve awaitable service results in the legacy sync Flask app."""
+    if inspect.isawaitable(value):
+        return asyncio.run(value)
+    return value
 
 
 @people_bp.route('/add_person', methods=['GET', 'POST'])
@@ -24,6 +33,7 @@ def add_person() -> Response:
         birthday_str = request.form['birthday']
         pin = request.form['pin']
         is_admin = 'is_admin' in request.form
+        assign_chores = 'assign_chores' in request.form
         birthday = datetime.strptime(birthday_str, '%Y-%m-%d').date()
 
         if not current_app.people_service.validate_pin(pin):
@@ -31,7 +41,7 @@ def add_person() -> Response:
                             'numeric characters.'}), 400
 
         current_app.people_service.add_person(
-            first_name, last_name, birthday, pin, is_admin, login_name)
+            first_name, last_name, birthday, pin, is_admin, assign_chores, login_name)
         return redirect(url_for('index_bp.home'))
 
     # Check if there are any admins
@@ -72,6 +82,7 @@ def edit_person(person_id: int) -> Response:
         birthday_str = request.form['birthday']
         person.birthday = datetime.strptime(birthday_str, '%Y-%m-%d').date()
         person.is_admin = 'is_admin' in request.form
+        person.assign_chores = 'assign_chores' in request.form
         current_app.people_service.update_person(person)
         person = current_app.people_service.get_person_by_id(person_id)
 
@@ -118,7 +129,7 @@ def get_people() -> Response:
     Returns:
         Response: The rendered template with the list of people.
     """
-    people = current_app.people_service.get_all_people()
+    people = _resolve_value(current_app.people_service.get_all_people())
     return render_template('edit_people.html', people=people)
 
 
@@ -129,7 +140,7 @@ def change_sequence() -> Response:
     Returns:
         Response: The rendered template for changing the sequence of people.
     """
-    people = current_app.people_service.get_all_people()
+    people = _resolve_value(current_app.people_service.get_all_people())
     return render_template('change_sequence.html', people=people)
 
 

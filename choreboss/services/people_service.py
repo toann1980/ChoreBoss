@@ -26,6 +26,7 @@ class PeopleService:
         birthday: str,
         pin: str,
         is_admin: bool,
+        assign_chores: bool = True,
         login_name: str | None = None,
     ) -> People:
         """Add a new person.
@@ -36,6 +37,7 @@ class PeopleService:
             birthday: Birthday.
             pin: PIN (will be hashed).
             is_admin: Admin flag.
+            assign_chores: Whether the person should receive chores in rotation.
             login_name: Optional human-friendly login name.
 
         Returns:
@@ -47,6 +49,7 @@ class PeopleService:
             birthday=birthday,
             pin=pin,
             is_admin=is_admin,
+            assign_chores=assign_chores,
             login_name=login_name,
         )
 

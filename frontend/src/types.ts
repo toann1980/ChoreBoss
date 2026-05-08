@@ -5,6 +5,7 @@ export interface PersonRead {
   login_name: string;
   birthday: string;
   is_admin: boolean;
+  assign_chores: boolean;
   sequence_num: number;
   created_at: string;
   updated_at: string;
@@ -16,6 +17,7 @@ export interface PersonCreateInput {
   login_name: string;
   birthday: string;
   is_admin?: boolean;
+  assign_chores?: boolean;
   pin: string;
 }
 
@@ -25,6 +27,7 @@ export interface PersonUpdateInput {
   login_name?: string;
   birthday?: string;
   is_admin?: boolean;
+  assign_chores?: boolean;
 }
 
 export interface ChoreRead {

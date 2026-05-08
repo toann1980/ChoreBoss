@@ -65,6 +65,15 @@ export function PersonCreateForm({ busy, form, onSubmit, onChange }: PersonCreat
           />
           Admin
         </label>
+        <label className="checkbox-row">
+          <input
+            name="assign_chores"
+            type="checkbox"
+            checked={form.assign_chores}
+            onChange={(event) => onChange({ assign_chores: event.target.checked })}
+          />
+          Assign chores
+        </label>
       </div>
       <button type="submit" disabled={busy}>
         {busy ? 'Saving…' : 'Add person'}

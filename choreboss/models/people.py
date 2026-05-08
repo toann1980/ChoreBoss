@@ -23,6 +23,7 @@ class People(Base):
     birthday = Column(Date, nullable=False)
     pin = Column(String(255), nullable=False)
     is_admin = Column(Boolean, default=False)
+    assign_chores = Column(Boolean, default=True, nullable=False)
     sequence_num = Column(Integer, nullable=False)
     created_at = Column(
         DateTime,
@@ -102,6 +103,13 @@ class People(Base):
     @validates("is_admin")
     def validate_is_admin(self, key, value):
         """Validate is_admin field."""
+        if not isinstance(value, bool):
+            raise AttributeError(f"{key} must be a boolean")
+        return value
+
+    @validates("assign_chores")
+    def validate_assign_chores(self, key, value):
+        """Validate assign_chores field."""
         if not isinstance(value, bool):
             raise AttributeError(f"{key} must be a boolean")
         return value

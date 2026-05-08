@@ -52,6 +52,7 @@ class TestChoreService(unittest.TestCase):
             datetime.now().date()
         )
 
+
     def test_delete_chore(self):
         self.chore_service.delete_chore(1)
         self.session.commit()
