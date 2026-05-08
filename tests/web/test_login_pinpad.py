@@ -52,3 +52,15 @@ def test_pin_pad_buttons_are_explicit_buttons_and_keyboard_input_is_consumed(tes
     html = response.text
     assert 'type="button"' in html
     assert 'preventDefault()' in html or 'event.preventDefault()' in html
+
+
+def test_pin_modal_escape_should_close_and_reset_state(test_client) -> None:
+    """Escape should close the pin modal and reset pin state instead of leaving it open."""
+    response = test_client.get("/login")
+
+    assert response.status_code == 200
+    html = response.text
+    assert "hidePinModal()" in html
+    assert "Escape" in html
+    assert "isConfirmingPin = false" in html
+    assert "initialPin = \"\"" in html

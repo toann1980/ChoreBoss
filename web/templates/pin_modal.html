@@ -105,7 +105,7 @@
       confirmPin();
     } else if (key === "Escape") {
       event.preventDefault();
-      clearPin();
+      hidePinModal();
     }
   }
 
@@ -122,6 +122,17 @@
     $("#numpadModal").modal("hide");
     activePinContext = null;
     document.removeEventListener("keydown", handleKeyPress);
+  }
+
+  const numpadModalEl = document.getElementById("numpadModal");
+  if (numpadModalEl) {
+    numpadModalEl.addEventListener("hidden.bs.modal", () => {
+      activePinContext = null;
+      isConfirmingPin = false;
+      initialPin = "";
+      clearPin();
+      document.removeEventListener("keydown", handleKeyPress);
+    });
   }
 
   function confirmPin() {
