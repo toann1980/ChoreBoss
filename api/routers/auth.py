@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Any
+import logging
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -34,8 +35,13 @@ async def login(
     """
     people_repo = PeopleRepository(session)
     service = PeopleService(people_repo)
+    logger = logging.getLogger(__name__)
+    logger.debug("Auth attempt for login_name=%s", credentials.login_name)
 
-    person = await service.get_person_by_login_name(credentials.login_name)
+    # Normalize login name (case-insensitive usernames)
+    login_name = credentials.login_name.strip().lower()
+    logger.debug("Normalized login_name=%s", login_name)
+    person = await service.get_person_by_login_name(login_name)
     if not person:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

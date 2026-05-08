@@ -18,6 +18,8 @@
                  class="form-control text-center"
                  id="pinDisplay"
                  readonly />
+          <!-- Modal-local hidden pin storage to avoid relying on page-level elements -->
+          <input type="hidden" id="modalPin" name="modalPin" />
         </div>
         <div class="numpad">
           {% set buttons = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "C", "0", "←"] %}
@@ -44,29 +46,45 @@
   let isConfirmingPin = false;
   let initialPin = "";
 
+  function _getModalPinEl() {
+    return document.getElementById("modalPin");
+  }
+
+  function _getPagePinEl() {
+    return document.getElementById("pin");
+  }
+
   function clearPin() {
-    document.getElementById("pin").value = "";
-    document.getElementById("pinDisplay").value = "";
+    const modalPin = _getModalPinEl();
+    const pinDisplay = document.getElementById("pinDisplay");
+    if (modalPin) modalPin.value = "";
+    if (pinDisplay) pinDisplay.value = "";
+    // also clear page-level hidden input if present
+    const pagePin = _getPagePinEl();
+    if (pagePin) pagePin.value = "";
   }
 
   function deleteLastPin() {
-    const pinInput = document.getElementById("pin");
+    const modalPin = _getModalPinEl();
     const pinDisplay = document.getElementById("pinDisplay");
-    pinInput.value = pinInput.value.slice(0, -1);
-    pinDisplay.value = pinInput.value;
+    if (!modalPin) return;
+    modalPin.value = modalPin.value.slice(0, -1);
+    if (pinDisplay) pinDisplay.value = modalPin.value;
   }
 
   function addToPin(value) {
-    const pinInput = document.getElementById("pin");
+    const modalPin = _getModalPinEl();
     const pinDisplay = document.getElementById("pinDisplay");
+
+    if (!modalPin) return;
 
     if (value === "C") {
       clearPin();
     } else if (value === "←") {
       deleteLastPin();
-    } else if (pinInput.value.length < 6) {
-      pinInput.value += value;
-      pinDisplay.value = pinInput.value;
+    } else if (modalPin.value.length < 6) {
+      modalPin.value += value;
+      if (pinDisplay) pinDisplay.value = modalPin.value;
     }
   }
 
@@ -85,7 +103,8 @@
 
   function showPinModal(context) {
     clearPin();
-    document.getElementById("pinContext").value = context;
+    const ctxEl = document.getElementById("pinContext");
+    if (ctxEl) ctxEl.value = context;
     $("#numpadModal").modal("show");
     document.addEventListener("keydown", handleKeyPress);
   }
@@ -96,43 +115,55 @@
   }
 
   function confirmPin() {
-    const context = document.getElementById("pinContext").value;
-    const pinInput = document.getElementById("pin").value;
+    const ctxEl = document.getElementById("pinContext");
+    const context = ctxEl ? ctxEl.value : null;
+    const modalPin = _getModalPinEl();
+    const pinValue = modalPin ? modalPin.value : "";
+
+    // copy modal pin to page-level hidden input if present so server-side templates can read it
+    const pagePin = _getPagePinEl();
+    if (pagePin) pagePin.value = pinValue;
 
     if (context === "add_person") {
       if (!isConfirmingPin) {
-        initialPin = pinInput;
+        initialPin = pinValue;
         isConfirmingPin = true;
         clearPin();
         alert("Please re-enter your PIN to confirm.");
       } else {
-        if (pinInput === initialPin) {
+        if (pinValue === initialPin) {
           hidePinModal();
-          document.getElementById("addPersonForm").submit();
+          const f = document.getElementById("addPersonForm");
+          if (f) f.submit();
         } else {
           alert("PINs do not match. Please try again.");
           clearPin();
           isConfirmingPin = false;
         }
       }
-    } else {    
-      const choreIdElement = document.getElementById("chore_id");
-      const choreId = choreIdElement ? choreIdElement.value : null;
-      const personIdElement = document.getElementById("person_id");
-      const personId = personIdElement ? personIdElement.value : null;
-      fetch('/verify_pin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          pin: pinInput, context: context, chore_id: choreId, person_id: personId
-        }),
-      })
-        .then(response => response.json())
-        .then(data => {
-          console.log(`context: ${context}, status: ${data.status}`);
-          if (data.status === 'success') {
+      return;
+    }
+
+    // other contexts: call verify_pin endpoint on the bridge
+    const choreIdElement = document.getElementById("chore_id");
+    const choreId = choreIdElement ? choreIdElement.value : null;
+    const personIdElement = document.getElementById("person_id");
+    const personId = personIdElement ? personIdElement.value : null;
+
+    fetch('/verify_pin', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        pin: pinValue, context: context, chore_id: choreId, person_id: personId
+      }),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(`context: ${context}, status: ${data.status}`);
+        if (data.status === 'success') {
+          try {
             switch (context) {
               case "change_sequence":
                 fetch('/update_sequence', {
@@ -144,41 +175,72 @@
                 })
                   .then(response => response.json())
                   .then(result => {
-                    if (result.status === 'success') {
+                    // Accept both old and new response shapes for compatibility
+                    if (result && (result.status === 'success' || result.success === true)) {
                       alert('Sequence updated successfully!');
                     } else {
-                      alert('Failed to update sequence.');
+                      const msg = (result && (result.error || result.message)) || 'Failed to update sequence.';
+                      alert(msg);
                     }
                   })
                   .catch(error => {
                     console.error('There was a problem with the fetch operation:', error);
+                    alert('Failed to update sequence.');
                   });
                 break;
               case "complete_chore":
-                document.getElementById("completeChoreForm").submit();
-                break;              
+                {
+                  const f = document.getElementById("completeChoreForm");
+                  if (f) f.submit();
+                }
+                break;
               case "delete_person":
-                document.getElementById("deletePersonForm").submit();
+                {
+                  const f = document.getElementById("deletePersonForm");
+                  if (f) f.submit();
+                }
                 break;
               case "delete_chore":
-                document.getElementById("deleteChoreForm").submit();
+                {
+                  const f = document.getElementById("deleteChoreForm");
+                  if (f) f.submit();
+                }
                 break;
               case "edit_person":
-                document.getElementById("editPersonForm").submit();
+                {
+                  const f = document.getElementById("editPersonForm");
+                  if (f) f.submit();
+                }
                 break;
               case "edit_chore":
-                document.getElementById("editChoreForm").submit();
+                {
+                  const f = document.getElementById("editChoreForm");
+                  if (f) f.submit();
+                }
                 break;
               default:
                 console.error("Unknown context: ", context);
             }
-            hidePinModal();
-          } else {
-            alert('Invalid PIN. Please try again.');
-            clearPin();
+          } catch (e) {
+            console.error('Error handling success context action', e);
           }
-        });
-    }
+          hidePinModal();
+        } else {
+          // Provide a clearer error reason when available
+          if (data && data.reason === 'not_admin') {
+            alert('PIN accepted but this action requires an admin account.');
+          } else if (data && data.reason === 'invalid') {
+            alert('Invalid PIN. Please try again.');
+          } else {
+            alert('PIN verification failed. Please try again.');
+          }
+          clearPin();
+        }
+      })
+      .catch(err => {
+        console.error('verify_pin fetch failed', err);
+        alert('Unable to verify PIN right now. Try again later.');
+      });
   }
 
 </script>

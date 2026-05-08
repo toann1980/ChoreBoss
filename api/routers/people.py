@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import date
 from typing import Any
+from pydantic import BaseModel
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -16,6 +17,11 @@ from choreboss.services import PeopleService
 
 router = APIRouter()
 optional_bearer = HTTPBearer(auto_error=False)
+
+
+class SequenceItem(BaseModel):
+    id: int
+    sequence: int
 
 
 @router.get("/", response_model=list[PersonRead])
@@ -88,7 +94,9 @@ async def create_person(
     people_repo = PeopleRepository(session)
     service = PeopleService(people_repo)
 
-    existing_person = await service.get_person_by_login_name(person.login_name)
+    # Normalize login name to be case-insensitive
+    login_name = person.login_name.strip().lower()
+    existing_person = await service.get_person_by_login_name(login_name)
     if existing_person:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -118,7 +126,8 @@ async def create_person(
         birthday=person.birthday,
         pin=person.pin,
         is_admin=person.is_admin,
-        login_name=person.login_name,
+        assign_chores=person.assign_chores,
+        login_name=login_name,
     )
     await session.commit()
     return result
@@ -164,6 +173,8 @@ async def update_person(
         person.birthday = person_update.birthday
     if person_update.is_admin is not None:
         person.is_admin = person_update.is_admin
+    if person_update.assign_chores is not None:
+        person.assign_chores = person_update.assign_chores
 
     result = await service.update_person(person)
     await session.commit()
@@ -198,3 +209,21 @@ async def delete_person(
 
     await service.delete_person(person_id)
     await session.commit()
+
+
+@router.post("/sequence")
+async def update_sequence(
+    items: list[SequenceItem],
+    session: AsyncSession = Depends(get_session),
+    admin: dict[str, Any] = Depends(get_admin_person),
+) -> dict[str, Any]:
+    """Bulk update person sequence numbers (admin only)."""
+    people_repo = PeopleRepository(session)
+    service = PeopleService(people_repo)
+
+    # Validate and apply
+    for item in items:
+        await service.update_sequence(item.id, item.sequence)
+
+    await session.commit()
+    return {"status": "success"}

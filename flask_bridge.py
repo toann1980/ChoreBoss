@@ -192,8 +192,9 @@ def login():
                 return jsonify({'error': 'Unexpected login response from backend'}), 502
             session['token'] = result.get('access_token')
             session['person_id'] = result.get('person_id')
-            session['login_name'] = login_name
-            app.logger.info('Login succeeded for %s', login_name)
+            # Normalize and store login_name as lowercase so the bridge is case-insensitive
+            session['login_name'] = login_name.strip().lower()
+            app.logger.info('Login succeeded for %s', session['login_name'])
             return jsonify({'success': True})
         else:
             app.logger.warning('Login failed for %s with status %s payload=%s', login_name, status, result)
@@ -326,14 +327,24 @@ def complete_chore(chore_id):
     """Mark chore as complete."""
     if 'token' not in session:
         return jsonify({'error': 'Not authenticated'}), 401
-    
+
     status, result = api_call('POST', f'/chores/{chore_id}/complete', {})
-    
+
+    # If the caller expects JSON (AJAX), return JSON. Otherwise redirect to the chore detail
+    wants_json = request.is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', '')
+
     if status == 200:
-        return jsonify({'success': True, 'chore': result})
+        if wants_json:
+            return jsonify({'success': True, 'chore': result})
+        # Redirect back to the chore detail page for normal form submissions
+        return redirect(url_for('chore_detail', chore_id=chore_id))
     else:
         message = result.get('error', 'Failed to complete') if isinstance(result, dict) else 'Failed to complete'
-        return jsonify({'error': message}), status
+        if wants_json:
+            return jsonify({'error': message}), status
+        # For non-AJAX, render the chore detail page with an error message
+        status2, chore = api_call('GET', f'/chores/{chore_id}')
+        return render_template('chore_detail.html', chore=chore, error=message), status
 
 
 @app.route('/chores/<int:chore_id>/delete', methods=['POST'])
@@ -380,14 +391,18 @@ def verify_pin():
         'pin': pin,
     })
     if status != 200 or not isinstance(auth_result, dict):
-        return jsonify({'status': 'failure'})
+        # Cannot verify PIN (invalid credentials)
+        return jsonify({'status': 'failure', 'reason': 'invalid'})
 
     # Refresh the bridge session with the latest backend token/role so a
     # just-promoted admin can immediately perform admin actions.
     session['token'] = auth_result.get('access_token')
     session['person_id'] = auth_result.get('person_id')
     session['is_admin'] = bool(auth_result.get('is_admin'))
-    session['login_name'] = session.get('login_name') or data.get('login_name')
+    # Keep login_name normalized in session (lowercase)
+    _ln = session.get('login_name') or data.get('login_name')
+    if _ln:
+        session['login_name'] = _ln.strip().lower()
 
     is_admin = bool(auth_result.get('is_admin'))
     if context == 'add_person':
@@ -395,15 +410,15 @@ def verify_pin():
         people = _collection_items(people_data, 'people') if status2 == 200 else []
         if is_admin or not people:
             return jsonify({'status': 'success'})
-        return jsonify({'status': 'failure'})
+        return jsonify({'status': 'failure', 'reason': 'not_admin'})
 
     if context == 'complete_chore':
         return jsonify({'status': 'success'})
 
     if context in {'change_sequence', 'delete_chore', 'delete_person', 'edit_chore', 'edit_person'}:
-        return jsonify({'status': 'success' if is_admin else 'failure'})
+        return jsonify({'status': 'success' if is_admin else 'failure', 'reason': (None if is_admin else 'not_admin')})
 
-    return jsonify({'status': 'failure'})
+    return jsonify({'status': 'failure', 'reason': 'invalid'})
 
 
 @app.route('/people')
@@ -437,6 +452,7 @@ def person_detail(person_id):
             'last_name': data.get('last_name'),
             'birthday': data.get('birthday'),
             'is_admin': data.get('is_admin') in ('on', 'true', '1', True),
+            'assign_chores': data.get('assign_chores') in ('on', 'true', '1', True),
         }
         status, result = api_call('PUT', f'/people/{person_id}', payload)
         if status == 200:
@@ -462,10 +478,13 @@ def add_person():
             'login_name': data.get('login_name'),
             'birthday': data.get('birthday'),
             'pin': data.get('pin'),
-            'is_admin': data.get('is_admin', False)
+            'is_admin': data.get('is_admin', False),
+            'assign_chores': data.get('assign_chores', False),
         }
         if hasattr(payload['is_admin'], 'lower'):
             payload['is_admin'] = str(payload['is_admin']).lower() in ('1', 'true', 'on', 'yes')
+        if hasattr(payload['assign_chores'], 'lower'):
+            payload['assign_chores'] = str(payload['assign_chores']).lower() in ('1', 'true', 'on', 'yes')
         status, result = api_call('POST', '/people/', payload)
         
         if status == 201 or status == 200:
@@ -542,13 +561,41 @@ def change_sequence():
 
 @app.route('/update_sequence', methods=['POST'])
 def update_sequence():
-    """Placeholder update-sequence action until backend support exists."""
+    """Proxy a sequence update to the FastAPI backend.
+
+    Expects JSON: { sequence_data: JSON-stringified list [{id, sequence}, ...] }
+    Returns JSON on AJAX requests, otherwise redirects to people list.
+    """
     if 'token' not in session:
         return redirect(url_for('login'))
-    message = 'Sequence updates are not yet implemented in the FastAPI backend.'
-    if request.is_json:
-        return jsonify({'error': message}), 501
-    return jsonify({'error': message}), 501
+
+    data = request.get_json(silent=True) or request.form
+    seq_raw = data.get('sequence_data')
+    try:
+        if isinstance(seq_raw, str):
+            seq = json.loads(seq_raw)
+        else:
+            seq = seq_raw
+        # normalize types
+        seq = [{'id': int(x['id']), 'sequence': int(x['sequence'])} for x in seq]
+    except Exception as e:
+        app.logger.exception('Bad sequence_data payload: %s', e)
+        if request.is_json:
+            return jsonify({'error': 'Bad sequence data'}), 400
+        return render_template('change_sequence.html', people=_collection_items(api_call('GET', '/people/')[1], 'people'), error='Invalid sequence payload'), 400
+
+    status, result = api_call('POST', '/people/sequence', seq)
+    if status == 200:
+        if request.is_json:
+            # Return both old and new shapes for compatibility: boolean 'success' and 'status' string
+            return jsonify({'success': True, 'status': 'success'})
+        return redirect(url_for('people_list'))
+    else:
+        message = result.get('error', 'Failed to update sequence') if isinstance(result, dict) else 'Failed to update sequence'
+        if request.is_json:
+            return jsonify({'error': message, 'status': 'failure'}), status
+        people = _collection_items(api_call('GET', '/people/')[1], 'people')
+        return render_template('change_sequence.html', people=people, error=message), status
 
 
 @app.route('/api/health')
@@ -608,4 +655,4 @@ if __name__ == '__main__':
       http://localhost:{FLASK_PORT}/api/health
 
 """)
-    app.run(debug=True, host='0.0.0.0', port=FLASK_PORT)
+    app.run(debug=False, use_reloader=False, host='0.0.0.0', port=FLASK_PORT)

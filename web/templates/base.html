@@ -23,11 +23,20 @@
   </head>
   <body>
     {% if session.get('token') %}
-      <div class="container mt-3 d-flex justify-content-end gap-2">
-        {% if request.path != '/' %}
-          <a class="btn btn-outline-secondary" href="{{ url_for('index') }}">Home</a>
-        {% endif %}
-        <a class="btn btn-outline-danger" href="{{ url_for('logout') }}">Logout</a>
+      <div class="container mt-3">
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="left-controls">
+            {% if request.path != '/' %}
+              <button class="btn btn-secondary" onclick="window.history.back()">Back</button>
+            {% endif %}
+          </div>
+          <div class="right-controls">
+            {% if request.path != '/' %}
+              <a class="btn btn-outline-secondary" href="{{ url_for('index') }}">Home</a>
+            {% endif %}
+            <a class="btn btn-outline-danger" href="{{ url_for('logout') }}">Logout</a>
+          </div>
+        </div>
       </div>
     {% endif %}
     {% block content %}

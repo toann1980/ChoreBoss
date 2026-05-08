@@ -72,3 +72,35 @@ section button {
     max-height: 75%;
     margin-top: 1rem;
 }
+
+/* Numpad / PIN modal improvements: larger touch targets and more spacing for mobile */
+.numpad .row {
+    margin-bottom: 0.5rem;
+}
+
+.numpad .col-4 {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+}
+
+.numpad .btn {
+    min-height: 56px;
+    padding: 0.75rem 0;
+    font-size: 1.25rem;
+    border-radius: 10px;
+}
+
+/* Ensure the input/display is visibly separated from the buttons */
+#pinDisplay {
+    font-size: 1.15rem;
+    height: 2.4rem;
+    padding-top: 0.3rem;
+    padding-bottom: 0.3rem;
+}
+
+@media (max-width: 480px) {
+    .numpad .btn {
+        min-height: 64px;
+        font-size: 1.4rem;
+    }
+}
