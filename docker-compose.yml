@@ -5,6 +5,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        BUILD_VERSION: ${BUILD_VERSION:-2.0.0}
+        BUILD_SHA: ${BUILD_SHA:-unknown}
+        BUILD_DATE: ${BUILD_DATE:-unknown}
     container_name: choreboss-app
     restart: unless-stopped
     ports:
@@ -14,7 +18,7 @@ services:
     volumes:
       - .:/app
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8055/api/health"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8055/api/health').read()"]
       interval: 30s
       timeout: 10s
       retries: 3

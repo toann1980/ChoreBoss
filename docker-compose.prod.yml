@@ -1,0 +1,37 @@
+services:
+  app:
+    image: ${CHOREBOSS_IMAGE:-choreboss:latest}
+    container_name: choreboss-app
+    restart: unless-stopped
+    ports:
+      - "8055:8055"
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8055/api/health').read()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    container_name: choreboss-db
+    environment:
+      POSTGRES_USER: envestero
+      POSTGRES_PASSWORD: envestero_password
+      POSTGRES_DB: envestero
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - choreboss_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U envestero -d envestero"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  choreboss_pgdata:

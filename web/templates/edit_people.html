@@ -7,10 +7,12 @@
     <h1 class="mt-5">Edit People</h1>
     <ul class="list-group">
       {% for person in people %}
-        <li class="list-group-item">
+        <li class="list-group-item d-flex justify-content-between align-items-center">
           <a href="{{ url_for('person_detail', person_id=person.id) }}">
             {{ person.first_name }} {{ person.last_name }}
           </a>
+          <a class="btn btn-sm btn-outline-primary"
+             href="{{ url_for('person_chores', person_id=person.id) }}">View Chores</a>
         </li>
       {% endfor %}
     </ul>

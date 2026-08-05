@@ -8,13 +8,13 @@
 
 ## What You Now Have
 
-### 1. ✅ Envestero Running
+### 1b. ChoreBoss deployment persistence pattern
 
-All services operational on NUC (10.0.0.81):
-- API: http://10.0.0.81/api/health → `{"status": "ok"}`
-- Frontend: http://10.0.0.81/ → Full dashboard
-- Database: 19 tickers loaded from PostgreSQL
-- Nginx: Single entry point routing all traffic
+For ChoreBoss, the production pattern is now split into:
+- `docker-compose.yml` for development iteration
+- `docker-compose.prod.yml` for immutable image deployment
+- `/api/version` for explicit release identity
+- durable DB volume for restart-safe data
 
 ### 2. ✅ Production-Ready URL Architecture
 

@@ -15,29 +15,37 @@
   <main class="container">
     <div class="content-container">
       <section class="my-4" id="chores">
-        <h2>Chores</h2>
+        <div class="chore-section-header d-flex justify-content-between align-items-center mb-3">
+          <h2 class="mb-0">Chores</h2>
+          <button class="btn btn-primary mt-0"
+                  onclick="location.href='{{ url_for("add_chore") }}'">Add Chore</button>
+        </div>
         {% if chores %}
           <ul class="list-group">
             {% for chore in chores %}
-              <li class="list-group-item">
+              <li class="list-group-item chore-row d-flex justify-content-between align-items-center">
                 <a href="{{ url_for('chore_detail', chore_id=chore.id) }}">{{ chore.name }}</a>
+                <span class="chore-assignee">
+                  {% if chore.person %}
+                    {{ chore.person.first_name }} {{ chore.person.last_name }}
+                  {% else %}
+                    Unassigned
+                  {% endif %}
+                </span>
               </li>
             {% endfor %}
           </ul>
         {% else %}
           <p>No chores? This can't be right...</p>
         {% endif %}
-        <button class="btn btn-primary"
-                onclick="location.href='{{ url_for("add_chore") }}'">Add Chore</button>
       </section>
       <section id="people">
-        <h2>People</h2>
+        <div class="chore-section-header d-flex justify-content-between align-items-center mb-3">
+          <h2 class="mb-0">People</h2>
+          <a class="btn btn-primary mt-0"
+             href="{{ url_for('people_list') }}">Manage People</a>
+        </div>
         {% if not people %}<p>Are you the Boss?</p>{% endif %}
-        <button class="btn btn-primary"
-                onclick="location.href='{{ url_for("add_person") }}'">Add Person</button>
-        <button class="btn btn-primary"
-                onclick="location.href='{{ url_for("people_list") }}'"
-                {% if not people %}disabled{% endif %}>Edit People</button>
       </section>
     </div>
   </main>

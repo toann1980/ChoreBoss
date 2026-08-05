@@ -6,6 +6,7 @@ import pytest
 from fastapi import status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.dependencies.auth import create_access_token
 from choreboss.models.chore import Chore
 from tests.setup_memory_records import setup_test_people, setup_test_chores
 
@@ -301,3 +302,61 @@ async def test_create_person_non_admin(
     )
 
     assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+@pytest.mark.asyncio
+async def test_admin_can_reset_another_person_pin_without_current_pin(
+    test_client,
+    async_session: AsyncSession,
+) -> None:
+    """Admins reset a user's PIN with only the replacement PIN fields."""
+    people = await setup_test_people(async_session, 2)
+    await async_session.commit()
+    admin, user = people
+
+    login_response = test_client.post(
+        "/api/auth/login",
+        json={"login_name": admin.login_name, "pin": "1234"},
+    )
+    token = login_response.json()["access_token"]
+
+    response = test_client.post(
+        f"/people/{user.id}/edit_pin",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"new_pin": "2468", "confirm_pin": "2468"},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    await async_session.refresh(user)
+    assert user.verify_pin("2468") is True
+
+
+@pytest.mark.asyncio
+async def test_database_admin_does_not_need_current_pin_when_token_claim_is_stale(
+    test_client,
+    async_session: AsyncSession,
+) -> None:
+    """A newly promoted admin is not forced through the old PIN flow."""
+    people = await setup_test_people(async_session, 2)
+    admin, user = people
+    admin.is_admin = True
+    await async_session.commit()
+
+    stale_token = create_access_token(person_id=admin.id, is_admin=False)
+    page = test_client.get(
+        f"/people/{user.id}/edit_pin",
+        headers={"Authorization": f"Bearer {stale_token}"},
+    )
+    assert page.status_code == status.HTTP_200_OK
+    assert "Current PIN" not in page.text
+    assert "New PIN" in page.text
+
+    response = test_client.post(
+        f"/people/{user.id}/edit_pin",
+        headers={"Authorization": f"Bearer {stale_token}"},
+        json={"new_pin": "1357", "confirm_pin": "1357"},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    await async_session.refresh(user)
+    assert user.verify_pin("1357") is True

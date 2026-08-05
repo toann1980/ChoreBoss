@@ -1,17 +1,23 @@
 OCP — ChoreBoss Current (OWL Mode update)
 
-Timestamp: 2026-05-07 17:55 PDT
-Scope: ChoreBoss (Flask UI bridge + FastAPI backend)
+Timestamp: 2026-05-20 22:16 PDT
+Scope: ChoreBoss (FastAPI backend + legacy Flask bridge)
 
 Summary
 -------
-Short: The running ChoreBoss stack is healthy. Key fixes for PIN handling, UI numpad ergonomics, sequence updates, and header layout were implemented and pushed to origin/main. Runtime services (FastAPI on :8055, Flask bridge on :8056) are running and responding to health checks.
+Short: The production ChoreBoss deployment is healthy and restart-safe. The prod image now carries explicit build identity metadata, `/api/health` responds on :8055, and `/api/version` reports the live build/version fields from the running container.
 
 Status (live)
 -------------
-- FastAPI backend + UI shell: running (http://127.0.0.1:8055/api/health → 200)
-- Flask bridge: retired from the runtime path and removed from the working tree.
-- Git: changes merged to origin/main and pushed.
+- FastAPI backend: running and healthy at http://127.0.0.1:8055/api/health → 200
+- Dockerized app: `choreboss-app` is up, healthy, and bound to host port 8055
+- Database persistence: app container mounts the repo, and the live SQLite DB file is `/srv/github/ChoreBoss/choreboss.db`
+- `/api/version`: live deployment identity available from the running prod container
+  - version: 2.0.1
+  - build_sha: 8365d13
+  - build_date: 2026-05-20T21:52:00-07:00
+- Prod compose stack: restarted cleanly after image rebuilds
+- Git: deployment changes are committed locally; push status not re-checked in this turn
 
 What I changed (high-level)
 ---------------------------
@@ -71,6 +77,7 @@ Open / Outstanding
 - Baton pass: FastAPI-only app shell migration plan is now captured in OCP/ChoreBoss/FASTAPI_BATON_PASS_CHECKLIST.md.
 - Phase 0 completed: exact Flask bridge route inventory captured in OCP/ChoreBoss/FASTAPI_ROUTE_INVENTORY.md.
 - Phase 1-5 of the baton pass are functionally complete for the current shell routes; docs cleanup and memory sync remain.
+- Deployment persistence prep has started: we now have a TDD brief for restart-safe data, session continuity, explicit release identity, and externalized config.
 
 Risks & Mitigations
 -------------------

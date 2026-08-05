@@ -483,6 +483,35 @@ async def people_list(
     return _render(request, "edit_people.html", people=people)
 
 
+@router.get("/people/{person_id:int}/chores", name="person_chores", response_class=HTMLResponse)
+async def person_chores(
+    person_id: int,
+    request: Request,
+    session: AsyncSession = Depends(get_session),
+    current_person: dict[str, Any] = Depends(get_current_person),
+):
+    """Show the chores assigned to one selected person."""
+    people_repo = PeopleRepository(session)
+    person = await PeopleService(people_repo).get_person_by_id(person_id)
+    if not person:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Person not found")
+
+    chores = await _load_assigned_chores(session, person_id)
+    for chore in chores:
+        chore.due_label = _due_label(chore)
+
+    return _render(
+        request,
+        "chores_list.html",
+        chores=chores,
+        current_person=current_person,
+        is_admin=False,
+        selected_person=person,
+        page_title=f"{person.first_name} {person.last_name}'s Chores",
+        empty_message=f"No chores are assigned to {person.first_name} yet.",
+    )
+
+
 @router.get("/people/{person_id:int}", name="person_detail", response_class=HTMLResponse)
 async def person_detail_get(
     person_id: int,
@@ -629,10 +658,17 @@ async def edit_pin_get(
     if not person:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Person not found")
 
-    if current_person["person_id"] != person_id and not current_person.get("is_admin"):
+    authenticated_person = await service.get_person_by_id(current_person["person_id"])
+    is_admin = bool(authenticated_person and authenticated_person.is_admin)
+    if current_person["person_id"] != person_id and not is_admin:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin privileges required")
 
-    return _render(request, "edit_pin.html", person=person)
+    return _render(
+        request,
+        "edit_pin.html",
+        person=person,
+        is_admin=is_admin,
+    )
 
 
 @router.post("/people/{person_id:int}/edit_pin", name="edit_pin")
@@ -649,7 +685,9 @@ async def edit_pin_post(
     if not person:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Person not found")
 
-    if current_person["person_id"] != person_id and not current_person.get("is_admin"):
+    authenticated_person = await service.get_person_by_id(current_person["person_id"])
+    is_admin = bool(authenticated_person and authenticated_person.is_admin)
+    if current_person["person_id"] != person_id and not is_admin:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin privileges required")
 
     data = await _request_data(request)
@@ -657,12 +695,20 @@ async def edit_pin_post(
     new_pin = str(data.get("new_pin", ""))
     confirm_pin = str(data.get("confirm_pin", ""))
 
-    if not service.verify_pin(current_pin, person.pin):
-        return _render(request, "edit_pin.html", person=person, error="Current PIN is incorrect.", status_code=status.HTTP_400_BAD_REQUEST)
+    admin_reset = is_admin
+    if not admin_reset and not service.verify_pin(current_pin, person.pin):
+        return _render(
+            request,
+            "edit_pin.html",
+            person=person,
+            is_admin=False,
+            error="Current PIN is incorrect.",
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
     if new_pin != confirm_pin:
-        return _render(request, "edit_pin.html", person=person, error="New PINs do not match.", status_code=status.HTTP_400_BAD_REQUEST)
+        return _render(request, "edit_pin.html", person=person, is_admin=admin_reset, error="New PINs do not match.", status_code=status.HTTP_400_BAD_REQUEST)
     if not service.validate_pin(new_pin):
-        return _render(request, "edit_pin.html", person=person, error="PIN must be 4 to 6 digits.", status_code=status.HTTP_400_BAD_REQUEST)
+        return _render(request, "edit_pin.html", person=person, is_admin=admin_reset, error="PIN must be 4 to 6 digits.", status_code=status.HTTP_400_BAD_REQUEST)
 
     person.set_pin(new_pin)
     await service.update_person(person)

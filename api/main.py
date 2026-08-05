@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from contextlib import asynccontextmanager
 from pathlib import Path
+import os
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -34,11 +35,14 @@ def create_app() -> FastAPI:
     """
     config = get_config()
     repo_root = Path(__file__).resolve().parents[1]
+    app_version = os.getenv("BUILD_VERSION", "2.0.0")
+    build_sha = os.getenv("BUILD_SHA", "unknown")
+    build_date = os.getenv("BUILD_DATE", "unknown")
 
     app = FastAPI(
         title="ChoreBoss API",
         description="Household chore tracker API",
-        version="2.0.0",
+        version=app_version,
         lifespan=lifespan,
     )
 
@@ -82,6 +86,20 @@ def create_app() -> FastAPI:
             dict: Status message.
         """
         return {"status": "ok"}
+
+    @app.get("/api/version")
+    async def version_info() -> dict[str, str]:
+        """Return build identity for deployment tracking.
+
+        Returns:
+            dict: Version metadata.
+        """
+        return {
+            "version": app_version,
+            "title": app.title,
+            "build_sha": build_sha,
+            "build_date": build_date,
+        }
 
     @app.exception_handler(HTTPException)
     async def http_exception_handler(request: Request, exc: HTTPException):

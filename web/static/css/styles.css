@@ -2,10 +2,9 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 button {
@@ -28,8 +27,8 @@ header {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 50vh;
-    flex-shrink: 0;
+    min-height: 50vh;
+    height: auto;
 }
 
 header h1 {
@@ -42,11 +41,11 @@ header h2 {
 }
 
 main {
-    flex: 1;
-    overflow-y: auto;
+    flex: none;
+    overflow: visible;
     justify-content: center;
     align-items: center;
-    height: 50vh;
+    height: auto;
 }
 
 section {
@@ -69,8 +68,18 @@ section button {
 }
 
 .svg-logo {
-    max-height: 75%;
+    width: auto;
+    height: 25vh;
+    max-height: 25vh;
+    max-width: 100%;
+    object-fit: contain;
     margin-top: 1rem;
+}
+
+.chore-assignee {
+    margin-left: auto;
+    text-align: right;
+    color: #555;
 }
 
 /* Numpad / PIN modal improvements: larger touch targets and more spacing for mobile */
